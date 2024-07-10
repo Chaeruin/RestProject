@@ -114,7 +114,7 @@ def get_answer(category, answer, output, input_sentence):
 """
 
 def gpt(input_sentence, selected_categories): # 지금은 chatbot_type 삭제
-    openai.api_key = "sk-proj-zOVzKRhoYruJJhEkU24DT3BlbkFJXdYQxKnCQHXFBpfxbc2q"
+    openai.api_key = "YOUR_OPEN_AI_KEY"
     MODEL = "gpt-3.5-turbo"
     #MODEL = "gpt-4-turbo"
 
