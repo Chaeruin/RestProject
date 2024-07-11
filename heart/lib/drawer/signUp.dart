@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'APi/login_apis.dart';
+import '../Api/login_apis.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});

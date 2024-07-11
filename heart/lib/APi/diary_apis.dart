@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:heart/Model/diary_model.dart';
+import 'package:heart/Model/event_model.dart';
 import 'package:http/http.dart' as http;
 
 //다이어리 생성
@@ -126,5 +127,18 @@ Future<bool> deleteDiary(String diaryId) async {
   } catch (e) {
     print("Failed to send post data: $e");
     return false;
+  }
+}
+
+Future<List<Event>> fetchEventsForDay(DateTime day) async {
+  // API 요청을 통해 이벤트 데이터를 가져옵니다.
+  final response = await http.get(Uri.parse('YOUR_API_ENDPOINT_FOR_DAY'));
+
+  if (response.statusCode == 200) {
+    // JSON 파싱 및 Event 객체로 변환
+    final List<dynamic> jsonData = jsonDecode(response.body);
+    return jsonData.map((data) => Event.fromJson(data)).toList();
+  } else {
+    throw Exception('Failed to load events');
   }
 }

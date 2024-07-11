@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/drawer/demo1.dart';
 import 'package:heart/drawer/demo2.dart';
-import 'package:heart/logIn.dart';
+import 'package:heart/drawer/logIn.dart';
 import 'package:heart/screen/chat.dart';
 import 'package:heart/screen/diary.dart';
 import 'package:heart/screen/home.dart';
