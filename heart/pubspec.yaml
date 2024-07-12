@@ -41,6 +41,7 @@ dependencies:
   table_calendar: ^3.1.2
   flutter_secure_storage: ^9.2.2
   shared_preferences: ^2.2.3
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:
@@ -82,9 +83,9 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: single_day
-      fonts: 
-        - lib/Assets/Fonts/SingleDay-Regular.ttf
+     - family: single_day
+       fonts:
+         - asset: lib/Assets/Fonts/SingleDay-Regular.ttf
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

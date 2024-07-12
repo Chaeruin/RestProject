@@ -14,8 +14,6 @@ enum Emotion {
   regret,
 }
 
-Emotion _selectedEmotion = Emotion.joy;
-
 class AddDiaries extends StatefulWidget {
   final String selectedDate;
   final String memberId;
@@ -31,7 +29,8 @@ class _AddDiariesState extends State<AddDiaries> {
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = '';
-  // late String _selectedImage = 'lib/assets/images/giryong.png';
+  late String _selectedImage = 'lib/Assets/Images/3.png';
+  Emotion _selectedEmotion = Emotion.joy;
 
   SharedPreferences? prefs;
   List<String> writedays = [];
@@ -63,25 +62,6 @@ class _AddDiariesState extends State<AddDiaries> {
     _writeDate = widget.selectedDate;
   }
 
-  // Future<Map<String, dynamic>> analyzeSentiment(String text) async {
-  //   final url = Uri.parse('http://3.35.183.52:8081/analyze');
-  //   final payload = jsonEncode({'text': text});
-  //   final response = await http.post(
-  //     url,
-  //     headers: {'Content-Type': 'application/json'},
-  //     body: payload,
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     Map<String, dynamic> result = jsonDecode(response.body);
-  //     print(result);
-  //     print("감정 전송 완료");
-  //     return result;
-  //   } else {
-  //     throw Exception('감정 분석 오류!!');
-  //   }
-  // }
-
   Future<String?> _showImagePicker(BuildContext context) async {
     return showModalBottomSheet<String>(
       context: context,
@@ -95,9 +75,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/joy.png';
+                    _selectedImage = 'lib/Assets/Images/joy.png';
                     _emotionType = Emotion.joy.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -106,9 +85,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/hope.png';
+                    _selectedImage = 'lib/Assets/Images/hope.png';
                     _emotionType = Emotion.hope.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -117,9 +95,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/anger.png';
+                    _selectedImage = 'lib/Assets/Images/anger.png';
                     _emotionType = Emotion.anger.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -128,9 +105,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/anxiety.png';
+                    _selectedImage = 'lib/Assets/Images/anxiety.png';
                     _emotionType = Emotion.anxiety.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -139,10 +115,9 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/neutrality.png';
+                    _selectedImage = 'lib/Assets/Images/neutrality.png';
                     _emotionType =
                         Emotion.neutrality.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -151,9 +126,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/sadness.png';
+                    _selectedImage = 'lib/Assets/Images/sadness.png';
                     _emotionType = Emotion.sadness.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -162,9 +136,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/tiredness.png';
+                    _selectedImage = 'lib/Assets/Images/tiredness.png';
                     _emotionType = Emotion.tiredness.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -173,9 +146,8 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    // _selectedImage = 'lib/assets/images/regret.png';
+                    _selectedImage = 'lib/Assets/Images/regret.png';
                     _emotionType = Emotion.regret.toString().split('.').last;
-                    _writeDate = widget.selectedDate;
                   });
                   Navigator.pop(context, _emotionType);
                 },
@@ -283,106 +255,99 @@ class _AddDiariesState extends State<AddDiaries> {
               _updateWritedays(_writeDate);
               Navigator.pop(context);
             },
-            icon: Image.asset(
-              'lib/assets/images/month.png',
-              width: 35,
-              height: 35,
-            ),
+            icon: Icon(Icons.calendar_month),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () async {
-                  final String? selectedEmotion =
-                      await _showImagePicker(context);
-                  setState(() {
-                    _emotionType = selectedEmotion ?? '';
-                  });
-                  print(_emotionType);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 200,
-                      padding: const EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF98DFFF),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Text(
-                        '저를 클릭해서 당신의 \n기분을 선택하세요!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
-                        ),
+      body: Container(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () async {
+                final String? selectedEmotion = await _showImagePicker(context);
+                setState(() {
+                  _emotionType = selectedEmotion ?? '';
+                });
+                print(_emotionType);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 200,
+                    padding: const EdgeInsets.all(8),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF98DFFF),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      '저를 클릭해서 당신의 \n기분을 선택하세요!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 22,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    // Image.asset(
-                    //   _selectedImage,
-                    //   height: 80,
-                    //   width: 70,
-                    // ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _textEditingController,
-                maxLines: 19,
-                onChanged: (value) {
-                  setState(() {
-                    _content = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: const Color(0xFFFFE3EE), // 배경색 지정
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFE3EE),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: TextButton(
-                  onPressed: () async {
-                    // 여기!! 여기에 data 전송 api 넣기
-                    // _content 가 넘어와야 함
-                    // Map<String, dynamic> sentiment =
-                    //     await analyzeSentiment(_content);
-                    // Navigator.push(
-                    //   // ignore: use_build_context_synchronously
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => Statics(sentiment: sentiment)),
-                    // );
-                  },
-                  child: const Text(
-                    '오늘의 기분 상태 보기',
-                    style: TextStyle(
-                      color: Color(0xFFFB7474),
-                      fontSize: 25,
-                    ),
+                  const SizedBox(width: 8),
+                  Image.asset(
+                    _selectedImage,
+                    height: 80,
+                    width: 70,
                   ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _textEditingController,
+              maxLines: 19,
+              onChanged: (value) {
+                setState(() {
+                  _content = value;
+                });
+              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFFFFE3EE), // 배경색 지정
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 30),
+            // Container(
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xFFFFE3EE),
+            //     borderRadius: BorderRadius.circular(20),
+            //   ),
+            //   child: TextButton(
+            //     onPressed: () async {
+            //       여기!! 여기에 data 전송 api 넣기
+            //       _content 가 넘어와야 함
+            //       Map<String, dynamic> sentiment =
+            //           await analyzeSentiment(_content);
+            //       Navigator.push(
+            //         // ignore: use_build_context_synchronously
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => Statics(sentiment: sentiment)),
+            //       );
+            //     },
+            //     child: const Text(
+            //       '오늘의 기분 상태 보기',
+            //       style: TextStyle(
+            //         color: Color(0xFFFB7474),
+            //         fontSize: 25,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
         ),
       ),
     );
@@ -446,3 +411,23 @@ class _AddDiariesState extends State<AddDiaries> {
 //     );
 //   }
 // }
+
+
+ // Future<Map<String, dynamic>> analyzeSentiment(String text) async {
+  //   final url = Uri.parse('http://3.35.183.52:8081/analyze');
+  //   final payload = jsonEncode({'text': text});
+  //   final response = await http.post(
+  //     url,
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: payload,
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     Map<String, dynamic> result = jsonDecode(response.body);
+  //     print(result);
+  //     print("감정 전송 완료");
+  //     return result;
+  //   } else {
+  //     throw Exception('감정 분석 오류!!');
+  //   }
+  // }

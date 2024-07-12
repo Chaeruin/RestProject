@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:heart/top3emo.dart';
+import 'package:heart/totalemo.dart';
 
-class Statistics extends StatelessWidget {
-  const Statistics({super.key});
+class Statistics extends StatefulWidget {
+  final String memId;
+  const Statistics({super.key, required this.memId});
+
+  @override
+  State<Statistics> createState() => _StatisticsState();
+}
+
+class _StatisticsState extends State<Statistics> {
+  late final String memberID;
+
+  @override
+  void initState() {
+    super.initState();
+    memberID = widget.memId;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,57 +26,11 @@ class Statistics extends StatelessWidget {
       child: Scaffold(
         body: Column(
           children: [
-            Column(
-              children: [
-                SizedBox(
-                  height: 15,
-                ),
-                Text('이 달의 마음들'),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  height: 200,
-                  width: 200,
-                  color: Colors.red,
-                  child: Text('PieChart'),
-                ),
-              ],
-            ),
+            TotalEmotion(memberId: memberID),
             SizedBox(
               height: 20,
             ),
-            Column(
-              children: [
-                Text('많이 느낀 감정'),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      color: Colors.red,
-                      child: Text('Emo1'),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 100,
-                      color: Colors.blue,
-                      child: Text('Emo2'),
-                    ),
-                    Container(
-                      width: 100,
-                      height: 100,
-                      color: Colors.green,
-                      child: Text('Emo3'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            Top3Emotion(memberId: 'test'),
             SizedBox(
               height: 30,
             ),
