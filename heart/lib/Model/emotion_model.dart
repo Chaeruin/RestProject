@@ -10,7 +10,6 @@ class MonthlyEmo {
   final String tiredness;
   final String regret;
   final String anger;
-
   MonthlyEmo({
     required this.month,
     required this.joy,
@@ -55,64 +54,6 @@ class MonthlyEmo {
 
   factory MonthlyEmo.fromJson(String source) =>
       MonthlyEmo.fromMap(json.decode(source));
-
-  MonthlyEmo copyWith({
-    String? month,
-    String? joy,
-    String? hope,
-    String? neutrality,
-    String? sadness,
-    String? anxiety,
-    String? tiredness,
-    String? regret,
-    String? anger,
-  }) {
-    return MonthlyEmo(
-      month: month ?? this.month,
-      joy: joy ?? this.joy,
-      hope: hope ?? this.hope,
-      neutrality: neutrality ?? this.neutrality,
-      sadness: sadness ?? this.sadness,
-      anxiety: anxiety ?? this.anxiety,
-      tiredness: tiredness ?? this.tiredness,
-      regret: regret ?? this.regret,
-      anger: anger ?? this.anger,
-    );
-  }
-
-  @override
-  String toString() {
-    return 'MonthlyEmo(month: $month, joy: $joy, hope: $hope, neutrality: $neutrality, sadness: $sadness, anxiety: $anxiety, tiredness: $tiredness, regret: $regret, anger: $anger)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is MonthlyEmo &&
-        other.month == month &&
-        other.joy == joy &&
-        other.hope == hope &&
-        other.neutrality == neutrality &&
-        other.sadness == sadness &&
-        other.anxiety == anxiety &&
-        other.tiredness == tiredness &&
-        other.regret == regret &&
-        other.anger == anger;
-  }
-
-  @override
-  int get hashCode {
-    return month.hashCode ^
-        joy.hashCode ^
-        hope.hashCode ^
-        neutrality.hashCode ^
-        sadness.hashCode ^
-        anxiety.hashCode ^
-        tiredness.hashCode ^
-        regret.hashCode ^
-        anger.hashCode;
-  }
 }
 
 class Top3Emo {

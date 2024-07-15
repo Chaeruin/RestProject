@@ -41,8 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 2;
   int _drawerIndex = 0;
   late PageController _pageController;
-  String memberId = 'test';
-  String nickname = 'text';
+  String memberId = 'hello@gmail.com';
+  String nickname = '안녕!';
   bool isLogin = false;
 
   @override
@@ -158,7 +158,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           Chat(),
                           Diary(),
                           Home(),
-                          Statistics(),
+                          Statistics(
+                            memId: memberId,
+                          ),
                           Mypage(),
                         ],
                       )
@@ -169,11 +171,13 @@ class _MyHomePageState extends State<MyHomePage> {
             : PageView(
                 controller: _pageController,
                 onPageChanged: _onPageChanged,
-                children: const [
+                children: [
                   Chat(),
                   Diary(),
                   Home(),
-                  Statistics(),
+                  Statistics(
+                    memId: memberId,
+                  ),
                   Mypage(),
                 ],
               ),
