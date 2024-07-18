@@ -82,15 +82,14 @@ class _TotalEmotionState extends State<TotalEmotion> {
     var sentiments = snapshot.data!;
 
     // 여기 sentiment 받아서 처리하기
-    double joy = (double.parse(sentiments.joy.replaceAll('%', '')));
-    double hope = (double.parse(sentiments.hope.replaceAll('%', '')));
-    double neutrality =
-        (double.parse(sentiments.neutrality.replaceAll('%', '')));
-    double sadness = (double.parse(sentiments.sadness.replaceAll('%', '')));
-    double anger = (double.parse(sentiments.anger.replaceAll('%', '')));
-    double anxiety = (double.parse(sentiments.anxiety.replaceAll('%', '')));
-    double tiredness = (double.parse(sentiments.tiredness.replaceAll('%', '')));
-    double regret = (double.parse(sentiments.regret.replaceAll('%', '')));
+    double joy = (double.parse(sentiments.joy.substring(0, 2)));
+    double hope = (double.parse(sentiments.hope.substring(0, 2)));
+    double neutrality = (double.parse(sentiments.neutrality.substring(0, 2)));
+    double sadness = (double.parse(sentiments.sadness.substring(0, 2)));
+    double anger = (double.parse(sentiments.anger.substring(0, 2)));
+    double anxiety = (double.parse(sentiments.anxiety.substring(0, 2)));
+    double tiredness = (double.parse(sentiments.tiredness.substring(0, 2)));
+    double regret = (double.parse(sentiments.regret.substring(0, 2)));
 
     return List.generate(8, (i) {
       final isTouched = i == touchedIndex;

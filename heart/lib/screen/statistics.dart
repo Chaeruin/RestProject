@@ -26,14 +26,14 @@ class _StatisticsState extends State<Statistics> {
       child: Scaffold(
         body: Column(
           children: [
-            TotalEmotion(memberId: memberID),
-            SizedBox(
-              height: 20,
-            ),
-            Top3Emotion(memberId: 'test'),
-            SizedBox(
-              height: 30,
-            ),
+            Expanded(child: TotalEmotion(memberId: memberID)),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            Expanded(child: Top3Emotion(memberId: 'test')),
+            // SizedBox(
+            //   height: 30,
+            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
