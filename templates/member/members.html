@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <style>
+        .blue-text {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" style="max-width: 600px">
+    <div class="py-5 text-center">
+        <h2>회원 목록</h2>
+    </div>
+
+    <hr class="my-4">
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>아이디</th>
+                <th>비밀번호</th>
+                <th>닉네임</th>
+                <th>성별</th>
+                <th>생년월일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="member : ${members}">
+                <td th:text="${member.id}">ID</a></td>
+                <td th:text="${member.memberId}" class="blue-text">아이디</a></td>
+                <td th:text="${member.password}">비밀번호</td>
+                <td th:text="${member.nickname}">닉네임</td>
+                <td th:text="${member.gender}">성별</td>
+                <td th:text="${member.birthdate}">생년월일</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div> <!-- /container -->
+
+</body>
+</html>

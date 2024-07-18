@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="heart.project.repository.mybatis.MemberMapper">
+
+    <insert id="save">
+        insert into member (member_id, password, nickname, gender, birthdate, created_at, created_by, updated_at, updated_by)
+        values (#{memberId}, #{password}, #{nickname}, #{gender}, #{birthdate}, CURRENT_TIMESTAMP, '회원가입', CURRENT_TIMESTAMP, '회원가입')
+    </insert>
+
+    <select id="findNewMember" resultType="Member">
+        select id, member_id, password, nickname, gender, birthdate
+        from member
+        where id = (select max(id) from member)
+    </select>
+
+    <update id="update">
+        update member
+        set password=#{updateParam.password},
+        nickname=#{updateParam.nickname},
+        gender=#{updateParam.gender},
+        birthdate=#{updateParam.birthdate},
+        updated_at=CURRENT_TIMESTAMP,
+        updated_by='개인정보 수정'
+        where id = #{id}
+    </update>
+
+    <select id="findById" resultType="Member">
+        select id, member_id, password, nickname, gender, birthdate
+        from member
+        where id = #{id}
+    </select>
+
+    <select id="findAll" resultType="Member">
+        select id, member_id, password, nickname, gender, birthdate
+        from member
+        order by id asc
+    </select>
+
+    <select id="findByMemberId" resultType="Member">
+        select id, member_id, password, nickname, gender, birthdate
+        from member
+        where member_id = #{memberId}
+    </select>
+
+</mapper>

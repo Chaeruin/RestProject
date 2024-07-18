@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="heart.project.repository.mybatis.DiaryMapper">
+
+    <update id="preSave">
+        UPDATE DIARY
+        SET is_public = 'N',
+        updated_at=CURRENT_TIMESTAMP,
+        updated_by='새 일기 등록'
+        WHERE 1 = 1
+        AND member_id = #{memberId}
+        AND write_date = #{writeDate}
+        AND is_public = 'Y'
+    </update>
+
+    <insert id="save">
+        insert into diary (member_id, write_date, content, created_at, created_by, updated_at, updated_by)
+        values (#{memberId}, #{writeDate}, #{content}, CURRENT_TIMESTAMP, '일기 생성', CURRENT_TIMESTAMP, '일기 생성')
+    </insert>
+
+    <select id="findNewDiary" resultType="Diary">
+        select diary_id, member_id, write_date, content
+        from diary
+        where diary_id = (select max(diary_id) from diary)
+    </select>
+
+    <update id="update">
+        update diary
+        set member_id=#{updateParam.memberId},
+        write_date=#{updateParam.writeDate},
+        content=#{updateParam.content},
+        updated_at=CURRENT_TIMESTAMP,
+        updated_by='일기 수정'
+        where diary_id = #{diaryId}
+    </update>
+
+    <update id="delete">
+        update diary
+        set is_public = 'N'
+        where diary_id = #{diaryId}
+    </update>
+
+    <select id="findById" resultType="Diary">
+        select d.diary_id, d.member_id, d.write_date, d.content, e.emotion_type
+        from diary d
+        LEFT JOIN emotion e ON d.diary_id = e.diary_id
+        where d.diary_id = #{diaryId} and d.is_public = 'Y'
+    </select>
+
+    <select id="findAll" resultType="Diary">
+        select d.diary_id, d.member_id, d.write_date, d.content, e.emotion_type
+        from diary d
+        LEFT JOIN emotion e ON d.diary_id = e.diary_id
+        where d.is_public = 'Y'
+        order by d.diary_id asc
+    </select>
+
+    <select id="findByMemberId" resultType="Diary">
+        select d.diary_id, d.member_id, d.write_date, d.content, e.emotion_type
+        from diary d
+        LEFT JOIN emotion e ON d.diary_id = e.diary_id
+        where d.member_id = #{memberId} and d.is_public = 'Y'
+        order by d.write_date
+    </select>
+
+    <select id="findByMemberIdAndWriteDate" resultType="Diary">
+        select d.*, e.emotion_type
+          from (
+                select a.*
+                  from (
+                        select diary_id, member_id, write_date, content
+                          from diary
+                         where member_id = #{memberId}
+                           and write_date = #{writeDate}
+                           and is_public = 'Y'
+                       ) a,
+                       (
+                        select max(diary_id) as DIARY_ID
+                          from diary
+                         where member_id = #{memberId}
+                           and write_date = #{writeDate}
+                           and is_public = 'Y'
+                       ) b
+                 where a.DIARY_ID = b.DIARY_ID
+               ) d
+          LEFT JOIN emotion e ON d.diary_id = e.diary_id
+    </select>
+
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="heart.project.repository.mybatis.ChatMapper">
+
+    <select id="findLargestChatId" resultType="int">
+        select coalesce(max(chat_id), 0) from chat
+    </select>
+
+    <insert id="memberChatSave">
+        insert into chat (chat_id, member_id, chat_content, created_at, created_by, updated_at, updated_by)
+        values (#{chatId}, #{memberId}, #{chatContent}, CURRENT_TIMESTAMP, '채팅 전송', CURRENT_TIMESTAMP, '채팅 전송')
+    </insert>
+
+    <insert id="aiChatSave">
+        insert into chat (chat_id, member_id, chat_content, created_at, created_by, updated_at, updated_by)
+        values (#{chatId}, 'ai_chat_bot@chat.response', #{chatContent}, CURRENT_TIMESTAMP, '채팅 답변', CURRENT_TIMESTAMP, '채팅 답변')
+    </insert>
+
+    <select id="findById" resultType="Chat">
+        select chat_id, member_id, chat_date, chat_time, chat_content
+        from chat
+        where chat_id = #{chatId}
+        order by chat_id, chat_date, chat_time
+    </select>
+
+    <select id="findByMemberId" resultType="Chat">
+        select chat_id, member_id, chat_date, chat_time, chat_content
+        from chat
+        where member_id = #{memberId}
+        order by chat_id, chat_date, chat_time
+    </select>
+
+</mapper>
