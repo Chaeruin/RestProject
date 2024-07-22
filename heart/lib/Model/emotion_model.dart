@@ -2,25 +2,17 @@ import 'dart:convert';
 
 class MonthlyEmo {
   final String month;
-  final String joy;
-  final String hope;
-  final String neutrality;
-  final String sadness;
-  final String anxiety;
-  final String tiredness;
-  final String regret;
-  final String anger;
-  MonthlyEmo({
-    required this.month,
-    required this.joy,
-    required this.hope,
-    required this.neutrality,
-    required this.sadness,
-    required this.anxiety,
-    required this.tiredness,
-    required this.regret,
-    required this.anger,
-  });
+  final double joy;
+  final double hope;
+  final double neutrality;
+  final double sadness;
+  final double anxiety;
+  final double tiredness;
+  final double regret;
+  final double anger;
+
+  MonthlyEmo(this.month, this.joy, this.hope, this.neutrality, this.sadness,
+      this.anxiety, this.tiredness, this.regret, this.anger);
 
   Map<String, dynamic> toMap() {
     return {
@@ -38,15 +30,15 @@ class MonthlyEmo {
 
   factory MonthlyEmo.fromMap(Map<String, dynamic> map) {
     return MonthlyEmo(
-      month: map['month'] ?? '',
-      joy: map['joy'] ?? '',
-      hope: map['hope'] ?? '',
-      neutrality: map['neutrality'] ?? '',
-      sadness: map['sadness'] ?? '',
-      anxiety: map['anxiety'] ?? '',
-      tiredness: map['tiredness'] ?? '',
-      regret: map['regret'] ?? '',
-      anger: map['anger'] ?? '',
+      map['month'] ?? '',
+      map['joy']?.toDouble() ?? 0.0,
+      map['hope']?.toDouble() ?? 0.0,
+      map['neutrality']?.toDouble() ?? 0.0,
+      map['sadness']?.toDouble() ?? 0.0,
+      map['anxiety']?.toDouble() ?? 0.0,
+      map['tiredness']?.toDouble() ?? 0.0,
+      map['regret']?.toDouble() ?? 0.0,
+      map['anger']?.toDouble() ?? 0.0,
     );
   }
 
@@ -57,24 +49,24 @@ class MonthlyEmo {
 }
 
 class Top3Emo {
-  final String emoType;
+  final String afterEmoType;
   final int count;
 
   Top3Emo({
-    required this.emoType,
+    required this.afterEmoType,
     required this.count,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'emoType': emoType,
+      'afterEmoType': afterEmoType,
       'count': count,
     };
   }
 
   factory Top3Emo.fromMap(Map<String, dynamic> map) {
     return Top3Emo(
-      emoType: map['emoType'] ?? '',
+      afterEmoType: map['afterEmoType'] ?? '',
       count: map['count']?.toInt() ?? 0,
     );
   }

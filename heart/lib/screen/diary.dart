@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/event_model.dart';
 import 'package:heart/add_diary.dart';
-import 'package:table_calendar/table_calendar.dart';
 
-//빈칸에 감정변화 전 -> 후 보이게 << 이건 api열리고 나서
 class Diary extends StatefulWidget {
-  const Diary({super.key});
+  final String memID;
+  const Diary({
+    super.key,
+    required this.memID,
+  });
 
   @override
   State<Diary> createState() => _DiaryState();
@@ -24,29 +29,55 @@ class _DiaryState extends State<Diary> {
   }
 
   Future<List<Event>> _getEventsForDay(DateTime day) async {
-    return fetchEventsForDay(day);
+    String date = DateFormat('yyyyMM').format(day);
+    return fetchEventsForDay(widget.memID, date);
   }
 
   @override
   Widget build(BuildContext context) {
+    const TextStyle customTextStyle = TextStyle(
+      fontFamily: 'single_day',
+      fontSize: 16,
+    );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Diary Demo'),
+        backgroundColor: const Color(0xFFFFFBA0),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 30.0),
+            child: InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddDiaries(
+                    selectedDate: _selectedDay.toString(),
+                    memberId: 'text',
+                  ),
+                ),
+              ),
+              child: Image.asset(
+                'lib/assets/image/add.png',
+                width: 40,
+                height: 40,
+              ),
+            ),
+          ),
+        ],
       ),
+
       body: Column(
         children: [
           TableCalendar(
             focusedDay: _focusedDay,
-            firstDay: kFirstDay,
-            lastDay: kLastDay,
+            firstDay: DateTime.utc(2020, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
             calendarFormat: _calendarFormat,
-            eventLoader: (day) => [], // Dummy loader,
+            eventLoader: (day) => [],
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
             onDaySelected: (selectedDay, focusedDay) {
               if (!isSameDay(_selectedDay, selectedDay)) {
-                // Call `setState()` when updating the selected day
                 setState(() {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
@@ -55,18 +86,38 @@ class _DiaryState extends State<Diary> {
             },
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
-                // Call `setState()` when updating calendar format
                 setState(() {
                   _calendarFormat = format;
                 });
               }
             },
             onPageChanged: (focusedDay) {
-              // No need to call `setState()` here
               _focusedDay = focusedDay;
             },
+            calendarStyle: CalendarStyle(
+              defaultTextStyle: customTextStyle,
+              weekendTextStyle: customTextStyle,
+              selectedTextStyle: customTextStyle.copyWith(color: Colors.white),
+              todayTextStyle: customTextStyle.copyWith(
+                  color: const Color.fromARGB(255, 2, 2, 2)),
+              selectedDecoration: const BoxDecoration(
+                color: Color.fromARGB(255, 89, 181, 81),
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: const BoxDecoration(
+                color: Color(0xFFFFFBA0),
+                shape: BoxShape.circle,
+              ),
+            ),
+            daysOfWeekStyle: const DaysOfWeekStyle(
+              weekdayStyle: customTextStyle,
+              weekendStyle: customTextStyle,
+            ),
+            headerStyle: HeaderStyle(
+              titleTextStyle: customTextStyle.copyWith(fontSize: 25),
+            ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Expanded(
@@ -74,26 +125,31 @@ class _DiaryState extends State<Diary> {
               future: _getEventsForDay(_selectedDay!),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator.adaptive(),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
                   );
-                } else if (!snapshot.hasData || snapshot.data!.isempty) {
-                  return Center(
+                } else if (!snapshot.hasData || snapshot.data.isEmpty) {
+                  return const Center(
                     child: Text('No data found'),
                   );
                 } else {
                   final events = snapshot.data!;
+                  if (events.length < 2) {
+                    return const Center(
+                      child: Text('Not enough data to display emotion changes'),
+                    );
+                  }
                   return Row(
                     children: [
                       Container(
                         color: Colors.amber,
                         child: Text('${events[0]}'),
                       ),
-                      Icon(Icons.arrow_right_alt_sharp),
+                      const Icon(Icons.arrow_right_alt_sharp),
                       Container(
                         color: Colors.lightBlue,
                         child: Text('${events[1]}'),
@@ -106,21 +162,7 @@ class _DiaryState extends State<Diary> {
           ),
         ],
       ),
-      floatingActionButton: ElevatedButton.icon(
-        onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddDiaries(
-                selectedDate: _selectedDay.toString(),
-                memberId: 'text', //후에 수정
-              ),
-            )),
-        label: Icon(
-          Icons.add,
-          size: 50,
-        ),
-      ),
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      //floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
   }
 }

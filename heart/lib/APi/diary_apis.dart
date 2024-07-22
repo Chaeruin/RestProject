@@ -130,9 +130,10 @@ Future<bool> deleteDiary(String diaryId) async {
   }
 }
 
-Future<List<Event>> fetchEventsForDay(DateTime day) async {
+Future<List<Event>> fetchEventsForDay(String memID, String date) async {
   // API 요청을 통해 이벤트 데이터를 가져옵니다.
-  final response = await http.get(Uri.parse('localhost:8080'));
+  final response = await http
+      .get(Uri.parse('http://54.79.110.239:8080/api/diaries/$memID/$date'));
 
   if (response.statusCode == 200) {
     // JSON 파싱 및 Event 객체로 변환

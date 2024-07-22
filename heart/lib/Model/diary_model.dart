@@ -1,41 +1,36 @@
 import 'dart:convert';
 
 class DiaryModel {
-  final int? DiaryID;
-  final String? MemID;
-  final String? WriteD;
-  final String? Contents;
-  final String? PreEmotion;
-  final String? PostEmotion;
+  final String? diaryID;
+  final String memID;
+  final String writeD;
+  final String contents;
+  final String emotionType;
 
-  DiaryModel({
-    this.DiaryID,
-    this.MemID,
-    this.WriteD,
-    this.Contents,
-    this.PreEmotion,
-    this.PostEmotion,
-  });
+  DiaryModel(
+      {this.diaryID,
+      required this.memID,
+      required this.writeD,
+      required this.contents,
+      required this.emotionType});
 
   Map<String, dynamic> toMap() {
     return {
-      'DiaryID': DiaryID,
-      'MemID': MemID,
-      'WriteD': WriteD,
-      'Contents': Contents,
-      'PreEmotion': PreEmotion,
-      'PostEmotion': PostEmotion,
+      'diaryID': diaryID,
+      'memID': memID,
+      'writeD': writeD,
+      'contents': contents,
+      'emotionType': emotionType,
     };
   }
 
   factory DiaryModel.fromMap(Map<String, dynamic> map) {
     return DiaryModel(
-      DiaryID: map['DiaryID']?.toInt(),
-      MemID: map['MemID'],
-      WriteD: map['WriteD'],
-      Contents: map['Contents'],
-      PreEmotion: map['PreEmotion'],
-      PostEmotion: map['PostEmotion'],
+      diaryID: map['diaryID'],
+      memID: map['memID'] ?? '',
+      writeD: map['writeD'] ?? '',
+      contents: map['contents'] ?? '',
+      emotionType: map['emotionType'] ?? '',
     );
   }
 

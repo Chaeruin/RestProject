@@ -25,19 +25,19 @@ class AddDiaries extends StatefulWidget {
 }
 
 class _AddDiariesState extends State<AddDiaries> {
-  late String _content = '';
+  late String _content;
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = '';
   late String _selectedImage = 'lib/Assets/Images/3.png';
-  Emotion _selectedEmotion = Emotion.joy;
+  final Emotion selectedEmotion = Emotion.joy;
 
-  SharedPreferences? prefs;
+  late SharedPreferences prefs;
   List<String> writedays = [];
 
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
-    final writedaysList = prefs!.getStringList(widget.memberId);
+    final writedaysList = prefs.getStringList(widget.memberId);
 
     if (writedaysList != null) {
       writedays = writedaysList;
@@ -50,8 +50,7 @@ class _AddDiariesState extends State<AddDiaries> {
 
   void _updateWritedays(String date) async {
     writedays.add(date);
-    await prefs!.setStringList(
-        widget.memberId, writedays); // writedays 리스트를 SharedPreferences에 저장
+    await prefs.setStringList(widget.memberId, writedays); // writedays 리스트를 저장
     setState(() {});
   }
 
@@ -164,13 +163,14 @@ class _AddDiariesState extends State<AddDiaries> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF4CADE4),
+        backgroundColor: const Color(0xFFFFFBA0),
         centerTitle: true,
         title: Text(
           (_writeDate),
           style: const TextStyle(
             color: Colors.black,
-            fontSize: 30,
+            fontSize: 25,
+            fontFamily: 'single_day',
           ),
         ),
         actions: [
@@ -181,12 +181,13 @@ class _AddDiariesState extends State<AddDiaries> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      backgroundColor: const Color(0xFFFFE3EE),
+                      backgroundColor: const Color.fromARGB(255, 206, 251, 201),
                       content: const Text(
                         '감정을 선택해주세요!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
+                          fontFamily: 'single_day',
                           fontSize: 25,
                         ),
                       ),
@@ -198,7 +199,8 @@ class _AddDiariesState extends State<AddDiaries> {
                           child: const Text(
                             '확인',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Color.fromARGB(255, 89, 181, 81),
+                              fontFamily: 'single_day',
                               fontSize: 20,
                             ),
                           ),
@@ -214,13 +216,14 @@ class _AddDiariesState extends State<AddDiaries> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      backgroundColor: const Color(0xFFFFE3EE),
+                      backgroundColor: const Color.fromARGB(255, 206, 251, 201),
                       content: const Text(
                         '내용을 입력해주세요!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
+                          fontFamily: 'single_day',
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 25,
                         ),
                       ),
                       actions: [
@@ -231,7 +234,8 @@ class _AddDiariesState extends State<AddDiaries> {
                           child: const Text(
                             '확인',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 61, 149, 250),
+                              fontFamily: 'single_day',
+                              color: Color.fromARGB(255, 89, 181, 81),
                               fontSize: 20,
                             ),
                           ),
@@ -245,17 +249,16 @@ class _AddDiariesState extends State<AddDiaries> {
 
               //백엔드 요청
               DiaryModel newPage = DiaryModel(
-                DiaryID: 0,
-                MemID: widget.memberId,
-                WriteD: _writeDate,
-                Contents: _content,
-                PostEmotion: _emotionType,
+                memID: widget.memberId,
+                writeD: _writeDate,
+                contents: _content,
+                emotionType: _emotionType,
               );
               await saveDiary(newPage);
               _updateWritedays(_writeDate);
               Navigator.pop(context);
             },
-            icon: Icon(Icons.calendar_month),
+            icon: const Icon(Icons.check),
           ),
         ],
       ),
@@ -280,7 +283,7 @@ class _AddDiariesState extends State<AddDiaries> {
                     padding: const EdgeInsets.all(8),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF98DFFF),
+                      color: const Color.fromARGB(255, 89, 181, 81),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
@@ -288,6 +291,7 @@ class _AddDiariesState extends State<AddDiaries> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
+                        fontFamily: 'single_day',
                         fontSize: 22,
                       ),
                     ),
@@ -301,7 +305,7 @@ class _AddDiariesState extends State<AddDiaries> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 35),
             TextField(
               controller: _textEditingController,
               maxLines: 19,
@@ -312,7 +316,7 @@ class _AddDiariesState extends State<AddDiaries> {
               },
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFFFFE3EE), // 배경색 지정
+                fillColor: const Color(0xFFFFFBA0), // 배경색 지정
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),

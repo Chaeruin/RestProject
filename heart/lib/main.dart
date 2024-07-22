@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:heart/drawer/demo1.dart';
-import 'package:heart/drawer/demo2.dart';
-import 'package:heart/drawer/logIn.dart';
 import 'package:heart/screen/chat.dart';
 import 'package:heart/screen/diary.dart';
 import 'package:heart/screen/home.dart';
-import 'package:heart/screen/mypage.dart';
+import 'package:heart/screen/recommendation.dart';
 import 'package:heart/screen/statistics.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,16 +37,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 2;
-  int _drawerIndex = 0;
   late PageController _pageController;
-  String memberId = 'hello@gmail.com';
-  String nickname = '안녕!';
+  late SharedPreferences prefs;
+  late String memberID = '';
   bool isLogin = false;
+
+  //저장소에 nickname이 있는지 확인 후 로그인 여부 판단
+  Future initPref() async {
+    prefs = await SharedPreferences.getInstance();
+    final memId = prefs.getString('ID');
+
+    if (memId != null) {
+      setState(() {
+        isLogin = true;
+        memberID = memId;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _selectedIndex);
+    initPref();
   }
 
   @override
@@ -67,19 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _pageController.jumpToPage(index);
   }
 
-  void _onTapDrawer(int index) {
-    setState(() {
-      _drawerIndex = index;
-      if (index == 0) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Demo1()));
-      } else if (index == 1) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Demo2()));
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -88,52 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return Theme(
       data: ThemeData.light(),
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          leading: isLargeScreen
-              ? null
-              : Builder(
-                  builder: (context) => IconButton(
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                    icon: const Icon(Icons.menu),
-                  ),
-                ),
-          title: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "마음씨",
-                  style: TextStyle(
-                      color: Colors.green, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-        ),
-        drawer: NavigationDrawer(
-          selectedIndex: _drawerIndex,
-          onDestinationSelected: _onTapDrawer,
-          children: [
-            if (isLogin)
-              DrawerHeader(
-                child: Text('안녕하세요\n ${nickname}님!'),
-              )
-            else
-              DrawerHeader(
-                child: ElevatedButton(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login())),
-                  child: Text('로그인하기'),
-                ),
-              ),
-            NavigationDrawerDestination(
-                icon: Icon(Icons.abc), label: Text('임시1')),
-            NavigationDrawerDestination(
-                icon: Icon(Icons.ac_unit), label: Text('임시2')),
-          ],
-        ),
         body: isLargeScreen
             ? Row(
                 children: [
@@ -155,13 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       IndexedStack(
                         index: _selectedIndex,
                         children: [
-                          Chat(),
-                          Diary(),
-                          Home(),
+                          const Chat(),
+                          Diary(memID: memberID),
+                          const Home(),
                           Statistics(
-                            memId: memberId,
+                            memId: memberID,
                           ),
-                          Mypage(),
+                          const Recommendation(),
                         ],
                       )
                     ],
@@ -172,21 +124,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: _pageController,
                 onPageChanged: _onPageChanged,
                 children: [
-                  Chat(),
-                  Diary(),
-                  Home(),
+                  const Chat(),
+                  Diary(memID: memberID),
+                  const Home(),
                   Statistics(
-                    memId: memberId,
+                    memId: memberID,
                   ),
-                  Mypage(),
+                  const Recommendation(),
                 ],
               ),
-        bottomNavigationBar: SalomonBottomBar(
-            currentIndex: _selectedIndex,
-            selectedItemColor: const Color(0xff6200ee),
-            unselectedItemColor: const Color(0xff757575),
-            items: _navBarItems,
-            onTap: _onItemTapped),
+        bottomNavigationBar: Container(
+            color: const Color(0xFFFFFBA0), // 배경색 설정
+            child: SalomonBottomBar(
+              currentIndex: _selectedIndex,
+              selectedItemColor: const Color(0xff6200ee),
+              unselectedItemColor: const Color(0xff757575),
+              items: _navBarItems,
+              onTap: _onItemTapped,
+            )),
       ),
     );
   }
@@ -195,50 +150,85 @@ class _MyHomePageState extends State<MyHomePage> {
 final _navBarItems = [
   SalomonBottomBarItem(
     icon: const Icon(Icons.chat),
-    title: const Text("Chat"),
-    selectedColor: Colors.pink,
+    title: const Text(
+      "채팅",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontFamily: 'single_day',
+      ),
+    ),
+    selectedColor: const Color.fromARGB(255, 89, 181, 81),
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.note_alt_outlined),
-    title: const Text("Diary"),
-    selectedColor: Colors.orange,
+    title: const Text(
+      "일기",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontFamily: 'single_day',
+      ),
+    ),
+    selectedColor: const Color.fromARGB(255, 89, 181, 81),
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.home),
-    title: const Text("Home"),
-    selectedColor: Colors.purple,
+    title: const Text(
+      "홈",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontFamily: 'single_day',
+      ),
+    ),
+    selectedColor: const Color.fromARGB(255, 89, 181, 81),
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.bar_chart_sharp),
-    title: const Text("Statistics"),
-    selectedColor: Colors.teal,
+    title: const Text(
+      "통계",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontFamily: 'single_day',
+      ),
+    ),
+    selectedColor: const Color.fromARGB(255, 89, 181, 81),
   ),
   SalomonBottomBarItem(
-    icon: const Icon(Icons.person_2_outlined),
-    title: const Text("MyPage"),
-    selectedColor: Colors.teal,
+    icon: const Icon(Icons.directions_run),
+    title: const Text(
+      "추천",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontFamily: 'single_day',
+      ),
+    ),
+    selectedColor: const Color.fromARGB(255, 89, 181, 81),
   ),
 ];
 
 final _navRailItems = [
   const NavigationRailDestination(
     icon: Icon(Icons.home),
-    label: Text("Home"),
+    label: Text("홈"),
   ),
   const NavigationRailDestination(
     icon: Icon(Icons.chat),
-    label: Text("Chat"),
+    label: Text("채팅"),
   ),
   const NavigationRailDestination(
     icon: Icon(Icons.note_alt_outlined),
-    label: Text("Diary"),
+    label: Text("일기"),
   ),
   const NavigationRailDestination(
     icon: Icon(Icons.person),
-    label: Text("Statistics"),
+    label: Text("통계"),
   ),
   const NavigationRailDestination(
-    icon: Icon(Icons.person),
-    label: Text("MyPage"),
+    icon: Icon(Icons.directions_run),
+    label: Text("추천"),
   ),
 ];

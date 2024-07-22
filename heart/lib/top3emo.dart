@@ -12,7 +12,7 @@ class Top3Emotion extends StatefulWidget {
 }
 
 class _Top3EmotionState extends State<Top3Emotion> {
-  String writeDate = DateFormat('yyyyMMdd').format(DateTime.now()).toString();
+  String writeDate = DateFormat('yyyyMM').format(DateTime.now()).toString();
   late String memberId;
   late Future<List<Top3Emo>> top3;
 
@@ -33,10 +33,10 @@ class _Top3EmotionState extends State<Top3Emotion> {
               color: Colors.black,
               child: const Text(
                 textAlign: TextAlign.center,
-                '   이번달 당신이 가장 많이 느낀 감정이에요!',
+                '    이번달 당신이 가장 많이 느낀 감정이에요!',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 65, 133, 59),
+                  fontSize: 23,
                   fontFamily: 'single_day',
                 ),
               ),
@@ -63,13 +63,14 @@ class _Top3EmotionState extends State<Top3Emotion> {
 
 ListView makeList(AsyncSnapshot<List<Top3Emo>> snapshot) {
   return ListView.separated(
+    shrinkWrap: true,
     scrollDirection: Axis.horizontal,
-    itemCount: snapshot.data!.length,
+    itemCount: 3,
     padding: const EdgeInsets.all(8),
     itemBuilder: (context, index) {
       var rank = snapshot.data![index];
       return Top3(
-        emotionType: rank.emoType,
+        afterEmoType: rank.afterEmoType,
         count: rank.count,
       );
     },
@@ -80,11 +81,11 @@ ListView makeList(AsyncSnapshot<List<Top3Emo>> snapshot) {
 }
 
 class Top3 extends StatelessWidget {
-  final String emotionType;
+  final String afterEmoType;
   final int count;
   const Top3({
     super.key,
-    required this.emotionType,
+    required this.afterEmoType,
     required this.count,
   });
 
@@ -97,13 +98,13 @@ class Top3 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            'lib/assets/images/$emotionType.png',
+            'lib/assets/images/$afterEmoType.png',
             width: 110,
             height: 110,
           ),
           const SizedBox(height: 5), // 이미지와 텍스트 사이의 간격
           Text(
-            emotionType, // 원하는 텍스트로 변경
+            afterEmoType, // 원하는 텍스트로 변경
             style: const TextStyle(fontSize: 10), // 적절한 크기로 텍스트 스타일 설정
           ),
         ],

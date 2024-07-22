@@ -9,16 +9,16 @@ class SignUp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const Text(
-              '환영합니다~',
+            Text(
+              'SignUp',
               style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-              ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
             ),
           ],
         ),
@@ -58,9 +58,10 @@ class _SignUpFormState extends State<SignUpForm> {
           const Text(
             '아이디',
             style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-            ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
           ),
           TextFormField(
             onChanged: (value) {
@@ -75,12 +76,12 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF98dfff),
+                  color: Color.fromARGB(255, 89, 181, 81), 
                 ),
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF98dfff),
+                  color: Color.fromARGB(255, 89, 181, 81), 
                 ),
               ),
             ),
@@ -100,16 +101,18 @@ class _SignUpFormState extends State<SignUpForm> {
                         '아이디 중복',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color.fromARGB(255, 255, 83, 83),
-                          fontSize: 20,
-                        ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
                       ),
                       content: const Text(
                         '이미 사용 중인 아이디입니다.',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
                       ),
                       actions: [
                         TextButton(
@@ -118,10 +121,11 @@ class _SignUpFormState extends State<SignUpForm> {
                           },
                           child: const Text(
                             '확인',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 48, 155, 248),
-                              fontSize: 20,
-                            ),
+                             style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
                           ),
                         ),
                       ],
@@ -139,16 +143,18 @@ class _SignUpFormState extends State<SignUpForm> {
                       title: const Text(
                         '아이디 사용 가능',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 83, 83),
-                          fontSize: 20,
+                       style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 23,
+                          fontFamily: 'single_day',
                         ),
                       ),
                       content: const Text(
                         '사용 가능한 아이디입니다.',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 23,
+                          fontFamily: 'single_day',
                         ),
                       ),
                       actions: [
@@ -158,9 +164,10 @@ class _SignUpFormState extends State<SignUpForm> {
                           },
                           child: const Text(
                             '확인',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 48, 155, 248),
-                              fontSize: 20,
+                             style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 23,
+                              fontFamily: 'single_day',
                             ),
                           ),
                         ),
@@ -179,16 +186,18 @@ class _SignUpFormState extends State<SignUpForm> {
                       title: const Text(
                         '아이디 형식 오류',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 83, 83),
-                          fontSize: 20,
+                       style: TextStyle(
+                          color: Color.fromARGB(255, 89, 181, 81), 
+                          fontSize: 23,
+                          fontFamily: 'single_day',
                         ),
                       ),
                       content: const Text(
                         '올바른 아이디 형식이 아닙니다.',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 23,
+                          fontFamily: 'single_day',
                         ),
                       ),
                       actions: [
@@ -199,8 +208,9 @@ class _SignUpFormState extends State<SignUpForm> {
                           child: const Text(
                             '확인',
                             style: TextStyle(
-                              color: Color.fromARGB(255, 48, 155, 248),
-                              fontSize: 20,
+                              color: Color.fromARGB(255, 89, 181, 81), 
+                              fontSize: 23,
+                              fontFamily: 'single_day',
                             ),
                           ),
                         ),
@@ -213,9 +223,10 @@ class _SignUpFormState extends State<SignUpForm> {
             child: const Text(
               '중복 확인',
               style: TextStyle(
-                color: Color.fromARGB(255, 253, 98, 134),
-                fontSize: 16,
-              ),
+                    color:Color.fromARGB(255, 89, 181, 81), 
+                    fontSize: 20,
+                    fontFamily: 'single_day',
+                  ),
             ),
           ),
           const SizedBox(
@@ -223,10 +234,11 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           const Text(
             '비밀번호',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-            ),
+             style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
           ),
           TextFormField(
             onChanged: (value) {
@@ -242,12 +254,12 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF98dfff),
+                  color: Color.fromARGB(255, 89, 181, 81), 
                 ),
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF98dfff),
+                  color: Color.fromARGB(255, 89, 181, 81), 
                 ),
               ),
             ),
@@ -258,9 +270,10 @@ class _SignUpFormState extends State<SignUpForm> {
           const Text(
             '닉네임',
             style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-            ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
           ),
           TextFormField(
             onChanged: (value) {
@@ -275,12 +288,12 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF98dfff),
+                  color: Color.fromARGB(255, 89, 181, 81), 
                 ),
               ),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: Color(0xFF98dfff),
+                  color: Color.fromARGB(255, 89, 181, 81), 
                 ),
               ),
             ),
@@ -288,13 +301,21 @@ class _SignUpFormState extends State<SignUpForm> {
           const SizedBox(height: 10),
           const Text('성별',
               style: TextStyle(
-                fontSize: 20,
-              )),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),),
           Column(
             children: [
               RadioListTile(
-                activeColor: const Color(0xFF98dfff),
-                title: const Text('남자'),
+                activeColor: const Color.fromARGB(255, 89, 181, 81), 
+                title: const Text(
+                  '남자',
+                   style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),),
                 value: Gender.male,
                 groupValue: gender,
                 onChanged: (value) {
@@ -305,8 +326,15 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
               ),
               RadioListTile(
-                activeColor: const Color(0xFF98dfff),
-                title: const Text('여자'),
+                activeColor: const Color.fromARGB(255, 89, 181, 81), 
+                title: const Text(
+                  '여자',
+                   style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
+                  ),
                 value: Gender.female,
                 groupValue: gender,
                 onChanged: (value) {
@@ -322,8 +350,10 @@ class _SignUpFormState extends State<SignUpForm> {
           const Text(
             '생년월일',
             style: TextStyle(
-              fontSize: 20,
-            ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
@@ -331,8 +361,8 @@ class _SignUpFormState extends State<SignUpForm> {
               backgroundColor: Colors.white,
               fixedSize: const Size(400, 45),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                side: BorderSide(color: Color(0xFF98dfff)),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                side: BorderSide(color: Color.fromARGB(255, 89, 181, 81), ),
               ),
             ),
             onPressed: () async {
@@ -345,11 +375,11 @@ class _SignUpFormState extends State<SignUpForm> {
                   return Theme(
                     data: ThemeData.light().copyWith(
                       colorScheme: const ColorScheme.light(
-                        primary: Color(0xFF98dfff),
+                        primary: Color.fromARGB(255, 89, 181, 81), 
                       ),
                       textButtonTheme: TextButtonThemeData(
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF98dfff),
+                          foregroundColor: const Color.fromARGB(255, 89, 181, 81), 
                           textStyle: const TextStyle(
                             fontSize: 20,
                           ),
@@ -371,18 +401,19 @@ class _SignUpFormState extends State<SignUpForm> {
             child: Text(
               _birthdate.isEmpty ? "여기를 눌러서 입력하세요!" : _birthdate,
               style: const TextStyle(
-                color: Color(0xFF98dfff),
-                fontSize: 20,
-              ),
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
             ),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF98dfff),
+              backgroundColor: const Color.fromARGB(255, 89, 181, 81), 
               fixedSize: const Size(400, 45),
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
             ),
             onPressed: () async {
@@ -398,9 +429,10 @@ class _SignUpFormState extends State<SignUpForm> {
                       title: const Text(
                         '입력 오류',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 255, 98, 98),
-                          fontSize: 20,
+                         style: TextStyle(
+                          color: Color.fromARGB(255, 89, 181, 81), 
+                          fontSize: 23,
+                          fontFamily: 'single_day',
                         ),
                       ),
                       content: const Text(
@@ -408,7 +440,8 @@ class _SignUpFormState extends State<SignUpForm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 23,
+                          fontFamily: 'single_day',
                         ),
                       ),
                       actions: [
@@ -418,9 +451,10 @@ class _SignUpFormState extends State<SignUpForm> {
                           },
                           child: const Text(
                             '확인',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 76, 144, 255),
-                              fontSize: 20,
+                             style: TextStyle(
+                              color: Color.fromARGB(255, 89, 181, 81), 
+                              fontSize: 23,
+                              fontFamily: 'single_day',
                             ),
                           ),
                         ),
@@ -436,14 +470,35 @@ class _SignUpFormState extends State<SignUpForm> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text('아이디 중복'),
-                      content: const Text('이미 사용 중인 아이디입니다.'),
+                      title: const Text(
+                        '아이디 중복',
+                         style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 23,
+                          fontFamily: 'single_day',
+                        ),
+                        ),
+                      content: const Text(
+                        '이미 사용 중인 아이디입니다.',
+                         style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 23,
+                          fontFamily: 'single_day',
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text('확인'),
+                          child: const Text(
+                            '확인',
+                             style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 23,
+                              fontFamily: 'single_day',
+                            ),
+                          ),
                         ),
                       ],
                     );
@@ -456,10 +511,11 @@ class _SignUpFormState extends State<SignUpForm> {
             },
             child: const Text(
               '회원가입 하기',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-              ),
+               style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
             ),
           ),
         ],
