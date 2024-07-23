@@ -44,7 +44,7 @@
     </select>
 
     <select id="getMonthlyEmotionStatistics" resultType="java.util.LinkedHashMap" parameterType="java.util.Map">
-        SELECT
+        select
         TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') AS month,
         ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'joy' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS joy,
         ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'hope' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS hope,
@@ -54,14 +54,11 @@
         ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'anxiety' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS anxiety,
         ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'tiredness' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS tiredness,
         ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'regret' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS regret
-        FROM
-        diary d
+        from diary d
         LEFT JOIN emotion e ON d.diary_id = e.diary_id
-        WHERE
-        d.member_id = #{memberId} AND d.is_public = 'Y'
-        AND TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') = #{month}
-        GROUP BY
-        TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM')
+        where d.member_id = #{memberId} AND d.is_public = 'Y'
+          and TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') = #{month}
+        group by TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM')
     </select>
 
     <select id="getTopEmotionsByMonth" resultType="java.util.LinkedHashMap" parameterType="java.util.Map">
