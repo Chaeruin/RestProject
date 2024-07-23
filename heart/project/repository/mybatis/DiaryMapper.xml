@@ -27,9 +27,7 @@
 
     <update id="update">
         update diary
-        set member_id=#{updateParam.memberId},
-        write_date=#{updateParam.writeDate},
-        content=#{updateParam.content},
+        set content=#{updateParam.content},
         updated_at=CURRENT_TIMESTAMP,
         updated_by='일기 수정'
         where diary_id = #{diaryId}
@@ -42,14 +40,14 @@
     </update>
 
     <select id="findById" resultType="Diary">
-        select d.diary_id, d.member_id, d.write_date, d.content, e.emotion_type
+        select d.diary_id, d.member_id, d.write_date, d.content, e.before_emotion, e.after_emotion
         from diary d
         LEFT JOIN emotion e ON d.diary_id = e.diary_id
         where d.diary_id = #{diaryId} and d.is_public = 'Y'
     </select>
 
     <select id="findAll" resultType="Diary">
-        select d.diary_id, d.member_id, d.write_date, d.content, e.emotion_type
+        select d.diary_id, d.member_id, d.write_date, d.content, e.before_emotion, e.after_emotion
         from diary d
         LEFT JOIN emotion e ON d.diary_id = e.diary_id
         where d.is_public = 'Y'
@@ -57,7 +55,7 @@
     </select>
 
     <select id="findByMemberId" resultType="Diary">
-        select d.diary_id, d.member_id, d.write_date, d.content, e.emotion_type
+        select d.diary_id, d.member_id, d.write_date, d.content, e.before_emotion, e.after_emotion
         from diary d
         LEFT JOIN emotion e ON d.diary_id = e.diary_id
         where d.member_id = #{memberId} and d.is_public = 'Y'
@@ -65,7 +63,7 @@
     </select>
 
     <select id="findByMemberIdAndWriteDate" resultType="Diary">
-        select d.*, e.emotion_type
+        select d.*, e.before_emotion, e.after_emotion
           from (
                 select a.*
                   from (

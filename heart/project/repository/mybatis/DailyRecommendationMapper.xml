@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="heart.project.repository.mybatis.DailyRecommendationMapper">
+
+    <insert id="insertDailyRecommendation" parameterType="DailyRecommendation">
+        insert into daily_recommendations (member_id, action_id, emotion_type, category,
+        recommendation_date, created_at, created_by, updated_at, updated_by)
+        values (#{memberId}, #{actionId}, #{emotionType}, #{category}, #{recommendationDate},
+        CURRENT_TIMESTAMP, '임시 저장', CURRENT_TIMESTAMP, '임시 저장')
+    </insert>
+
+    <select id="selectDailyRecommendations" parameterType="map" resultType="DailyRecommendation">
+        select daily_recommendations_id, ma.member_action_id, a.action_id, dr.member_id, a.action,
+               ma.status, dr.emotion_type, a.category, dr.recommendation_date
+        from daily_recommendations dr
+             LEFT JOIN action a ON dr.action_id = a.action_id
+             LEFT JOIN member_action ma ON dr.action_id = ma.action_id and dr.member_id = ma.member_id
+        where dr.member_id = #{memberId}
+          and dr.emotion_type = #{emotionType}
+          and dr.recommendation_date = #{recommendationDate}
+    </select>
+
+</mapper>

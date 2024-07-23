@@ -40,7 +40,7 @@ public class DiaryApiController {
      */
     @PostMapping("/add")
     public ResponseEntity<?> saveDiary(@RequestBody Diary diary) {
-        String emotionType = diary.getEmotionType();
+        String beforeEmotion = diary.getBeforeEmotion();
 
         Diary savedDiary = diaryService.save(diary);
 
@@ -48,13 +48,13 @@ public class DiaryApiController {
         Emotion emotion = new Emotion();
         emotion.setDiaryId(savedDiary.getDiaryId());
         emotion.setMemberId(savedDiary.getMemberId());
-        emotion.setEmotionType(emotionType);
+        emotion.setBeforeEmotion(beforeEmotion);
 
         // 감정 저장
         emotionService.save(emotion);
 
         // 응답에 emotionType 정보 추가
-        savedDiary.setEmotionType(emotionType);
+        savedDiary.setBeforeEmotion(beforeEmotion);
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("message", "일기가 저장되었습니다");
@@ -64,28 +64,25 @@ public class DiaryApiController {
     }
 
     /**
-     * 특정 일기를 수정하는 엔드포인트
+     * 특정 일기의 이후 감정을 저장하는 엔드포인트
+     */
+    @PostMapping("/{diaryId}/edit/emotion")
+    public ResponseEntity<String> editEmotionDiary(@PathVariable("diaryId") Integer diaryId, @RequestBody DiaryUpdateApiDto updateParam) {
+        String afterEmotion = updateParam.getAfterEmotion();
+
+        EmotionUpdateApiDto emotionUpdateDto = new EmotionUpdateApiDto(afterEmotion);
+        emotionService.update(diaryId, emotionUpdateDto);
+
+        return ResponseEntity.ok("이후 감정이 추가되었습니다.");
+    }
+
+    /**
+     * 특정 일기의 내용을 수정하는 엔드포인트
      */
     @PutMapping("/{diaryId}/edit")
     public ResponseEntity<String> editDiary(@PathVariable("diaryId") Integer diaryId, @RequestBody DiaryUpdateApiDto updateParam) {
-        String emotionType = updateParam.getEmotionType();
 
         diaryService.update(diaryId, updateParam);
-
-        // 감정 수정
-        Optional<Emotion> existingEmotion = emotionService.findByDiaryId(diaryId);
-        if (existingEmotion.isEmpty()) {
-            // 해당 diaryId에 대한 감정이 없으면 새로 추가
-            Emotion emotion = new Emotion();
-            emotion.setDiaryId(diaryId);
-            emotion.setMemberId(updateParam.getMemberId());
-            emotion.setEmotionType(emotionType);
-            emotionService.save(emotion);
-        } else {
-            // 해당 diaryId에 대한 감정이 이미 존재하면 업데이트
-            EmotionUpdateApiDto emotionUpdateDto = new EmotionUpdateApiDto(emotionType);
-            emotionService.update(diaryId, emotionUpdateDto);
-        }
 
         return ResponseEntity.ok("일기가 수정되었습니다");
     }

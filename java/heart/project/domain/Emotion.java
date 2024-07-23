@@ -15,7 +15,10 @@ public class Emotion {
     private String memberId; // member ID, 외래키
 
     @NotEmpty
-    private String emotionType; // 감정 타입
+    private String beforeEmotion; // 일기 작성 이전 감정
+
+    @NotEmpty
+    private String afterEmotion; // 일기 작성 이후 감정
 
     @NotEmpty
     private String emotionTime; // 감정 시간

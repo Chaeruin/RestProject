@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="heart.project.repository.mybatis.MemberActionMapper">
+
+    <insert id="save">
+        insert into member_action (action_id, member_id, status, before_emotion,
+        before_emotion_time, created_at, created_by, updated_at, updated_by)
+        values (#{actionId}, #{memberId}, '진행중', #{beforeEmotion},
+        TO_CHAR(CURRENT_TIMESTAMP, 'HH24'), CURRENT_TIMESTAMP, '행동 진행', CURRENT_TIMESTAMP, '행동 진행')
+    </insert>
+
+    <select id="findNewMemberAction" resultType="MemberAction">
+        select member_action_id, action_id, member_id, status, before_emotion, after_emotion
+        from member_action
+        where member_action_id = (select max(member_action_id) from member_action)
+    </select>
+
+    <update id="completeMemberAction">
+        update member_action
+        set status='완료',
+        after_emotion=#{updateParam.afterEmotion},
+        after_emotion_time=TO_CHAR(CURRENT_TIMESTAMP, 'HH24'),
+        updated_at=CURRENT_TIMESTAMP,
+        updated_by='행동 완료'
+        where member_action_id = #{memberActionId}
+    </update>
+
+</mapper>

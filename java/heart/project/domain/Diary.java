@@ -17,6 +17,8 @@ public class Diary {
     @NotEmpty
     private String content; // 일기 내용
 
-    private String emotionType; // 임시로 받는 감정 타입
+    private String beforeEmotion; // 임시로 받는 감정
+
+    private String afterEmotion; // 임시로 받는 감정
 
 }

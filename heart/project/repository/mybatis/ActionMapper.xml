@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="heart.project.repository.mybatis.ActionMapper">
+
+    <select id="recommendAction" resultType="Action">
+        select *
+        from (select action_id, emotion_type, category, action, reward
+              from action
+              order by dbms_random.random) a
+        where rownum = 1
+    </select>
+
+    <select id="recommendActionsByCategory" resultType="Action">
+        select * from (
+            select * from (
+                select action_id, emotion_type, category, action, reward
+                from action
+                where emotion_type = #{emotionType}
+                  and category = '실내활동'
+                  and action_id NOT IN (
+                    select action_id
+                    from member_action
+                    where member_id = #{memberId}
+                      and status = '완료'
+                    )
+                order by DBMS_RANDOM.VALUE
+             )
+            where rownum = 1
+        )
+        UNION ALL
+        select * from (
+            select * from (
+                select action_id, emotion_type, category, action, reward
+                from action
+                where emotion_type = #{emotionType}
+                  and category = '실외활동'
+                  and action_id NOT IN (
+                    select action_id
+                    from member_action
+                    where member_id = #{memberId}
+                      and status = '완료'
+                )
+                order by DBMS_RANDOM.VALUE
+            )
+            where rownum = 1
+        )
+        UNION ALL
+        select * from (
+            select * from (
+                select action_id, emotion_type, category, action, reward
+                from action
+                where emotion_type = #{emotionType}
+                  and category = '집'
+                  and action_id NOT IN (
+                    select action_id
+                    from member_action
+                    where member_id = #{memberId}
+                      and status = '완료'
+                )
+                order by DBMS_RANDOM.VALUE
+            )
+            where rownum = 1
+        )
+    </select>
+
+    <select id="findByActionId" resultType="Action">
+        select * from action where action_id = #{actionId}
+    </select>
+
+</mapper>

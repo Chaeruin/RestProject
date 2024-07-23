@@ -12,19 +12,19 @@
     </update>
 
     <insert id="save">
-        insert into emotion (diary_id, member_id, emotion_type, emotion_time, created_at, created_by, updated_at, updated_by)
-        values (#{diaryId}, #{memberId}, #{emotionType}, TO_CHAR(CURRENT_TIMESTAMP, 'HH24'), CURRENT_TIMESTAMP, '감정 생성', CURRENT_TIMESTAMP, '감정 생성')
+        insert into emotion (diary_id, member_id, before_emotion, emotion_time, created_at, created_by, updated_at, updated_by)
+        values (#{diaryId}, #{memberId}, #{beforeEmotion}, TO_CHAR(CURRENT_TIMESTAMP, 'HH24'), CURRENT_TIMESTAMP, '감정 생성', CURRENT_TIMESTAMP, '감정 생성')
     </insert>
 
     <select id="findNewEmotion" resultType="Emotion">
-        select emotion_id, diary_id, member_id, emotion_type, emotion_time
+        select emotion_id, diary_id, member_id, before_emotion, emotion_time
         from emotion
         where emotion_id = (select max(emotion_id) from emotion)
     </select>
 
     <update id="update">
         update emotion
-        set emotion_type=#{updateParam.emotionType},
+        set after_emotion=#{updateParam.afterEmotion},
         emotion_time=TO_CHAR(CURRENT_TIMESTAMP, 'HH24'),
         updated_at=CURRENT_TIMESTAMP,
         updated_by='감정 수정'
@@ -38,57 +38,53 @@
     </update>
 
     <select id="findByDiaryId" resultType="Emotion">
-        select emotion_id, diary_id, member_id, emotion_type, emotion_time
+        select emotion_id, diary_id, member_id, after_emotion, emotion_time
         from emotion
         where diary_id = #{diaryId} and is_public = 'Y'
     </select>
 
     <select id="getMonthlyEmotionStatistics" resultType="java.util.LinkedHashMap" parameterType="java.util.Map">
-        select TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') AS month,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'joy' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS joy,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'hope' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS hope,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'neutrality' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS neutrality,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'sadness' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS sadness,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'anger' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS anger,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'anxiety' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS anxiety,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'tiredness' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS tiredness,
-        CASE WHEN COUNT(e.emotion_type) = 0 THEN '0%' ELSE
-        TO_CHAR(ROUND(SUM(CASE WHEN e.emotion_type = 'regret' THEN 1 ELSE 0 END) / COUNT(e.emotion_type) * 100)) || '%' END AS regret
-        from diary d
+        SELECT
+        TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') AS month,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'joy' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS joy,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'hope' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS hope,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'neutrality' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS neutrality,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'sadness' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS sadness,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'anger' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS anger,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'anxiety' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS anxiety,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'tiredness' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS tiredness,
+        ROUND(COALESCE(SUM(CASE WHEN e.after_emotion = 'regret' THEN 1 ELSE 0 END) / NULLIF(COUNT(e.after_emotion), 0) * 100, 0)) / 100 AS regret
+        FROM
+        diary d
         LEFT JOIN emotion e ON d.diary_id = e.diary_id
-        where d.member_id = #{memberId} and d.is_public = 'Y'
-        and TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') = #{month}
-        group by TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM')
+        WHERE
+        d.member_id = #{memberId} AND d.is_public = 'Y'
+        AND TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') = #{month}
+        GROUP BY
+        TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM')
     </select>
 
     <select id="getTopEmotionsByMonth" resultType="java.util.LinkedHashMap" parameterType="java.util.Map">
-        select e.emotion_type, COUNT(e.emotion_type) AS count
+        select e.after_emotion, COUNT(e.after_emotion) AS count
         from diary d
         LEFT JOIN emotion e ON d.diary_id = e.diary_id
         where d.member_id = #{memberId} and d.is_public = 'Y'
         and TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') = #{month}
-        group by e.emotion_type
+        group by e.after_emotion
         order by count DESC
         FETCH FIRST 3 ROWS ONLY
     </select>
 
     <select id="getHourlyEmotionByMonth" resultType="java.util.LinkedHashMap" parameterType="java.util.Map">
-        select EMOTION_TYPE, EMOTION_TIME, COUNT
+        select AFTER_EMOTION, EMOTION_TIME, COUNT
         from (
-              select e.emotion_type AS EMOTION_TYPE, e.emotion_time AS EMOTION_TIME, COUNT(e.emotion_time) AS COUNT,
+              select e.after_emotion AS AFTER_EMOTION, e.emotion_time AS EMOTION_TIME, COUNT(e.emotion_time) AS COUNT,
                      ROW_NUMBER() OVER(PARTITION BY e.emotion_time ORDER BY COUNT(e.emotion_time) DESC) AS RN
               from diary d
               LEFT JOIN emotion e ON d.diary_id = e.diary_id
               where d.member_id = #{memberId} AND d.is_public = 'Y'
               AND TO_CHAR(TO_DATE(d.write_date, 'YYYYMMDD'), 'YYYYMM') = #{month}
-              group by e.emotion_type, e.emotion_time
+              group by e.after_emotion, e.emotion_time
         ) sub
         where RN = 1
         order by EMOTION_TIME ASC
