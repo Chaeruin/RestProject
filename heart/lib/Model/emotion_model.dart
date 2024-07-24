@@ -30,15 +30,15 @@ class MonthlyEmo {
 
   factory MonthlyEmo.fromMap(Map<String, dynamic> map) {
     return MonthlyEmo(
-      map['month'] ?? '',
-      map['joy']?.toDouble() ?? 0.0,
-      map['hope']?.toDouble() ?? 0.0,
-      map['neutrality']?.toDouble() ?? 0.0,
-      map['sadness']?.toDouble() ?? 0.0,
-      map['anxiety']?.toDouble() ?? 0.0,
-      map['tiredness']?.toDouble() ?? 0.0,
-      map['regret']?.toDouble() ?? 0.0,
-      map['anger']?.toDouble() ?? 0.0,
+      map['MONTH'] ?? '',
+      map['JOY']?.toDouble() ?? 0.0,
+      map['HOPE']?.toDouble() ?? 0.0,
+      map['NEUTRALITY']?.toDouble() ?? 0.0,
+      map['SADNESS']?.toDouble() ?? 0.0,
+      map['ANXIETY']?.toDouble() ?? 0.0,
+      map['TIREDNESS']?.toDouble() ?? 0.0,
+      map['REGRET']?.toDouble() ?? 0.0,
+      map['ANGER']?.toDouble() ?? 0.0,
     );
   }
 
@@ -49,25 +49,25 @@ class MonthlyEmo {
 }
 
 class Top3Emo {
-  final String afterEmoType;
+  final String afterEmotion;
   final int count;
 
   Top3Emo({
-    required this.afterEmoType,
+    required this.afterEmotion,
     required this.count,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'afterEmoType': afterEmoType,
+      'afterEmotion': afterEmotion,
       'count': count,
     };
   }
 
   factory Top3Emo.fromMap(Map<String, dynamic> map) {
     return Top3Emo(
-      afterEmoType: map['afterEmoType'] ?? '',
-      count: map['count']?.toInt() ?? 0,
+      afterEmotion: map['AFTER_EMOTION'] ?? '',
+      count: map['COUNT']?.toInt() ?? 0,
     );
   }
 

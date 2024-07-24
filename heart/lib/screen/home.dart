@@ -42,7 +42,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final bool isLargeScreen = MediaQuery.of(context).size.width > 600;
-
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -68,7 +67,7 @@ class _HomeState extends State<Home> {
             if (isLogin)
               DrawerHeader(
                 child: Text(
-                  '안녕하세요!\n $nickname님!',
+                  '안녕하세요!\n $nickname 님!',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 23,
@@ -197,7 +196,7 @@ class _HomeState extends State<Home> {
 imageChange(int points) {
   if (points >= 0 && points < 10) {
     return Image.asset(
-      'lib/assets/image/3.png', //레벨에 맞는 이미지 삽입
+      'lib/assets/image/2.png', //레벨에 맞는 이미지 삽입
       width: 250,
       height: 300,
     );
@@ -209,7 +208,7 @@ imageChange(int points) {
     );
   } else {
     return Image.asset(
-      'lib/assets/image/3.png', //레벨에 맞는 이미지 삽입
+      'lib/assets/image/4.png', //레벨에 맞는 이미지 삽입
       width: 250,
       height: 300,
     );

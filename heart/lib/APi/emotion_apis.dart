@@ -17,7 +17,7 @@ Future<MonthlyEmo> readEmotionMonthly(String memberId, String writeDate) async {
       },
     );
 
-    print('Response Status Code: ${response.statusCode}');
+    print('Response Status Code Monthly: ${response.statusCode}');
     print(
         'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
 
@@ -46,7 +46,7 @@ Future<List<Top3Emo>> top3Emotions(String memberId, String writeDate) async {
       },
     );
 
-    print('Response Status Code: ${response.statusCode}');
+    print('Response Status Code Top3: ${response.statusCode}');
     print(
         'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
 
@@ -54,7 +54,7 @@ Future<List<Top3Emo>> top3Emotions(String memberId, String writeDate) async {
       final datas = jsonDecode(utf8.decode(response.bodyBytes));
       for (var data in datas) {
         print('this data: $data');
-        emotionList.add(Top3Emo.fromJson(data));
+        emotionList.add(Top3Emo.fromMap(data));
       }
       return emotionList;
     } else {

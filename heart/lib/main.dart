@@ -40,17 +40,20 @@ class _MyHomePageState extends State<MyHomePage> {
   late PageController _pageController;
   late SharedPreferences prefs;
   late String memberID = '';
+  late String nickname = '';
   bool isLogin = false;
 
   //저장소에 nickname이 있는지 확인 후 로그인 여부 판단
   Future initPref() async {
     prefs = await SharedPreferences.getInstance();
     final memId = prefs.getString('ID');
+    final nickName = prefs.getString('nickName');
 
     if (memId != null) {
       setState(() {
         isLogin = true;
         memberID = memId;
+        nickname = nickName!;
       });
     }
   }
@@ -82,6 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isLargeScreen = width > 800;
+
+    print('memberID: $memberID');
+    print('nickname: $nickname');
 
     return Theme(
       data: ThemeData.light(),

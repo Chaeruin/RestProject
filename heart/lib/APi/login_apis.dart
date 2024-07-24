@@ -44,7 +44,7 @@ Future<bool> saveUser(LoginModel member) async {
 }
 
 //로그인정보 전송
-Future<bool> loginUser(String id, String password) async {
+Future<LoginModel?> loginUser(String id, String password) async {
   try {
     final loginData = LogIn(loginId: id, password: password);
     final response =
@@ -59,14 +59,14 @@ Future<bool> loginUser(String id, String password) async {
 
     if (response.statusCode == 200) {
       print('로그인 성공!');
-      return true;
+      return LoginModel.fromJson(response.body);
     } else {
       print("로그인 실패: ${response.statusCode}");
-      return false;
+      return null;
     }
   } catch (e) {
     print("로그인 요청 실패: $e");
-    return false;
+    return null;
   }
 }
 

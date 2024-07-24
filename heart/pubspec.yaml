@@ -69,6 +69,7 @@ flutter:
 
   assets:
      - lib/assets/image/
+     - lib/assets/image/emotions/
   fonts:
      - family: single_day
        fonts:

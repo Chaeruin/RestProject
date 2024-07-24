@@ -12,7 +12,6 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nickNameController = TextEditingController();
   late SharedPreferences prefs;
 
   Future initPref() async {
@@ -117,15 +116,12 @@ class _LoginState extends State<Login> {
                   onPressed: () async {
                     String id = _idController.text;
                     String password = _passwordController.text;
-                    String nickname = _nickNameController.text;
 
                     var logInUser = await loginUser(id, password);
-                    if (logInUser) {
+                    if (logInUser != null) {
                       //로그인 성공시
-                      setState(() {
-                        prefs.setString('ID', id);
-                        prefs.setString('nickName', nickname);
-                      });
+                      prefs.setString('ID', id);
+                      prefs.setString('nickName', logInUser.nickname);
                     } else {
                       showAdaptiveDialog(
                         context: context,
@@ -143,6 +139,7 @@ class _LoginState extends State<Login> {
                         },
                       );
                     }
+
                     Navigator.pop(context);
                   },
                   child: const Text(

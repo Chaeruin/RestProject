@@ -78,7 +78,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.joy * 100,
         title: 'JOY',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/joy.png',
+          assetRoute: 'lib/assets/image/emotions/joy.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -88,7 +88,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.hope * 100,
         title: 'HOPE',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/hope.png',
+          assetRoute: 'lib/assets/image/emotions/hope.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -98,7 +98,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.neutrality * 100,
         title: 'NEUTRALITY',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/neutrality.png',
+          assetRoute: 'lib/assets/image/emotions/neutrality.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -108,7 +108,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.sadness * 100,
         title: 'SADNESS',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/sadness.png',
+          assetRoute: 'lib/assets/image/emotions/sadness.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -118,7 +118,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.anger * 100,
         title: 'ANGER',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/anger.png',
+          assetRoute: 'lib/assets/image/emotions/anger.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -128,7 +128,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.anxiety * 100,
         title: 'ANXIETY',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/anxiety.png',
+          assetRoute: 'lib/assets/image/emotions/anxiety.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -138,7 +138,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.tiredness * 100,
         title: 'TIREDNESS',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/tiredness.png',
+          assetRoute: 'lib/assets/image/emotions/tiredness.png',
           size: 40,
           borderColor: Colors.black,
         ),
@@ -148,7 +148,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         value: sentiments.regret * 100,
         title: 'REGRET',
         badgeWidget: const _Badge(
-          assetRoute: 'lib/Assets/Images/regret.png',
+          assetRoute: 'lib/assets/image/emotions/regret.png',
           size: 40,
           borderColor: Colors.black,
         ),
