@@ -13,7 +13,7 @@ Future<bool> saveDiary(DiaryModel diary) async {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(diary.toJson()),
+      body: jsonEncode(diary.toMap()),
     );
 
     print('Response Status Code: ${response.statusCode}');
@@ -132,6 +132,7 @@ Future<bool> deleteDiary(String diaryId) async {
   }
 }
 
+//선택된 날짜의 before, after emotion 조회
 Future<List<Event>> fetchEventsForDay(String memID, String date) async {
   // API 요청을 통해 이벤트 데이터를 가져옵니다.
   final response = await http

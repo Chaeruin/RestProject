@@ -75,7 +75,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/emotions/joy.png';
+                    _selectedImage = 'lib/assets/image/emotions/joy.png';
                     _emotionType = Emotion.joy.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -85,7 +85,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/emotions/hope.png';
+                    _selectedImage = 'lib/assets/image/emotions/hope.png';
                     _emotionType = Emotion.hope.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -250,14 +250,17 @@ class _AddDiariesState extends State<AddDiaries> {
 
               //백엔드 요청
               DiaryModel newPage = DiaryModel(
-                memID: widget.memberId,
-                writeD: _writeDate,
-                contents: _content,
-                emotionBefore: _emotionType,
+                memberId: widget.memberId,
+                writeDate: _writeDate,
+                content: _content,
+                beforeEmotion: _emotionType,
               );
-              await saveDiary(newPage);
-              _updateWritedays(_writeDate);
-              Navigator.pop(context);
+              if (await saveDiary(newPage)) {
+                _updateWritedays(_writeDate);
+                Navigator.pop(context);
+              } //작성 실패 시 표시하는 창 작성하기
+
+              // Navigator.pop(context);
             },
             icon: const Icon(Icons.check),
           ),

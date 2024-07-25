@@ -57,7 +57,7 @@ class _EditDiariesState extends State<EditDiaries> {
 
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
-    final writedaysList = prefs!.getStringList(widget.diary.memID);
+    final writedaysList = prefs!.getStringList(widget.diary.memberId);
 
     if (writedaysList != null) {
       writedays = writedaysList;
@@ -70,7 +70,7 @@ class _EditDiariesState extends State<EditDiaries> {
 
   void _updateWritedays(String date) async {
     writedays.remove(date);
-    await prefs!.setStringList(widget.diary.memID,
+    await prefs!.setStringList(widget.diary.memberId,
         writedays); // writedays 리스트를 SharedPreferences에 저장합니다.
     setState(() {});
   }
@@ -79,12 +79,12 @@ class _EditDiariesState extends State<EditDiaries> {
   void initState() {
     super.initState();
     _textEditingController =
-        TextEditingController(text: (widget.diary.contents));
+        TextEditingController(text: (widget.diary.content));
     _content = '';
-    _emotionType = widget.diary.emotionBefore;
-    _diaryFuture = readDiarybyDiaryId(widget.diary.diaryID!);
+    _emotionType = widget.diary.beforeEmotion;
+    _diaryFuture = readDiarybyDiaryId(widget.diary.diaryId!);
     _selectedImage =
-        'lib/assets/image/emotions/${widget.diary.emotionBefore}.png';
+        'lib/assets/image/emotions/${widget.diary.beforeEmotion}.png';
     _initPrefs();
   }
 
@@ -193,7 +193,7 @@ class _EditDiariesState extends State<EditDiaries> {
         backgroundColor: const Color(0xFF4CADE4),
         centerTitle: true,
         title: Text(
-          (widget.diary.writeD),
+          (widget.diary.writeDate),
           style: const TextStyle(
             color: Colors.black,
             fontSize: 30,
@@ -205,9 +205,9 @@ class _EditDiariesState extends State<EditDiaries> {
             onPressed: () async {
               // 일기 삭제 기능 구현
               bool isDeleted =
-                  await deleteDiary(widget.diary.diaryID.toString());
+                  await deleteDiary(widget.diary.diaryId.toString());
               if (isDeleted) {
-                _updateWritedays(widget.diary.writeD);
+                _updateWritedays(widget.diary.writeDate);
                 Navigator.pop(context);
               } else {
                 // 삭제 실패 처리
@@ -268,13 +268,13 @@ class _EditDiariesState extends State<EditDiaries> {
               }
               //백엔드 요청
               DiaryModel newPage = DiaryModel(
-                diaryID: widget.diary.diaryID,
-                memID: widget.diary.memID,
-                writeD: widget.diary.writeD,
-                contents: _content,
-                emotionBefore: _emotionType,
+                diaryId: widget.diary.diaryId,
+                memberId: widget.diary.memberId,
+                writeDate: widget.diary.writeDate,
+                content: _content,
+                beforeEmotion: _emotionType,
               );
-              await updateDiary(newPage, widget.diary.diaryID!);
+              await updateDiary(newPage, widget.diary.diaryId!);
               setState(() {
                 _isEditing = false; // 저장 버튼을 누르면 수정 모드 종료
               });
