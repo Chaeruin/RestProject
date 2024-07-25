@@ -51,7 +51,7 @@ class _EditDiariesState extends State<EditDiaries> {
   late TextEditingController _textEditingController;
   late String _content;
   String _emotionType = '';
-  late String _selectedImage = 'lib/assets/images/giryong.png';
+  late String _selectedImage = 'lib/assets/image/3.png';
   SharedPreferences? prefs;
   List<String> writedays = [];
 
@@ -83,7 +83,8 @@ class _EditDiariesState extends State<EditDiaries> {
     _content = '';
     _emotionType = widget.diary.emotionBefore;
     _diaryFuture = readDiarybyDiaryId(widget.diary.diaryID!);
-    _selectedImage = 'lib/assets/images/${widget.diary.emotionBefore}.png';
+    _selectedImage =
+        'lib/assets/image/emotions/${widget.diary.emotionBefore}.png';
     _initPrefs();
   }
 
@@ -100,7 +101,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/joy.png';
+                    _selectedImage = 'lib/assets/image/emotions/joy.png';
                     _emotionType = Emotion.joy.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -110,7 +111,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/hope.png';
+                    _selectedImage = 'lib/assets/image/emotions/hope.png';
                     _emotionType = Emotion.hope.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -120,7 +121,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/anger.png';
+                    _selectedImage = 'lib/assets/image/emotions/anger.png';
                     _emotionType = Emotion.anger.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -130,7 +131,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/anxiety.png';
+                    _selectedImage = 'lib/assets/image/emotions/anxiety.png';
                     _emotionType = Emotion.anxiety.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -140,7 +141,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/neutrality.png';
+                    _selectedImage = 'lib/assets/image/emotions/neutrality.png';
                     _emotionType =
                         Emotion.neutrality.toString().split('.').last;
                   });
@@ -151,7 +152,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/sadness.png';
+                    _selectedImage = 'lib/assets/image/emotions/sadness.png';
                     _emotionType = Emotion.sadness.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -171,7 +172,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/regret.png';
+                    _selectedImage = 'lib/assets/image/emotions/regret.png';
                     _emotionType = Emotion.regret.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -214,7 +215,7 @@ class _EditDiariesState extends State<EditDiaries> {
               }
             },
             icon: Image.asset(
-              'lib/assets/images/delete.png',
+              'lib/assets/image/delete.png',
               width: 35,
               height: 35,
             ),
@@ -280,7 +281,7 @@ class _EditDiariesState extends State<EditDiaries> {
               Navigator.pop(context);
             },
             icon: Image.asset(
-              'lib/assets/images/month.png',
+              'lib/assets/image/month.png',
               width: 35,
               height: 35,
             ),

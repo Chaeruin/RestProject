@@ -30,7 +30,7 @@ class _AddDiariesState extends State<AddDiaries> {
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = '';
-  late String _selectedImage = 'lib/Assets/Images/3.png';
+  late String _selectedImage = 'lib/assets/image/3.png';
   final Emotion selectedEmotion = Emotion.joy;
 
   late SharedPreferences prefs;
@@ -75,7 +75,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/joy.png';
+                    _selectedImage = 'lib/assets/images/emotions/joy.png';
                     _emotionType = Emotion.joy.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -85,7 +85,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/hope.png';
+                    _selectedImage = 'lib/assets/images/emotions/hope.png';
                     _emotionType = Emotion.hope.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -95,7 +95,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/anger.png';
+                    _selectedImage = 'lib/assets/image/emotions/anger.png';
                     _emotionType = Emotion.anger.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -105,7 +105,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/anxiety.png';
+                    _selectedImage = 'lib/assets/image/emotions/anxiety.png';
                     _emotionType = Emotion.anxiety.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -115,7 +115,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/neutrality.png';
+                    _selectedImage = 'lib/assets/image/emotions/neutrality.png';
                     _emotionType =
                         Emotion.neutrality.toString().split('.').last;
                   });
@@ -126,7 +126,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/sadness.png';
+                    _selectedImage = 'lib/assets/image/emotions/sadness.png';
                     _emotionType = Emotion.sadness.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -136,7 +136,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/tiredness.png';
+                    _selectedImage = 'lib/assets/image/emotions/tiredness.png';
                     _emotionType = Emotion.tiredness.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -146,7 +146,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/regret.png';
+                    _selectedImage = 'lib/assets/image/emotions/regret.png';
                     _emotionType = Emotion.regret.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
