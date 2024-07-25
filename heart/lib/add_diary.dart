@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Emotion {
@@ -15,7 +16,7 @@ enum Emotion {
 }
 
 class AddDiaries extends StatefulWidget {
-  final String selectedDate;
+  final DateTime selectedDate;
   final String memberId;
   const AddDiaries(
       {super.key, required this.selectedDate, required this.memberId});
@@ -25,19 +26,19 @@ class AddDiaries extends StatefulWidget {
 }
 
 class _AddDiariesState extends State<AddDiaries> {
-  late String _content = '';
+  late String _content;
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = '';
-  late String _selectedImage = 'lib/Assets/Images/3.png';
-  final Emotion _selectedEmotion = Emotion.joy;
+  late String _selectedImage = 'lib/assets/image/1.png';
+  final Emotion selectedEmotion = Emotion.joy;
 
-  SharedPreferences? prefs;
+  late SharedPreferences prefs;
   List<String> writedays = [];
 
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
-    final writedaysList = prefs!.getStringList(widget.memberId);
+    final writedaysList = prefs.getStringList(widget.memberId);
 
     if (writedaysList != null) {
       writedays = writedaysList;
@@ -50,8 +51,7 @@ class _AddDiariesState extends State<AddDiaries> {
 
   void _updateWritedays(String date) async {
     writedays.add(date);
-    await prefs!.setStringList(
-        widget.memberId, writedays); // writedays 리스트를 SharedPreferences에 저장
+    await prefs.setStringList(widget.memberId, writedays); // writedays 리스트를 저장
     setState(() {});
   }
 
@@ -59,7 +59,7 @@ class _AddDiariesState extends State<AddDiaries> {
   void initState() {
     super.initState();
     _initPrefs();
-    _writeDate = widget.selectedDate;
+    _writeDate = DateFormat('yyyyMMdd').format(widget.selectedDate);
   }
 
   Future<String?> _showImagePicker(BuildContext context) async {
@@ -75,7 +75,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/joy.png';
+                    _selectedImage = 'lib/assets/image/emotions/joy.png';
                     _emotionType = Emotion.joy.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -85,7 +85,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/hope.png';
+                    _selectedImage = 'lib/assets/image/emotions/hope.png';
                     _emotionType = Emotion.hope.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -95,7 +95,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/anger.png';
+                    _selectedImage = 'lib/assets/image/emotions/anger.png';
                     _emotionType = Emotion.anger.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -105,7 +105,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/anxiety.png';
+                    _selectedImage = 'lib/assets/image/emotions/anxiety.png';
                     _emotionType = Emotion.anxiety.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -115,7 +115,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/neutrality.png';
+                    _selectedImage = 'lib/assets/image/emotions/neutrality.png';
                     _emotionType =
                         Emotion.neutrality.toString().split('.').last;
                   });
@@ -126,7 +126,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/sadness.png';
+                    _selectedImage = 'lib/assets/image/emotions/sadness.png';
                     _emotionType = Emotion.sadness.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -136,7 +136,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/tiredness.png';
+                    _selectedImage = 'lib/assets/image/emotions/tiredness.png';
                     _emotionType = Emotion.tiredness.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -146,7 +146,7 @@ class _AddDiariesState extends State<AddDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/Assets/Images/regret.png';
+                    _selectedImage = 'lib/assets/image/emotions/regret.png';
                     _emotionType = Emotion.regret.toString().split('.').last;
                   });
                   Navigator.pop(context, _emotionType);
@@ -250,15 +250,17 @@ class _AddDiariesState extends State<AddDiaries> {
 
               //백엔드 요청
               DiaryModel newPage = DiaryModel(
-                DiaryID: 0,
-                MemID: widget.memberId,
-                WriteD: _writeDate,
-                Contents: _content,
-                PostEmotion: _emotionType,
+                memberId: widget.memberId,
+                writeDate: _writeDate,
+                content: _content,
+                beforeEmotion: _emotionType,
               );
-              await saveDiary(newPage);
-              _updateWritedays(_writeDate);
-              Navigator.pop(context);
+              if (await saveDiary(newPage)) {
+                _updateWritedays(_writeDate);
+                Navigator.pop(context);
+              } //작성 실패 시 표시하는 창 작성하기
+
+              // Navigator.pop(context);
             },
             icon: const Icon(Icons.check),
           ),

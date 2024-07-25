@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:heart/Model/diary_model.dart';
+import 'package:heart/edit_diary.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/event_model.dart';
 import 'package:heart/add_diary.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class Diary extends StatefulWidget {
-  const Diary({super.key});
+  final String memID;
+  const Diary({
+    super.key,
+    required this.memID,
+  });
 
   @override
   State<Diary> createState() => _DiaryState();
@@ -15,16 +23,24 @@ class _DiaryState extends State<Diary> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  late String memId;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
+    memId = widget.memID;
   }
 
   Future<List<Event>> _getEventsForDay(DateTime day) async {
-    return fetchEventsForDay(day);
+    String date = DateFormat('yyyyMM').format(day);
+    return fetchEventsForDay(memId, date);
   }
+
+  // String dateFormatChange(DateTime date) {
+  //   String changedFormat = DateFormat('yyyyMMdd').format(date);
+  //   return changedFormat;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -33,21 +49,34 @@ class _DiaryState extends State<Diary> {
       fontSize: 16,
     );
     return Scaffold(
-    appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xFFFFFBA0),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 30.0),
             child: InkWell(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddDiaries(
-                    selectedDate: _selectedDay.toString(),
-                    memberId: 'text',
-                  ),
-                ),
-              ),
+              onTap: () async {
+                DiaryModel? newPage =
+                    await readDiarybyDate(memId, _selectedDay!);
+                if (newPage != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditDiaries(diary: newPage),
+                    ),
+                  );
+                } else {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddDiaries(
+                        memberId: memId,
+                        selectedDate: _selectedDay!,
+                      ),
+                    ),
+                  );
+                }
+              },
               child: Image.asset(
                 'lib/assets/image/add.png',
                 width: 40,
@@ -58,15 +87,14 @@ class _DiaryState extends State<Diary> {
         ],
       ),
 
-
       body: Column(
         children: [
           TableCalendar(
             focusedDay: _focusedDay,
-            firstDay: DateTime.utc(2020, 10, 16), 
-            lastDay: DateTime.utc(2030, 3, 14), 
+            firstDay: DateTime.utc(2020, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
             calendarFormat: _calendarFormat,
-            eventLoader: (day) => [], 
+            eventLoader: (day) => [],
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
             },
@@ -92,7 +120,8 @@ class _DiaryState extends State<Diary> {
               defaultTextStyle: customTextStyle,
               weekendTextStyle: customTextStyle,
               selectedTextStyle: customTextStyle.copyWith(color: Colors.white),
-              todayTextStyle: customTextStyle.copyWith(color: const Color.fromARGB(255, 2, 2, 2)),
+              todayTextStyle: customTextStyle.copyWith(
+                  color: const Color.fromARGB(255, 2, 2, 2)),
               selectedDecoration: const BoxDecoration(
                 color: Color.fromARGB(255, 89, 181, 81),
                 shape: BoxShape.circle,

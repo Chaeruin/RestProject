@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:heart/Model/diary_model.dart';
 import 'package:heart/Model/event_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 //다이어리 생성
 Future<bool> saveDiary(DiaryModel diary) async {
@@ -12,7 +13,7 @@ Future<bool> saveDiary(DiaryModel diary) async {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(diary.toJson()),
+      body: jsonEncode(diary.toMap()),
     );
 
     print('Response Status Code: ${response.statusCode}');
@@ -52,9 +53,10 @@ Future<DiaryModel> readDiarybyDiaryId(int diaryId) async {
 }
 
 //memberId, writeDate로 조회
-Future<DiaryModel?> readDiarybyDate(String memberId, String writeDate) async {
-  final Uri uri =
-      Uri.parse("http://54.79.110.239:8080/api/diaries/$memberId/$writeDate");
+Future<DiaryModel?> readDiarybyDate(String memberId, DateTime writeDate) async {
+  String formatedDate = DateFormat('yyyyMMdd').format(writeDate);
+  final Uri uri = Uri.parse(
+      "http://54.79.110.239:8080/api/diaries/$memberId/$formatedDate");
 
   try {
     final http.Response response = await http.get(
@@ -66,8 +68,7 @@ Future<DiaryModel?> readDiarybyDate(String memberId, String writeDate) async {
 
     if (response.statusCode == 200) {
       print('Response Status Code: ${response.statusCode}');
-      print(
-          'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
+      print('Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
       return DiaryModel.fromJson(response.body);
     }
   } catch (e) {
@@ -85,7 +86,7 @@ Future<bool> updateDiary(DiaryModel diaries, int diaryId) async {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(diaries.toJson()),
+      body: utf8.encode(jsonEncode(diaries.toJson())),
     );
 
     print('Response Status Code: ${response.statusCode}');
@@ -130,9 +131,11 @@ Future<bool> deleteDiary(String diaryId) async {
   }
 }
 
-Future<List<Event>> fetchEventsForDay(DateTime day) async {
+//선택된 날짜의 before, after emotion 조회
+Future<List<Event>> fetchEventsForDay(String memID, String date) async {
   // API 요청을 통해 이벤트 데이터를 가져옵니다.
-  final response = await http.get(Uri.parse('localhost:8080'));
+  final response = await http
+      .get(Uri.parse('http://54.79.110.239:8080/api/diaries/$memID/$date'));
 
   if (response.statusCode == 200) {
     // JSON 파싱 및 Event 객체로 변환

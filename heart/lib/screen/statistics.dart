@@ -15,7 +15,8 @@ class DottedLinePainter extends CustomPainter {
     double startX = 0.0;
 
     while (startX < size.width) {
-      canvas.drawLine(Offset(startX, 0.0), Offset(startX + dashWidth, 0.0), paint);
+      canvas.drawLine(
+          Offset(startX, 0.0), Offset(startX + dashWidth, 0.0), paint);
       startX += dashWidth + dashSpace;
     }
   }
@@ -44,8 +45,7 @@ class _StatisticsState extends State<Statistics> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-         appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xFFFFFBA0),
         title: const Text(
           '마음 통계',
@@ -57,16 +57,24 @@ class _StatisticsState extends State<Statistics> {
         ),
         centerTitle: true,
       ),
-
-        body: Column(
-          children: [
-             const SizedBox(height: 20),
-            Expanded(child: TotalEmotion(memberId: memberID )),
-             const SizedBox(height: 20),
-             Expanded(child: Top3Emotion(memberId: memberID)),
-             const SizedBox(height: 20),
-          ],
-        ),
-      );
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          const Text(
+            '월간 감정 통계', // 원하는 텍스트로 변경
+            style: TextStyle(
+              color: Color.fromARGB(255, 65, 133, 59),
+              fontSize: 25,
+              fontFamily: 'single_day',
+            ), // 적절한 크기로 텍스트 스타일 설정
+          ),
+          const SizedBox(height: 5), // 텍스트와 리프레셔 사이의 간격
+          Expanded(child: TotalEmotion(memberId: memberID)),
+          const SizedBox(height: 20),
+          Expanded(child: Top3Emotion(memberId: memberID)),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 }

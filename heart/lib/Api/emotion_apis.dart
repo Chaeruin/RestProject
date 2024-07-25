@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 //감정통계조회
 Future<MonthlyEmo> readEmotionMonthly(String memberId, String writeDate) async {
-  final String month = writeDate.substring(0, 6);
+  final String month = writeDate;
   final Uri uri = Uri.parse(
       "http://54.79.110.239:8080/api/emotion/statistics/$memberId?month=$month");
 
@@ -17,7 +17,7 @@ Future<MonthlyEmo> readEmotionMonthly(String memberId, String writeDate) async {
       },
     );
 
-    print('Response Status Code: ${response.statusCode}');
+    print('Response Status Code Monthly: ${response.statusCode}');
     print(
         'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
 
@@ -33,7 +33,7 @@ Future<MonthlyEmo> readEmotionMonthly(String memberId, String writeDate) async {
 
 //top3감정조회
 Future<List<Top3Emo>> top3Emotions(String memberId, String writeDate) async {
-  final String month = writeDate.substring(0, 6);
+  final String month = writeDate;
   List<Top3Emo> emotionList = [];
   final Uri uri = Uri.parse(
       "http://54.79.110.239:8080/api/emotion/top3/$memberId?month=$month");
@@ -46,14 +46,15 @@ Future<List<Top3Emo>> top3Emotions(String memberId, String writeDate) async {
       },
     );
 
-    print('Response Status Code: ${response.statusCode}');
+    print('Response Status Code Top3: ${response.statusCode}');
     print(
         'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
 
     if (response.statusCode == 200) {
       final datas = jsonDecode(utf8.decode(response.bodyBytes));
       for (var data in datas) {
-        emotionList.add(Top3Emo.fromJson(data));
+        print('this data: $data');
+        emotionList.add(Top3Emo.fromMap(data));
       }
       return emotionList;
     } else {
