@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Emotion {
@@ -15,7 +16,7 @@ enum Emotion {
 }
 
 class AddDiaries extends StatefulWidget {
-  final String selectedDate;
+  final DateTime selectedDate;
   final String memberId;
   const AddDiaries(
       {super.key, required this.selectedDate, required this.memberId});
@@ -58,7 +59,7 @@ class _AddDiariesState extends State<AddDiaries> {
   void initState() {
     super.initState();
     _initPrefs();
-    _writeDate = widget.selectedDate;
+    _writeDate = DateFormat('yyyyMMdd').format(widget.selectedDate);
   }
 
   Future<String?> _showImagePicker(BuildContext context) async {
@@ -252,7 +253,7 @@ class _AddDiariesState extends State<AddDiaries> {
                 memID: widget.memberId,
                 writeD: _writeDate,
                 contents: _content,
-                emotionType: _emotionType,
+                emotionBefore: _emotionType,
               );
               await saveDiary(newPage);
               _updateWritedays(_writeDate);

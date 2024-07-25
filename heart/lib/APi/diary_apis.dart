@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:heart/Model/diary_model.dart';
 import 'package:heart/Model/event_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 //다이어리 생성
 Future<bool> saveDiary(DiaryModel diary) async {
@@ -52,9 +53,10 @@ Future<DiaryModel> readDiarybyDiaryId(int diaryId) async {
 }
 
 //memberId, writeDate로 조회
-Future<DiaryModel?> readDiarybyDate(String memberId, String writeDate) async {
-  final Uri uri =
-      Uri.parse("http://54.79.110.239:8080/api/diaries/$memberId/$writeDate");
+Future<DiaryModel?> readDiarybyDate(String memberId, DateTime writeDate) async {
+  String formatedDate = DateFormat('yyyyMMdd').format(writeDate);
+  final Uri uri = Uri.parse(
+      "http://54.79.110.239:8080/api/diaries/$memberId/$formatedDate");
 
   try {
     final http.Response response = await http.get(

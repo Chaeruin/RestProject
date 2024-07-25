@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:heart/Model/diary_model.dart';
+import 'package:heart/edit_diary.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -21,17 +23,24 @@ class _DiaryState extends State<Diary> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  late String memId;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
+    memId = widget.memID;
   }
 
   Future<List<Event>> _getEventsForDay(DateTime day) async {
     String date = DateFormat('yyyyMM').format(day);
-    return fetchEventsForDay(widget.memID, date);
+    return fetchEventsForDay(memId, date);
   }
+
+  // String dateFormatChange(DateTime date) {
+  //   String changedFormat = DateFormat('yyyyMMdd').format(date);
+  //   return changedFormat;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +55,28 @@ class _DiaryState extends State<Diary> {
           Padding(
             padding: const EdgeInsets.only(right: 30.0),
             child: InkWell(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddDiaries(
-                    selectedDate: _selectedDay.toString(),
-                    memberId: 'text',
-                  ),
-                ),
-              ),
+              onTap: () async {
+                DiaryModel? newPage =
+                    await readDiarybyDate(memId, _selectedDay!);
+                if (newPage != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditDiaries(diary: newPage),
+                    ),
+                  );
+                } else {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddDiaries(
+                        memberId: memId,
+                        selectedDate: _selectedDay!,
+                      ),
+                    ),
+                  );
+                }
+              },
               child: Image.asset(
                 'lib/assets/image/add.png',
                 width: 40,

@@ -1,18 +1,20 @@
 import 'dart:convert';
 
 class DiaryModel {
-  final String? diaryID;
+  final int? diaryID;
   final String memID;
   final String writeD;
   final String contents;
-  final String emotionType;
+  final String emotionBefore;
+  final String? emotionAfter;
 
   DiaryModel(
       {this.diaryID,
       required this.memID,
       required this.writeD,
       required this.contents,
-      required this.emotionType});
+      required this.emotionBefore,
+      this.emotionAfter});
 
   Map<String, dynamic> toMap() {
     return {
@@ -20,17 +22,19 @@ class DiaryModel {
       'memID': memID,
       'writeD': writeD,
       'contents': contents,
-      'emotionType': emotionType,
+      'emotionBefore': emotionBefore,
+      'emotionAfter': emotionAfter
     };
   }
 
   factory DiaryModel.fromMap(Map<String, dynamic> map) {
     return DiaryModel(
-      diaryID: map['diaryID'],
-      memID: map['memID'] ?? '',
-      writeD: map['writeD'] ?? '',
-      contents: map['contents'] ?? '',
-      emotionType: map['emotionType'] ?? '',
+      diaryID: map['diaryId'],
+      memID: map['memId'] ?? '',
+      writeD: map['writeDate'] ?? '',
+      contents: map['content'] ?? '',
+      emotionBefore: map['beforeEmotion'] ?? '',
+      emotionAfter: map['afterEmotion'] ?? '',
     );
   }
 
