@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Chat extends StatefulWidget {
   const Chat({super.key, this.memberId});
@@ -19,11 +19,18 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: ChatScreen(memberId: memberId!));
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: memberId != null
+          ? ChatScreen(memberId: memberId!)
+          : const Scaffold(
+              body: Center(
+                child: Text('로그인이 필요합니다.'),
+              ),
+            ),
+    );
   }
 }
 
@@ -103,7 +110,10 @@ class ChatScreenState extends State<ChatScreen> {
     };
 
     final http.Response response = await http.post(Uri.parse(springUrl),
-        headers: {'Content-Type': 'application/json'}, body: jsonEncode(chat));
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(chat));
 
     print('Spring 서버 응답 Status Code: ${response.statusCode}');
     print('Spring 서버 응답 Body: ${utf8.decode(response.bodyBytes)}');
@@ -111,18 +121,41 @@ class ChatScreenState extends State<ChatScreen> {
     if (response.statusCode == 200) {
       print('Spring으로 메세지가 성공적으로 전달되었습니다');
       final springResponseBody = jsonDecode(utf8.decode(response.bodyBytes));
+      final List<dynamic> categoryList = springResponseBody['category'];
       final receivedMessage = springResponseBody['response'];
+      // 카테고리 받아오기
+      final String receiveCategory =
+          categoryList.isNotEmpty ? categoryList[0] : 'Unknown';
+      print('Category: $receiveCategory'); // 감정/자살충동
 
-      setState(() {
-        _messages.insert(
-          0,
-          ChatMessage(
-            text: receivedMessage,
-            isUser: false,
-          ),
-        );
-        _isLoading = false;
-      });
+      if (receiveCategory == "감정/자살충동" ||
+          receiveCategory == "감정/살인욕구" ||
+          receiveCategory == "증상/자살시도" ||
+          receiveCategory == "증상/자해") // 등등 여러가지
+      {
+        setState(() {
+          _messages.insert(
+            0,
+            ChatMessage(
+              image: Image.asset('lib/assets/images/SuicidePrevention.png'),
+              text: receivedMessage,
+              isUser: false,
+            ),
+          );
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _messages.insert(
+            0,
+            ChatMessage(
+              text: receivedMessage,
+              isUser: false,
+            ),
+          );
+          _isLoading = false;
+        });
+      }
     } else {
       print('Spring으로 메세지 전송에 실패했습니다. Error: ${response.reasonPhrase}');
       setState(() {
@@ -138,9 +171,9 @@ class ChatScreenState extends State<ChatScreen> {
         centerTitle: true,
         title: const Text(
           textAlign: TextAlign.center,
-          '기룡이',
+          '마음이',
           style: TextStyle(
-            color: Color.fromARGB(255, 49, 135, 255),
+            color: Color.fromARGB(255, 89, 181, 81),
             fontSize: 25,
             fontFamily: 'single_day',
           ),
@@ -158,16 +191,15 @@ class ChatScreenState extends State<ChatScreen> {
             );
           },
         ),
-        backgroundColor: const Color(0xFF98DFFF),
+        backgroundColor: const Color(0xFFFFFBA0),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(5.0),
           child: Container(
-            height: 3.0,
             color: const Color.fromARGB(255, 255, 255, 255),
           ),
         ),
       ),
-      backgroundColor: const Color(0xFF98DFFF),
+      backgroundColor: const Color.fromARGB(255, 250, 248, 205),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -260,8 +292,11 @@ class ChatScreenState extends State<ChatScreen> {
 class ChatMessage extends StatelessWidget {
   final String text;
   final bool isUser;
+  final Image? image;
+  static const String suicideText = "자살 방지 문구(임시)";
 
-  const ChatMessage({super.key, required this.text, required this.isUser});
+  const ChatMessage(
+      {super.key, required this.text, required this.isUser, this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -276,15 +311,18 @@ class ChatMessage extends StatelessWidget {
             crossAxisAlignment:
                 isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
+              // 사용자가 보낸게 아니면 (기룡이가 답변하는 채팅일 경우)
               if (!isUser)
                 Container(
                   margin: const EdgeInsets.only(
                       right: 10.0, left: 10.0, bottom: 10),
                   child: const CircleAvatar(
-                    backgroundImage: AssetImage('lib/assets/image/2.png'),
+                    backgroundImage:
+                        AssetImage('lib/assets/images/giryong.png'),
                     radius: 20,
                   ),
                 ),
+              // 사용자가 보내는 메세지일 경우
               if (isUser)
                 Container(
                   margin: const EdgeInsets.only(right: 10.0, left: 10.0),
@@ -309,6 +347,44 @@ class ChatMessage extends StatelessWidget {
                   ),
                 ),
               ),
+              // 이미지가 있는 경우
+              if (image != null)
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.5,
+                  ),
+                  margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        child: image,
+                      ),
+                      const Text(
+                        suicideText,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'single_day',
+                          fontSize: 20.0,
+                        ),
+                      ),
+                      // OutlineButton 추가
+                      OutlinedButton(
+                        onPressed: () {
+                          // pubspec.yaml에 url_launcher: ^6.0.9 추가
+                          launchUrl(Uri.parse("https://www.lifeline.or.kr/"));
+                        },
+                        child: const Text('자살 예방 상담하기'),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ],
@@ -316,21 +392,3 @@ class ChatMessage extends StatelessWidget {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class Chat extends StatelessWidget {
-//   const Chat({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Chat'),
-//       ),
-//       body: const Center(
-//         child: Text('Chat'),
-//       ),
-//     );
-//   }
-// }

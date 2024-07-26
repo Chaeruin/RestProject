@@ -60,24 +60,7 @@ class _Top3EmotionState extends State<Top3Emotion> {
               );
             } else {
               return Expanded(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: snapshot.data!.length,
-                  padding: const EdgeInsets.all(8),
-                  itemBuilder: (context, index) {
-                    var rank = snapshot.data![index];
-                    return Top3(
-                      afterEmotion: rank.afterEmotion.isNotEmpty
-                          ? rank.afterEmotion
-                          : 'Unknown',
-                      count: rank.count,
-                    );
-                  },
-                  separatorBuilder: (context, index) => const SizedBox(
-                    width: 25,
-                  ),
-                ),
+                child: makeList(snapshot),
               );
             }
           },
@@ -85,26 +68,26 @@ class _Top3EmotionState extends State<Top3Emotion> {
       ],
     );
   }
-}
 
-ListView makeList(AsyncSnapshot<List<Top3Emo>> snapshot) {
-  print('snapshot data: ${snapshot.data}');
-  return ListView.separated(
-    shrinkWrap: true,
-    scrollDirection: Axis.horizontal,
-    itemCount: snapshot.data!.length,
-    padding: const EdgeInsets.all(8),
-    itemBuilder: (context, index) {
-      var rank = snapshot.data![index];
-      return Top3(
-        afterEmotion: rank.afterEmotion,
-        count: rank.count,
-      );
-    },
-    separatorBuilder: (context, index) => const SizedBox(
-      width: 25,
-    ),
-  );
+  ListView makeList(AsyncSnapshot<List<Top3Emo>> snapshot) {
+    return ListView.separated(
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+      itemCount: snapshot.data!.length,
+      padding: const EdgeInsets.all(8),
+      itemBuilder: (context, index) {
+        var rank = snapshot.data![index];
+        return Top3(
+          afterEmotion:
+              rank.afterEmotion.isNotEmpty ? rank.afterEmotion : 'Unknown',
+          count: rank.count,
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(
+        width: 25,
+      ),
+    );
+  }
 }
 
 class Top3 extends StatelessWidget {

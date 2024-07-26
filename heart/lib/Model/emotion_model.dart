@@ -76,3 +76,36 @@ class Top3Emo {
   factory Top3Emo.fromJson(String source) =>
       Top3Emo.fromMap(json.decode(source));
 }
+
+class HourlyEmo {
+  final String afterEmotion;
+  final String emotionTime;
+  final int count;
+
+  HourlyEmo({
+    required this.afterEmotion,
+    required this.emotionTime,
+    required this.count,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'afterEmotion': afterEmotion,
+      'emotionTime': emotionTime,
+      'count': count,
+    };
+  }
+
+  factory HourlyEmo.fromMap(Map<String, dynamic> map) {
+    return HourlyEmo(
+      afterEmotion: map['AFTER_EMOTION'] ?? '',
+      emotionTime: map['EMOTION_TIME'] ?? '',
+      count: map['COUNT']?.toInt() ?? 0,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory HourlyEmo.fromJson(String source) =>
+      HourlyEmo.fromMap(json.decode(source));
+}

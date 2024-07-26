@@ -74,7 +74,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
     // 여기 sentiment 받아서 처리하기
     final sectionsData = [
       PieChartSectionData(
-        color: Colors.red,
+        color: const Color.fromARGB(255, 255, 120, 110),
         value: sentiments.joy * 100,
         title: 'JOY',
         badgeWidget: const _Badge(
@@ -84,7 +84,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.orange,
+        color: const Color.fromARGB(255, 255, 185, 80),
         value: sentiments.hope * 100,
         title: 'HOPE',
         badgeWidget: const _Badge(
@@ -94,7 +94,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.yellow,
+        color: const Color.fromARGB(255, 255, 240, 101),
         value: sentiments.neutrality * 100,
         title: 'NEUTRALITY',
         badgeWidget: const _Badge(
@@ -104,7 +104,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.green,
+        color: const Color.fromARGB(255, 90, 255, 115),
         value: sentiments.sadness * 100,
         title: 'SADNESS',
         badgeWidget: const _Badge(
@@ -114,7 +114,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.blue,
+        color: const Color.fromARGB(255, 132, 200, 255),
         value: sentiments.anger * 100,
         title: 'ANGER',
         badgeWidget: const _Badge(
@@ -124,7 +124,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.indigo,
+        color: const Color.fromARGB(255, 134, 151, 245),
         value: sentiments.anxiety * 100,
         title: 'ANXIETY',
         badgeWidget: const _Badge(
@@ -134,7 +134,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.purple,
+        color: const Color.fromARGB(255, 239, 148, 255),
         value: sentiments.tiredness * 100,
         title: 'TIREDNESS',
         badgeWidget: const _Badge(
@@ -144,7 +144,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
       PieChartSectionData(
-        color: Colors.brown,
+        color: const Color.fromARGB(255, 255, 150, 234),
         value: sentiments.regret * 100,
         title: 'REGRET',
         badgeWidget: const _Badge(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:heart/drawer/login.dart';
 import 'package:heart/drawer/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heart/Api/action_api.dart'; 
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,6 +16,7 @@ class HomeState extends State<Home> {
   late int points = 0;
   bool isLogin = false;
   late String nickname;
+  String? actionMessage;
 
   Future initPref() async {
     prefs = await SharedPreferences.getInstance();
@@ -37,6 +39,20 @@ class HomeState extends State<Home> {
   void initState() {
     super.initState();
     initPref();
+    fetchActionRecommendationFromApi();
+
+  }
+  Future<void> fetchActionRecommendationFromApi() async {
+    try {
+      final action = await fetchActionRecommendation();
+      setState(() {
+        actionMessage = action;
+      });
+    } catch (e) {
+      setState(() {
+        actionMessage = 'Failed to load action recommendation';
+      });
+    }
   }
 
   @override
@@ -167,21 +183,26 @@ class HomeState extends State<Home> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            
             children: [
               imageChange(points),
               Container(
+                 width: 350,
+                height: 100,
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFBA0),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 padding: const EdgeInsets.all(20.0),
-                child: const Text(
-                  '오늘은 날씨가 선선하니 \n야외에서 30분 산책하기 \n어떠세요?^^',
-                  style: TextStyle(
+                child:Center(
+                  child: Text(
+                  actionMessage != null ? '"$actionMessage" 어떠세요?^^' : 'Loading...',
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 23,
                     fontFamily: 'single_day',
                   ),
+                ),
                 ),
               ),
             ],

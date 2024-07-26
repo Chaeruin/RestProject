@@ -162,7 +162,7 @@ class _EditDiariesState extends State<EditDiaries> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/images/tiredness.png';
+                    _selectedImage = 'lib/assets/images/emotions/tiredness.png';
                     _emotionType = Emotion.tiredness.toString().split('.').last;
                   });
                   Navigator.pop(context);
@@ -190,7 +190,7 @@ class _EditDiariesState extends State<EditDiaries> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF4CADE4),
+        backgroundColor: const Color(0xFFFFFBA0),
         centerTitle: true,
         title: Text(
           (widget.diary.writeDate),
@@ -216,8 +216,8 @@ class _EditDiariesState extends State<EditDiaries> {
             },
             icon: Image.asset(
               'lib/assets/image/delete.png',
-              width: 35,
-              height: 35,
+              width: 40,
+              height: 40,
             ),
           ),
           IconButton(
@@ -315,7 +315,7 @@ class _EditDiariesState extends State<EditDiaries> {
                             padding: const EdgeInsets.all(8),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF98DFFF),
+                              color: const Color.fromARGB(255, 89, 181, 81),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: const Text(
@@ -359,7 +359,7 @@ class _EditDiariesState extends State<EditDiaries> {
                           },
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color(0xFFFFE3EE),
+                            fillColor: const Color(0xFFFFFBA0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),

@@ -30,7 +30,7 @@ class _AddDiariesState extends State<AddDiaries> {
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = '';
-  late String _selectedImage = 'lib/assets/image/3.png';
+  late String _selectedImage = 'lib/assets/image/1.png';
   final Emotion selectedEmotion = Emotion.joy;
 
   late SharedPreferences prefs;

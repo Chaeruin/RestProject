@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Model/diary_model.dart';
 import 'package:heart/edit_diary.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 import 'package:heart/Api/diary_apis.dart';
-import 'package:heart/Model/event_model.dart';
 import 'package:heart/add_diary.dart';
 
 class Diary extends StatefulWidget {
@@ -31,16 +28,6 @@ class _DiaryState extends State<Diary> {
     _selectedDay = _focusedDay;
     memId = widget.memID;
   }
-
-  Future<List<Event>> _getEventsForDay(DateTime day) async {
-    String date = DateFormat('yyyyMM').format(day);
-    return fetchEventsForDay(memId, date);
-  }
-
-  // String dateFormatChange(DateTime date) {
-  //   String changedFormat = DateFormat('yyyyMMdd').format(date);
-  //   return changedFormat;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -143,8 +130,8 @@ class _DiaryState extends State<Diary> {
             height: 10,
           ),
           Expanded(
-            child: FutureBuilder<List<Event>>(
-              future: _getEventsForDay(_selectedDay!),
+            child: FutureBuilder<DiaryModel?>(
+              future: readDiarybyDate(memId, _selectedDay!),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -154,34 +141,44 @@ class _DiaryState extends State<Diary> {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
                   );
-                } else if (!snapshot.hasData || snapshot.data.isEmpty) {
+                } else if (!snapshot.hasData) {
                   return const Center(
                     child: Text('No data found'),
                   );
                 } else {
-                  final events = snapshot.data!;
-                  if (events.length < 2) {
-                    return const Center(
-                      child: Text('Not enough data to display emotion changes'),
-                    );
-                  }
-                  return Row(
+                  return ListView(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
                     children: [
-                      Container(
-                        color: Colors.amber,
-                        child: Text('${events[0]}'),
+                      Image.asset(
+                        'lib/assets/image/emotions/${snapshot.data.beforeEmotion}.png',
+                        width: 100,
                       ),
-                      const Icon(Icons.arrow_right_alt_sharp),
-                      Container(
-                        color: Colors.lightBlue,
-                        child: Text('${events[1]}'),
+                      const Icon(
+                        Icons.arrow_right_alt_sharp,
+                        size: 100,
                       ),
+                      if (snapshot.data.afterEmotion == null ||
+                          snapshot.data.afterEmotion == '')
+                        const Icon(
+                          Icons.image_not_supported_outlined,
+                          size: 100,
+                        )
+                      else
+                        Image.asset(
+                          'lib/assets/image/emotions/${snapshot.data.afterEmotion}.png',
+                          width: 100,
+                        ),
                     ],
                   );
                 }
               },
             ),
           ),
+          //공간여백을 위해 놔둠
+          Expanded(
+            child: Container(),
+          )
         ],
       ),
       //floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,

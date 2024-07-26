@@ -119,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Statistics(
                             memId: memberID,
                           ),
-                          const Recommendation(),
+                          Recommendation(memberID: memberID),
                         ],
                       )
                     ],
@@ -136,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Statistics(
                     memId: memberID,
                   ),
-                  const Recommendation(),
+                   Recommendation(memberID: memberID,),
                 ],
               ),
         bottomNavigationBar: Container(
