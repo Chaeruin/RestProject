@@ -19,6 +19,12 @@
         where dr.member_id = #{memberId}
           and dr.emotion_type = #{emotionType}
           and dr.recommendation_date = #{recommendationDate}
+        order by
+            CASE
+                WHEN a.category = '실외활동' THEN 1
+                WHEN a.category = '집' THEN 2
+                WHEN a.category = '실내활동' THEN 3
+            END
     </select>
 
 </mapper>

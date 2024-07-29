@@ -49,7 +49,7 @@ public class MyBatisEmotionRepository implements EmotionRepository {
     }
 
     @Override
-    public List<LinkedHashMap<String, Object>> getHourlyEmotionByMonth(String memberId, String month) {
-        return emotionMapper.getHourlyEmotionByMonth(memberId, month);
+    public List<LinkedHashMap<String, Object>> getHourlyEmotion(String memberId) {
+        return emotionMapper.getHourlyEmotion(memberId);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,6 +46,31 @@ public class MemberActionApiController {
         return ResponseEntity.ok("행동이 완료되었습니다");
     }
 
+    /**
+     * 특정 멤버의 상태가 '진행중'인 행동을 조회하는 엔드포인트
+     */
+    @GetMapping("/{memberId}/ongoing")
+    public ResponseEntity<List<MemberAction>> getOngoingActionsByMemberId(@PathVariable("memberId") String memberId) {
+        List<MemberAction> actions = memberActionService.getOngoingActionsByMemberId(memberId);
+        return ResponseEntity.ok(actions);
+    }
 
+    /**
+     * 특정 멤버의 상태가 '완료'인 행동을 조회하는 엔드포인트
+     */
+    @GetMapping("/{memberId}/completed")
+    public ResponseEntity<List<MemberAction>> getCompletedActionsByMemberId(@PathVariable("memberId") String memberId) {
+        List<MemberAction> actions = memberActionService.getCompletedActionsByMemberId(memberId);
+        return ResponseEntity.ok(actions);
+    }
+
+    /**
+     * 특정 멤버의 기분을 나아지게 한 행동 2개를 조회하는 엔드포인트
+     */
+    @GetMapping("/{memberId}/feel-better")
+    public ResponseEntity<List<MemberAction>> getFeelBetterActions(@PathVariable("memberId") String memberId) {
+        List<MemberAction> actions = memberActionService.getFeelBetterActions(memberId);
+        return ResponseEntity.ok(actions);
+    }
 
 }

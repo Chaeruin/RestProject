@@ -20,5 +20,5 @@ public interface EmotionRepository {
 
     List<LinkedHashMap<String, Object>> getTopEmotionsByMonth(String memberId, String month);
 
-    List<LinkedHashMap<String, Object>> getHourlyEmotionByMonth(String memberId, String month);
+    List<LinkedHashMap<String, Object>> getHourlyEmotion(String memberId);
 }

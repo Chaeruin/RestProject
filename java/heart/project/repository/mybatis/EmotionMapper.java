@@ -28,6 +28,6 @@ public interface EmotionMapper {
 
     List<LinkedHashMap<String, Object>> getTopEmotionsByMonth(@Param("memberId") String memberId, @Param("month") String month);
 
-    List<LinkedHashMap<String, Object>> getHourlyEmotionByMonth(@Param("memberId") String memberId, @Param("month") String month);
+    List<LinkedHashMap<String, Object>> getHourlyEmotion(@Param("memberId") String memberId);
 
 }

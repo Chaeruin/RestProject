@@ -22,4 +22,6 @@ public class MemberAction {
 
     @NotEmpty
     private String afterEmotion; // 행동하기 이후 감정
+
+    private String action; // action 테이블에서 가져오는 행동 내용
 }

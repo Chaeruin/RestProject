@@ -6,6 +6,8 @@ import heart.project.repository.memberaction.MemberActionUpdateApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberActionService {
@@ -20,5 +22,20 @@ public class MemberActionService {
     // 행동 후 감정 변화를 갱신하고, 상태를 '완료'로 바꾸는 메서드
     public void completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam) {
         memberActionRepository.completeMemberAction(memberActionId, updateParam);
+    }
+
+    // 주어진 회원 ID의 상태가 '진행중'인 행동을 반환하는 메서드
+    public List<MemberAction> getOngoingActionsByMemberId(String memberId) {
+        return memberActionRepository.findOngoingActionsByMemberId(memberId);
+    }
+
+    // 주어진 회원 ID의 상태가 '진행중'인 행동을 반환하는 메서드
+    public List<MemberAction> getCompletedActionsByMemberId(String memberId) {
+        return memberActionRepository.findCompletedActionsByMemberId(memberId);
+    }
+
+    // 특정 멤버의 기분을 나아지게 한 행동 2개를 반환하는 메서드
+    public List<MemberAction> getFeelBetterActions(String memberId) {
+        return memberActionRepository.findFeelBetterActions(memberId);
     }
 }

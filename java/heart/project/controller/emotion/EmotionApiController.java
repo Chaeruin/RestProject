@@ -40,14 +40,13 @@ public class EmotionApiController {
     }
 
     /**
-     * 특정 멤버의 특정 월에 시간대별로 나타난 감정 통계를 조회하는 엔드포인트
+     * 특정 멤버의 시간대별로 나타난 감정 통계를 조회하는 엔드포인트
      */
     @GetMapping("/hourly/{memberId}")
-    public ResponseEntity<List<LinkedHashMap<String, Object>>> getHourlyEmotionByMonth(
-            @PathVariable("memberId") String memberId,
-            @RequestParam("month") String month) {
+    public ResponseEntity<List<LinkedHashMap<String, Object>>> getHourlyEmotion(
+            @PathVariable("memberId") String memberId) {
 
-        List<LinkedHashMap<String, Object>> statistics = emotionService.getHourlyEmotionByMonth(memberId, month);
+        List<LinkedHashMap<String, Object>> statistics = emotionService.getHourlyEmotion(memberId);
         return ResponseEntity.ok(statistics);
     }
 }

@@ -11,8 +11,9 @@
     </insert>
 
     <select id="findNewMemberAction" resultType="MemberAction">
-        select member_action_id, action_id, member_id, status, before_emotion, after_emotion
-        from member_action
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+        from member_action ma
+        LEFT JOIN action a ON ma.action_id = a.action_id
         where member_action_id = (select max(member_action_id) from member_action)
     </select>
 
@@ -25,5 +26,37 @@
         updated_by='행동 완료'
         where member_action_id = #{memberActionId}
     </update>
+
+    <select id="findOngoingActionsByMemberId" resultType="MemberAction">
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+        from member_action ma
+        LEFT JOIN action a ON ma.action_id = a.action_id
+        where ma.member_id = #{memberId} and ma.status = '진행중'
+        order by ma.created_at
+    </select>
+
+    <select id="findCompletedActionsByMemberId" resultType="MemberAction">
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+        from member_action ma
+        LEFT JOIN action a ON ma.action_id = a.action_id
+        where ma.member_id = #{memberId} and ma.status = '완료'
+        order by ma.updated_at
+    </select>
+
+    <select id="findFeelBetterActions" resultType="MemberAction">
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+        from member_action ma
+        LEFT JOIN action a ON ma.action_id = a.action_id
+        where ma.member_id = #{memberId}
+              and ma.status = '완료'
+              and ma.before_emotion NOT IN ('joy', 'hope')
+              and ma.after_emotion IN ('joy', 'hope')
+        order by
+            CASE ma.after_emotion
+                WHEN 'joy' THEN 1
+                WHEN 'hope' THEN 2
+            END
+        FETCH FIRST 2 ROWS ONLY
+    </select>
 
 </mapper>

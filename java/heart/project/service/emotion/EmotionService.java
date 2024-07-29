@@ -46,9 +46,9 @@ public class EmotionService {
         return emotionRepository.getTopEmotionsByMonth(memberId, month);
     }
 
-    // 회원의 특정 월의 시간별 감정을 조회하는 메서드
-    public List<LinkedHashMap<String, Object>> getHourlyEmotionByMonth(String memberId, String month) {
-        return emotionRepository.getHourlyEmotionByMonth(memberId, month);
+    // 회원의 시간별 감정을 조회하는 메서드
+    public List<LinkedHashMap<String, Object>> getHourlyEmotion(String memberId) {
+        return emotionRepository.getHourlyEmotion(memberId);
     }
 
 }
