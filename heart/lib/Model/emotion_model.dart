@@ -79,19 +79,19 @@ class Top3Emo {
 
 class HourlyEmo {
   final String afterEmotion;
-  final String emotionTime;
+  final String timeRange;
   final int count;
 
   HourlyEmo({
     required this.afterEmotion,
-    required this.emotionTime,
+    required this.timeRange,
     required this.count,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'afterEmotion': afterEmotion,
-      'emotionTime': emotionTime,
+      'timeRange': timeRange,
       'count': count,
     };
   }
@@ -99,7 +99,7 @@ class HourlyEmo {
   factory HourlyEmo.fromMap(Map<String, dynamic> map) {
     return HourlyEmo(
       afterEmotion: map['AFTER_EMOTION'] ?? '',
-      emotionTime: map['EMOTION_TIME'] ?? '',
+      timeRange: map['TIME_RANGE'] ?? '',
       count: map['COUNT']?.toInt() ?? 0,
     );
   }

@@ -57,23 +57,31 @@ class _StatisticsState extends State<Statistics> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Text(
-            '월간 감정 통계', // 원하는 텍스트로 변경
-            style: TextStyle(
-              color: Color.fromARGB(255, 65, 133, 59),
-              fontSize: 25,
-              fontFamily: 'single_day',
-            ), // 적절한 크기로 텍스트 스타일 설정
-          ),
-          const SizedBox(height: 5), // 텍스트와 리프레셔 사이의 간격
-          Expanded(child: TotalEmotion(memberId: memberID)),
-          const SizedBox(height: 20),
-          Expanded(child: Top3Emotion(memberId: memberID)),
-          const SizedBox(height: 20),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final bool isLargeScreen = constraints.maxWidth > 600;
+          final double titleFontSize = isLargeScreen ? 30 : 20;
+          final double sectionSpacing = isLargeScreen ? 30 : 20;
+
+          return Column(
+            children: [
+              SizedBox(height: sectionSpacing),
+              Text(
+                '월간 감정 통계',
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 65, 133, 59),
+                  fontSize: titleFontSize,
+                  fontFamily: 'single_day',
+                ),
+              ),
+              SizedBox(height: sectionSpacing / 2),
+              Expanded(child: TotalEmotion(memberId: memberID)),
+              SizedBox(height: sectionSpacing),
+              Expanded(child: Top3Emotion(memberId: memberID)),
+              SizedBox(height: sectionSpacing),
+            ],
+          );
+        },
       ),
     );
   }

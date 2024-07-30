@@ -73,115 +73,128 @@ class _DiaryState extends State<Diary> {
           ),
         ],
       ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final bool isLargeScreen = constraints.maxWidth > 600;
+          final double calendarFontSize = isLargeScreen ? 18 : 14;
+          final double headerFontSize = isLargeScreen ? 25 : 20;
+          final double iconSize = isLargeScreen ? 100 : 70;
+          final double imageSize = isLargeScreen ? 100 : 70;
+          final double spacing = isLargeScreen ? 20 : 10;
 
-      body: Column(
-        children: [
-          TableCalendar(
-            focusedDay: _focusedDay,
-            firstDay: DateTime.utc(2020, 10, 16),
-            lastDay: DateTime.utc(2030, 3, 14),
-            calendarFormat: _calendarFormat,
-            eventLoader: (day) => [],
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                setState(() {
-                  _selectedDay = selectedDay;
+          return Column(
+            children: [
+              TableCalendar(
+                focusedDay: _focusedDay,
+                firstDay: DateTime.utc(2020, 10, 16),
+                lastDay: DateTime.utc(2030, 3, 14),
+                calendarFormat: _calendarFormat,
+                eventLoader: (day) => [],
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  if (!isSameDay(_selectedDay, selectedDay)) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
+                  }
+                },
+                onFormatChanged: (format) {
+                  if (_calendarFormat != format) {
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  }
+                },
+                onPageChanged: (focusedDay) {
                   _focusedDay = focusedDay;
-                });
-              }
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
-            },
-            calendarStyle: CalendarStyle(
-              defaultTextStyle: customTextStyle,
-              weekendTextStyle: customTextStyle,
-              selectedTextStyle: customTextStyle.copyWith(color: Colors.white),
-              todayTextStyle: customTextStyle.copyWith(
-                  color: const Color.fromARGB(255, 2, 2, 2)),
-              selectedDecoration: const BoxDecoration(
-                color: Color.fromARGB(255, 89, 181, 81),
-                shape: BoxShape.circle,
+                },
+                calendarStyle: CalendarStyle(
+                  defaultTextStyle:
+                      customTextStyle.copyWith(fontSize: calendarFontSize),
+                  weekendTextStyle:
+                      customTextStyle.copyWith(fontSize: calendarFontSize),
+                  selectedTextStyle: customTextStyle.copyWith(
+                      color: Colors.white, fontSize: calendarFontSize),
+                  todayTextStyle: customTextStyle.copyWith(
+                      color: const Color.fromARGB(255, 2, 2, 2),
+                      fontSize: calendarFontSize),
+                  selectedDecoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 89, 181, 81),
+                    shape: BoxShape.circle,
+                  ),
+                  todayDecoration: const BoxDecoration(
+                    color: Color(0xFFFFFBA0),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  weekdayStyle:
+                      customTextStyle.copyWith(fontSize: calendarFontSize),
+                  weekendStyle:
+                      customTextStyle.copyWith(fontSize: calendarFontSize),
+                ),
+                headerStyle: HeaderStyle(
+                  titleTextStyle:
+                      customTextStyle.copyWith(fontSize: headerFontSize),
+                ),
               ),
-              todayDecoration: const BoxDecoration(
-                color: Color(0xFFFFFBA0),
-                shape: BoxShape.circle,
+              SizedBox(height: spacing),
+              Expanded(
+                child: FutureBuilder<DiaryModel?>(
+                  future: readDiarybyDate(memId, _selectedDay!),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    } else if (!snapshot.hasData) {
+                      return const Center(
+                        child: Text('No data found'),
+                      );
+                    } else {
+                      return ListView(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          Image.asset(
+                            'lib/assets/image/emotions/${snapshot.data.beforeEmotion}.png',
+                            width: imageSize,
+                          ),
+                          Icon(
+                            Icons.arrow_right_alt_sharp,
+                            size: iconSize,
+                          ),
+                          if (snapshot.data.afterEmotion == null ||
+                              snapshot.data.afterEmotion == '')
+                            Icon(
+                              Icons.image_not_supported_outlined,
+                              size: iconSize,
+                            )
+                          else
+                            Image.asset(
+                              'lib/assets/image/emotions/${snapshot.data.afterEmotion}.png',
+                              width: imageSize,
+                            ),
+                        ],
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-            daysOfWeekStyle: const DaysOfWeekStyle(
-              weekdayStyle: customTextStyle,
-              weekendStyle: customTextStyle,
-            ),
-            headerStyle: HeaderStyle(
-              titleTextStyle: customTextStyle.copyWith(fontSize: 25),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: FutureBuilder<DiaryModel?>(
-              future: readDiarybyDate(memId, _selectedDay!),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator.adaptive(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else if (!snapshot.hasData) {
-                  return const Center(
-                    child: Text('No data found'),
-                  );
-                } else {
-                  return ListView(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      Image.asset(
-                        'lib/assets/image/emotions/${snapshot.data.beforeEmotion}.png',
-                        width: 100,
-                      ),
-                      const Icon(
-                        Icons.arrow_right_alt_sharp,
-                        size: 100,
-                      ),
-                      if (snapshot.data.afterEmotion == null ||
-                          snapshot.data.afterEmotion == '')
-                        const Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 100,
-                        )
-                      else
-                        Image.asset(
-                          'lib/assets/image/emotions/${snapshot.data.afterEmotion}.png',
-                          width: 100,
-                        ),
-                    ],
-                  );
-                }
-              },
-            ),
-          ),
-          //공간여백을 위해 놔둠
-          Expanded(
-            child: Container(),
-          )
-        ],
+              Expanded(
+                child: Container(),
+              )
+            ],
+          );
+        },
       ),
-      //floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
   }
 }

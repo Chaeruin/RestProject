@@ -66,12 +66,10 @@ Future<List<Top3Emo>> top3Emotions(String memberId, String writeDate) async {
 }
 
 //시간대별 감정조회
-Future<List<HourlyEmo>> hourlyEmotions(
-    String memberId, String writeDate) async {
-  final String month = writeDate;
+Future<List<HourlyEmo>> hourlyEmotions(String memberId) async {
   List<HourlyEmo> emotionList = [];
-  final Uri uri = Uri.parse(
-      "http://54.79.110.239:8080/api/emotion/hourly/$memberId?month=$month");
+  final Uri uri =
+      Uri.parse("http://54.79.110.239:8080/api/emotion/hourly/$memberId");
 
   try {
     final http.Response response = await http.get(

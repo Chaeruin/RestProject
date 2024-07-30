@@ -26,50 +26,61 @@ class _Top3EmotionState extends State<Top3Emotion> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isLargeScreen = constraints.maxWidth > 600;
+
+        return Column(
           children: [
-            Expanded(
-              child: Text(
-                '이번달 당신이 가장 많이 느낀 감정이에요!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color.fromARGB(255, 65, 133, 59),
-                  fontSize: 23,
-                  fontFamily: 'single_day',
+            const Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '이번달 당신이 가장 많이 느낀 감정이에요!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 65, 133, 59),
+                      fontSize: 23,
+                      fontFamily: 'single_day',
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+            FutureBuilder<List<Top3Emo>>(
+              future: top3,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('No data available'),
+                  );
+                } else {
+                  return Expanded(
+                    child: makeList(snapshot, isLargeScreen),
+                  );
+                }
+              },
             ),
           ],
-        ),
-        FutureBuilder<List<Top3Emo>>(
-          future: top3,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text('No data available'),
-              );
-            } else {
-              return Expanded(
-                child: makeList(snapshot),
-              );
-            }
-          },
-        ),
-      ],
+        );
+      },
     );
   }
 
-  ListView makeList(AsyncSnapshot<List<Top3Emo>> snapshot) {
+  ListView makeList(AsyncSnapshot<List<Top3Emo>> snapshot, bool isLargeScreen) {
+    double itemWidth = isLargeScreen ? 150 : 110;
+    double itemHeight = isLargeScreen ? 200 : 150;
+    double imageSize = isLargeScreen ? 150 : 110;
+    double textSize = isLargeScreen ? 16 : 12;
+
     return ListView.separated(
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
@@ -81,6 +92,10 @@ class _Top3EmotionState extends State<Top3Emotion> {
           afterEmotion:
               rank.afterEmotion.isNotEmpty ? rank.afterEmotion : 'Unknown',
           count: rank.count,
+          itemWidth: itemWidth,
+          itemHeight: itemHeight,
+          imageSize: imageSize,
+          textSize: textSize,
         );
       },
       separatorBuilder: (context, index) => const SizedBox(
@@ -93,40 +108,49 @@ class _Top3EmotionState extends State<Top3Emotion> {
 class Top3 extends StatelessWidget {
   final String afterEmotion;
   final int count;
+  final double itemWidth;
+  final double itemHeight;
+  final double imageSize;
+  final double textSize;
+
   const Top3({
     super.key,
     required this.afterEmotion,
     required this.count,
+    required this.itemWidth,
+    required this.itemHeight,
+    required this.imageSize,
+    required this.textSize,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 110, // Desired width
-      height: 150, // Height including image and text
+      width: itemWidth, // Responsive width
+      height: itemHeight, // Responsive height including image and text
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             'lib/assets/image/emotions/$afterEmotion.png',
-            width: 110,
-            height: 110,
+            width: imageSize,
+            height: imageSize,
             errorBuilder: (context, error, stackTrace) {
-              return const Icon(
+              return Icon(
                 Icons.image_not_supported,
-                size: 110,
+                size: imageSize,
                 color: Colors.grey,
               );
             },
           ),
           const SizedBox(height: 5), // Space between image and text
           Text(
-            afterEmotion, // Desired text
-            style: const TextStyle(fontSize: 12), // Appropriate text style
+            afterEmotion, // Emotion text
+            style: TextStyle(fontSize: textSize), // Responsive text style
           ),
           Text(
-            '$count', // Desired text
-            style: const TextStyle(fontSize: 12), // Appropriate text style
+            '$count', // Count text
+            style: TextStyle(fontSize: textSize), // Responsive text style
           ),
         ],
       ),
