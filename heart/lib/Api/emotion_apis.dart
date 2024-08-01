@@ -64,3 +64,36 @@ Future<List<Top3Emo>> top3Emotions(String memberId, String writeDate) async {
     throw Error();
   }
 }
+
+//시간대별 감정조회
+Future<List<HourlyEmo>> hourlyEmotions(String memberId) async {
+  List<HourlyEmo> emotionList = [];
+  final Uri uri =
+      Uri.parse("http://54.79.110.239:8080/api/emotion/hourly/$memberId");
+
+  try {
+    final http.Response response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print('Response Status Code Top3: ${response.statusCode}');
+    print(
+        'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
+
+    if (response.statusCode == 200) {
+      final datas = jsonDecode(utf8.decode(response.bodyBytes));
+      for (var data in datas) {
+        print('this data: $data');
+        emotionList.add(HourlyEmo.fromMap(data));
+      }
+      return emotionList;
+    } else {
+      throw Error();
+    }
+  } catch (e) {
+    throw Error();
+  }
+}

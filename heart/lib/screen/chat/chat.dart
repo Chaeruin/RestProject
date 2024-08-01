@@ -1,11 +1,8 @@
-// ignore_for_file: avoid_print, prefer_const_declarations, use_super_parameters, no_logic_in_create_state
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class Chat extends StatefulWidget {
   const Chat({super.key, this.memberId});
@@ -37,7 +34,6 @@ class _ChatState extends State<Chat> {
   }
 }
 
-
 class ChatScreen extends StatefulWidget {
   final String? memberId;
 
@@ -46,7 +42,6 @@ class ChatScreen extends StatefulWidget {
   @override
   State createState() => ChatScreenState();
 }
-
 
 class ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
@@ -65,7 +60,7 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> enterChatRoom() async {
-    final String springUrl = 'http://54.79.110.239:8080/api/chat/newChatRoom';
+    const String springUrl = 'http://54.79.110.239:8080/api/chat/newChatRoom';
 
     final http.Response response = await http.post(
       Uri.parse(springUrl),
@@ -115,7 +110,10 @@ class ChatScreenState extends State<ChatScreen> {
     };
 
     final http.Response response = await http.post(Uri.parse(springUrl),
-        headers: {'Content-Type': 'application/json; charset=UTF-8',}, body: jsonEncode(chat));
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(chat));
 
     print('Spring 서버 응답 Status Code: ${response.statusCode}');
     print('Spring 서버 응답 Body: ${utf8.decode(response.bodyBytes)}');
@@ -126,10 +124,14 @@ class ChatScreenState extends State<ChatScreen> {
       final List<dynamic> categoryList = springResponseBody['category'];
       final receivedMessage = springResponseBody['response'];
       // 카테고리 받아오기
-      final String receiveCategory = categoryList.isNotEmpty ? categoryList[0] : 'Unknown';
+      final String receiveCategory =
+          categoryList.isNotEmpty ? categoryList[0] : 'Unknown';
       print('Category: $receiveCategory'); // 감정/자살충동
-      
-      if (receiveCategory == "감정/자살충동" || receiveCategory == "감정/살인욕구" || receiveCategory == "증상/자살시도" || receiveCategory == "증상/자해") // 등등 여러가지 
+
+      if (receiveCategory == "감정/자살충동" ||
+          receiveCategory == "감정/살인욕구" ||
+          receiveCategory == "증상/자살시도" ||
+          receiveCategory == "증상/자해") // 등등 여러가지
       {
         setState(() {
           _messages.insert(
@@ -142,8 +144,7 @@ class ChatScreenState extends State<ChatScreen> {
           );
           _isLoading = false;
         });
-      }
-      else {
+      } else {
         setState(() {
           _messages.insert(
             0,
@@ -153,7 +154,7 @@ class ChatScreenState extends State<ChatScreen> {
             ),
           );
           _isLoading = false;
-        }); 
+        });
       }
     } else {
       print('Spring으로 메세지 전송에 실패했습니다. Error: ${response.reasonPhrase}');
@@ -294,7 +295,8 @@ class ChatMessage extends StatelessWidget {
   final Image? image;
   static const String suicideText = "자살 방지 문구(임시)";
 
-  const ChatMessage({super.key, required this.text, required this.isUser, this.image});
+  const ChatMessage(
+      {super.key, required this.text, required this.isUser, this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -346,47 +348,47 @@ class ChatMessage extends StatelessWidget {
                 ),
               ),
               // 이미지가 있는 경우
-              if (image != null) 
+              if (image != null)
                 Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.5,
-                ),
-                margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                padding: const EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Column (
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10.0),
-                      child: image,
-                    ),
-                    const Text(
-                      suicideText,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'single_day',
-                        fontSize: 20.0,
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.5,
+                  ),
+                  margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        child: image,
                       ),
-                    ),
-                    // OutlineButton 추가
-                    OutlinedButton(
-                      onPressed: () {
-                        // pubspec.yaml에 url_launcher: ^6.0.9 추가
-                        launchUrl(Uri.parse("https://www.lifeline.or.kr/"));
-                      },
-                      child: const Text('자살 예방 상담하기'),
-                    ),
-                  ],
+                      const Text(
+                        suicideText,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'single_day',
+                          fontSize: 20.0,
+                        ),
+                      ),
+                      // OutlineButton 추가
+                      OutlinedButton(
+                        onPressed: () {
+                          // pubspec.yaml에 url_launcher: ^6.0.9 추가
+                          launchUrl(Uri.parse("https://www.lifeline.or.kr/"));
+                        },
+                        child: const Text('자살 예방 상담하기'),
+                      ),
+                    ],
                   ),
                 ),
             ],
-              ),
-            ],
           ),
+        ],
+      ),
     );
   }
 }

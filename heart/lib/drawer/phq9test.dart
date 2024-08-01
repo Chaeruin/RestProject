@@ -24,20 +24,20 @@ class _PHQ9State extends State<PHQ9> {
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            '우울증 건강설문(PHQ-9)',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFFFB7474),
-              fontSize: 25,
-              fontFamily: 'single_day',
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          '우울증 건강설문(PHQ-9)',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFFFB7474),
+            fontSize: 25,
+            fontFamily: 'single_day',
           ),
         ),
-         body: TableForm(memberId: memberId),
-        );
+      ),
+      body: TableForm(memberId: memberId),
+    );
   }
 }
 
@@ -46,10 +46,10 @@ class TableForm extends StatefulWidget {
   const TableForm({super.key, required this.memberId});
 
   @override
-  _TableFormState createState() => _TableFormState();
+  TableFormState createState() => TableFormState();
 }
 
-class _TableFormState extends State<TableForm> {
+class TableFormState extends State<TableForm> {
   int score = 0;
   SharedPreferences? prefs;
   List<String> testScore = [];
@@ -141,7 +141,7 @@ class _TableFormState extends State<TableForm> {
                                     fontSize: 18, fontFamily: 'single_day')))),
                   ],
                 ),
-                
+
                 _buildTableRow(
                   questionIndex: 0,
                   questionText: '기분이 가라앉거나, 우울하거나,\n 희망이 없다고 느꼈다.',

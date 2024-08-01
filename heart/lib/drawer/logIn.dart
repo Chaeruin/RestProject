@@ -122,6 +122,9 @@ class _LoginState extends State<Login> {
                       //로그인 성공시
                       prefs.setString('ID', id);
                       prefs.setString('nickName', logInUser.nickname);
+                      // 로그인 상태 설정
+                      await prefs.setBool('isLogin', true);
+
                     } else {
                       showAdaptiveDialog(
                         context: context,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:heart/Model/diary_model.dart';
-import 'package:heart/Model/event_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -44,7 +43,8 @@ Future<DiaryModel> readDiarybyDiaryId(int diaryId) async {
   );
 
   print('Response Status Code: ${response.statusCode}');
-  print('Response Body: ${utf8.decode(response.bodyBytes)}'); //인코딩 깨지는 부분 해결
+  print(
+      'Response Body readDiaryByDiaryId: ${utf8.decode(response.bodyBytes)}'); //인코딩 깨지는 부분 해결
 
   if (response.statusCode == 201) {
     return DiaryModel.fromJson(response.body);
@@ -68,7 +68,8 @@ Future<DiaryModel?> readDiarybyDate(String memberId, DateTime writeDate) async {
 
     if (response.statusCode == 200) {
       print('Response Status Code: ${response.statusCode}');
-      print('Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
+      print(
+          'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
       return DiaryModel.fromJson(response.body);
     }
   } catch (e) {
@@ -128,20 +129,5 @@ Future<bool> deleteDiary(String diaryId) async {
   } catch (e) {
     print("Failed to send post data: $e");
     return false;
-  }
-}
-
-//선택된 날짜의 before, after emotion 조회
-Future<List<Event>> fetchEventsForDay(String memID, String date) async {
-  // API 요청을 통해 이벤트 데이터를 가져옵니다.
-  final response = await http
-      .get(Uri.parse('http://54.79.110.239:8080/api/diaries/$memID/$date'));
-
-  if (response.statusCode == 200) {
-    // JSON 파싱 및 Event 객체로 변환
-    final List<dynamic> jsonData = jsonDecode(response.body);
-    return jsonData.map((data) => Event.fromJson(data)).toList();
-  } else {
-    throw Exception('Failed to load events');
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:heart/screen/chat.dart';
-import 'package:heart/screen/diary.dart';
+import 'package:heart/screen/chat/chat.dart';
+import 'package:heart/screen/diary/diary.dart';
 import 'package:heart/screen/home.dart';
-import 'package:heart/screen/recommendation.dart';
-import 'package:heart/screen/statistics.dart';
+import 'package:heart/screen/action/recommendation.dart';
+import 'package:heart/screen/statistics/statistics.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -18,13 +18,10 @@ Future<String> fetchActionRecommendation() async {
   }
 }
 
-//행동 추천 페이지에서 3개 행동 추천
-Future<List<String>> Recommendations(String memberId, String emotion) async {
-  final now = DateTime.now();
-  final recommendationDate =
-      '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+//멤버가 좋아하는 행동 2개 조회
+Future<List<String>> feelBetterActions(String memberId) async {
   final url =
-      'http://54.79.110.239:8080/api/daily-recommendations/$memberId/$emotion/$recommendationDate';
+      'http://54.79.110.239:8080/api/member-actions/$memberId/feel-better';
 
   try {
     final response = await http.get(Uri.parse(url));
@@ -38,3 +35,57 @@ Future<List<String>> Recommendations(String memberId, String emotion) async {
     return ['추천 데이터를 불러오는데 실패했습니다.'];
   }
 }
+
+//행동 추천 페이지에서 3개 행동 추천
+Future<List<Map<String, dynamic>>> Recommendations(String memberId, String emotion) async {
+  final now = DateTime.now();
+  final recommendationDate =
+      '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+  final url =
+      'http://54.79.110.239:8080/api/daily-recommendations/$memberId/$emotion/$recommendationDate';
+
+  try {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      print('Response Body: ${utf8.decode(response.bodyBytes)}');
+      return data.map((item) => {
+        'action': item['action'],
+        'actionId': item['actionId']
+      }).toList();
+    } else {
+      throw Exception('Failed to load recommendations');
+    }
+  } catch (e) {
+    return [{'action': '추천 데이터를 불러오는데 실패했습니다.', 'actionId': null}];
+  }
+}
+
+//행동 3개중 하나 선택->진행중
+Future<Map<String, dynamic>> startAction(int actionId, String memberId, String beforeEmotion) async {
+  final url = Uri.parse('http://54.79.110.239:8080/api/member-actions/add');
+  final headers = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Accept-Charset': 'utf-8',
+  };
+  final body = jsonEncode({
+    'actionId': actionId,
+    'memberId': memberId,
+    'beforeEmotion': beforeEmotion,
+  });
+
+  final response = await http.post(url, headers: headers, body: body);
+
+  if (response.statusCode == 200) {
+    final decodedBody = utf8.decode(response.bodyBytes, allowMalformed: true);
+    print('Decoded Response Body: $decodedBody');
+    return jsonDecode(decodedBody);
+  } else {
+    return {
+      'error': true,
+      'statusCode': response.body,//-> 수정하기
+      'body': utf8.decode(response.bodyBytes, allowMalformed: true),
+    };
+  }
+}
+//행동 완료

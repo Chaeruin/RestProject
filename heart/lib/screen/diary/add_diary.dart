@@ -32,6 +32,8 @@ class _AddDiariesState extends State<AddDiaries> {
   String _emotionType = '';
   late String _selectedImage = 'lib/assets/image/1.png';
   final Emotion selectedEmotion = Emotion.joy;
+  Emotion? _selectedEmotion;
+  late String beforeEmotion;
 
   late SharedPreferences prefs;
   List<String> writedays = [];
@@ -60,6 +62,16 @@ class _AddDiariesState extends State<AddDiaries> {
     super.initState();
     _initPrefs();
     _writeDate = DateFormat('yyyyMMdd').format(widget.selectedDate);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final String? selectedEmotion = await _showImagePicker(context);
+      if (selectedEmotion != null) {
+        setState(() {
+          _selectedEmotion = Emotion.values.firstWhere(
+              (e) => e.toString().split('.').last == selectedEmotion);
+          beforeEmotion = selectedEmotion;
+        });
+      }
+    });
   }
 
   Future<String?> _showImagePicker(BuildContext context) async {
@@ -247,13 +259,16 @@ class _AddDiariesState extends State<AddDiaries> {
                 );
                 return;
               }
-
+              String? afterEmotion = await _showImagePicker(context);
+              print('beforeEmotin: $beforeEmotion');
+              print('afterEmotion: $afterEmotion');
               //백엔드 요청
               DiaryModel newPage = DiaryModel(
                 memberId: widget.memberId,
                 writeDate: _writeDate,
                 content: _content,
-                beforeEmotion: _emotionType,
+                beforeEmotion: beforeEmotion,
+                afterEmotion: afterEmotion,
               );
               if (await saveDiary(newPage)) {
                 _updateWritedays(_writeDate);
@@ -271,43 +286,16 @@ class _AddDiariesState extends State<AddDiaries> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () async {
-                final String? selectedEmotion = await _showImagePicker(context);
-                setState(() {
-                  _emotionType = selectedEmotion ?? '';
-                });
-                print(_emotionType);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 200,
-                    padding: const EdgeInsets.all(8),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 89, 181, 81),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      '저를 클릭해서 당신의 \n기분을 선택하세요!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'single_day',
-                        fontSize: 22,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Image.asset(
-                    _selectedImage,
-                    height: 80,
-                    width: 70,
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(width: 8),
+                Image.asset(
+                  _selectedImage,
+                  height: 80,
+                  width: 70,
+                ),
+              ],
             ),
             const SizedBox(height: 35),
             TextField(
@@ -327,115 +315,9 @@ class _AddDiariesState extends State<AddDiaries> {
               ),
             ),
             const SizedBox(height: 30),
-            // Container(
-            //   width: double.infinity,
-            //   decoration: BoxDecoration(
-            //     color: const Color(0xFFFFE3EE),
-            //     borderRadius: BorderRadius.circular(20),
-            //   ),
-            //   child: TextButton(
-            //     onPressed: () async {
-            //       여기!! 여기에 data 전송 api 넣기
-            //       _content 가 넘어와야 함
-            //       Map<String, dynamic> sentiment =
-            //           await analyzeSentiment(_content);
-            //       Navigator.push(
-            //         // ignore: use_build_context_synchronously
-            //         context,
-            //         MaterialPageRoute(
-            //             builder: (context) => Statics(sentiment: sentiment)),
-            //       );
-            //     },
-            //     child: const Text(
-            //       '오늘의 기분 상태 보기',
-            //       style: TextStyle(
-            //         color: Color(0xFFFB7474),
-            //         fontSize: 25,
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class AddDiary extends StatefulWidget {
-//   AddDiary({super.key});
-
-//   @override
-//   State<AddDiary> createState() => _AddDiaryState();
-// }
-
-// class _AddDiaryState extends State<AddDiary> {
-//   TextEditingController _textEditingController = TextEditingController();
-//   String _content = ' ';
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Colors.lightGreen,
-//         centerTitle: true,
-//         title: Text('Add / writeday'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(10.0),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Container(
-//               color: Colors.red,
-//               height: 100,
-//               width: 100,
-//               child: Text('Emotion'),
-//             ),
-//             SizedBox(
-//               height: 15,
-//             ),
-//             TextField(
-//               controller: _textEditingController,
-//               maxLines: 19,
-//               onChanged: (value) {
-//                 setState(() {
-//                   _content = value;
-//                 });
-//               },
-//               decoration: InputDecoration(
-//                 filled: true,
-//                 fillColor: const Color(0xFFFFE3EE), // 배경색 지정
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(10.0),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
- // Future<Map<String, dynamic>> analyzeSentiment(String text) async {
-  //   final url = Uri.parse('http://3.35.183.52:8081/analyze');
-  //   final payload = jsonEncode({'text': text});
-  //   final response = await http.post(
-  //     url,
-  //     headers: {'Content-Type': 'application/json'},
-  //     body: payload,
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     Map<String, dynamic> result = jsonDecode(response.body);
-  //     print(result);
-  //     print("감정 전송 완료");
-  //     return result;
-  //   } else {
-  //     throw Exception('감정 분석 오류!!');
-  //   }
-  // }
