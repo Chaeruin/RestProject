@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:heart/drawer/phq9test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart/APi/action_api.dart';
+import 'package:heart/APi/action_api.dart'; 
+import 'package:heart/screen/action/action.dart';
 
 enum Emotion {
   joy,
@@ -19,17 +20,18 @@ class Recommendation extends StatefulWidget {
   const Recommendation({super.key, required this.memberID});
 
   @override
-  RecommendationState createState() => RecommendationState();
+  _RecommendationState createState() => _RecommendationState();
 }
 
-class RecommendationState extends State<Recommendation> {
-  List<String> _currentRecommendations = [];
+class _RecommendationState extends State<Recommendation> {
+  List<Map<String, dynamic>> _currentRecommendations = [];
   late String memberID;
   SharedPreferences? prefs;
   List<String> testScore = ['', ''];
 
   Emotion? _selectedEmotion;
   bool _isLoading = false;
+
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     List<String>? storedTestScore = prefs!.getStringList('testScore');
@@ -48,6 +50,16 @@ class RecommendationState extends State<Recommendation> {
         testScore = storedTestScore!;
       });
     }
+  }
+
+  Future<void> _saveActionStatus(String actionId, String status) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('action_status_$actionId', status);
+  }
+
+  Future<String?> _getActionStatus(String actionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('action_status_$actionId');
   }
 
   @override
@@ -73,14 +85,26 @@ class RecommendationState extends State<Recommendation> {
     });
 
     try {
-      final recommendations =
-          await Recommendations(memberID, emotion.toString().split('.').last);
+      final response = await Recommendations(
+          memberID, emotion.toString().split('.').last);
+      final List<Map<String, dynamic>> recommendations = await Future.wait(
+        (response as List).map((item) async {
+          final savedStatus = await _getActionStatus(item['actionId'].toString());
+          return {
+            'action': item['action'],
+            'actionId': item['actionId'],
+            'status': savedStatus ?? item['status'] ?? '없음',
+          };
+        }),
+      );
       setState(() {
         _currentRecommendations = recommendations;
       });
     } catch (e) {
       setState(() {
-        _currentRecommendations = ['추천 데이터를 불러오는데 실패했습니다.'];
+        _currentRecommendations = [
+          {'action': '추천 데이터를 불러오는데 실패했습니다.', 'actionId': null, 'status': '없음'}
+        ];
       });
     } finally {
       setState(() {
@@ -104,8 +128,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.joy;
                   });
-                  Navigator.pop(
-                      context, Emotion.joy.toString().split('.').last);
+                  Navigator.pop(context, Emotion.joy.toString().split('.').last);
                 },
                 child: const Text('기쁨'),
               ),
@@ -114,8 +137,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.hope;
                   });
-                  Navigator.pop(
-                      context, Emotion.hope.toString().split('.').last);
+                  Navigator.pop(context, Emotion.hope.toString().split('.').last);
                 },
                 child: const Text('희망'),
               ),
@@ -124,8 +146,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.anger;
                   });
-                  Navigator.pop(
-                      context, Emotion.anger.toString().split('.').last);
+                  Navigator.pop(context, Emotion.anger.toString().split('.').last);
                 },
                 child: const Text('분노'),
               ),
@@ -134,8 +155,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.anxiety;
                   });
-                  Navigator.pop(
-                      context, Emotion.anxiety.toString().split('.').last);
+                  Navigator.pop(context, Emotion.anxiety.toString().split('.').last);
                 },
                 child: const Text('불안'),
               ),
@@ -144,8 +164,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.neutrality;
                   });
-                  Navigator.pop(
-                      context, Emotion.neutrality.toString().split('.').last);
+                  Navigator.pop(context, Emotion.neutrality.toString().split('.').last);
                 },
                 child: const Text('중립'),
               ),
@@ -154,8 +173,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.sadness;
                   });
-                  Navigator.pop(
-                      context, Emotion.sadness.toString().split('.').last);
+                  Navigator.pop(context, Emotion.sadness.toString().split('.').last);
                 },
                 child: const Text('슬픔'),
               ),
@@ -163,9 +181,8 @@ class RecommendationState extends State<Recommendation> {
                 onPressed: () {
                   setState(() {
                     _selectedEmotion = Emotion.tiredness;
-                  });
-                  Navigator.pop(
-                      context, Emotion.tiredness.toString().split('.').last);
+                    });
+                  Navigator.pop(context, Emotion.tiredness.toString().split('.').last);
                 },
                 child: const Text('피곤'),
               ),
@@ -174,8 +191,7 @@ class RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.regret;
                   });
-                  Navigator.pop(
-                      context, Emotion.regret.toString().split('.').last);
+                  Navigator.pop(context, Emotion.regret.toString().split('.').last);
                 },
                 child: const Text('후회'),
               ),
@@ -244,36 +260,71 @@ class RecommendationState extends State<Recommendation> {
                 )
               else
                 SizedBox(
-                  height: 160,
+                  height: 200,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: _currentRecommendations.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        width: 170,
-                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFFBA0),
-                          borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(255, 65, 133, 59)
-                                  .withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
+                      return GestureDetector(
+                        onTap: () async {
+                          print('Action ID: ${_currentRecommendations[index]['actionId']}');
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => action(
+                                recommendation: _currentRecommendations[index]['action'],
+                                memberId: memberID,
+                                actionId: _currentRecommendations[index]['actionId'],
+                              ),
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            _currentRecommendations[index],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontFamily: 'single_day',
-                            ),
-                            textAlign: TextAlign.center,
+                          );
+                          if (result != null) {
+                            setState(() {
+                               _currentRecommendations[index]['status'] = result.toString();
+                            });
+                            await _saveActionStatus(_currentRecommendations[index]['actionId'].toString(), result.toString());
+                          }
+                        },
+                        child: Container(
+                          width: 170,
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFFBA0),
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 65, 133, 59)
+                                    .withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                               _currentRecommendations[index]['action'] ?? '행동 없음',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'single_day',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                '상태: ${_currentRecommendations[index]['status'] == 'true' ? '진행중' : _currentRecommendations[index]['status'] ?? '없음'}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Color.fromARGB(255, 65, 133, 59),
+                                  fontFamily: 'single_day',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       );

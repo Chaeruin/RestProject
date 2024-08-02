@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:heart/top3emo.dart';
-import 'package:heart/totalemo.dart';
+import 'package:heart/drawer/action/feel_better.dart';
+import 'package:heart/drawer/action/hourlyemo.dart';
+import 'package:heart/screen/statistics/top3emo.dart';
+import 'package:heart/screen/statistics/totalemo.dart';
 
 class DottedLinePainter extends CustomPainter {
   @override
@@ -63,23 +65,41 @@ class _StatisticsState extends State<Statistics> {
           final double titleFontSize = isLargeScreen ? 30 : 20;
           final double sectionSpacing = isLargeScreen ? 30 : 20;
 
-          return Column(
-            children: [
-              SizedBox(height: sectionSpacing),
-              Text(
-                '월간 감정 통계',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 65, 133, 59),
-                  fontSize: titleFontSize,
-                  fontFamily: 'single_day',
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: sectionSpacing),
+                Text(
+                  '월간 감정 통계',
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 65, 133, 59),
+                    fontSize: titleFontSize,
+                    fontFamily: 'single_day',
+                  ),
                 ),
-              ),
-              SizedBox(height: sectionSpacing / 2),
-              Expanded(child: TotalEmotion(memberId: memberID)),
-              SizedBox(height: sectionSpacing),
-              Expanded(child: Top3Emotion(memberId: memberID)),
-              SizedBox(height: sectionSpacing),
-            ],
+                SizedBox(height: sectionSpacing / 2),
+                SizedBox(
+                  height: 300, 
+                  child: TotalEmotion(memberId: memberID),
+                ),
+                SizedBox(height: sectionSpacing),
+                SizedBox(
+                  height: 300, 
+                  child: Top3Emotion(memberId: memberID),
+                ),
+                SizedBox(height: sectionSpacing),
+                SizedBox(
+                  height: 300, 
+                  child: FeelBetter(memberID: memberID),
+                ),
+                SizedBox(height: sectionSpacing),
+                SizedBox(
+                  height: 300, 
+                  child: HourlyEmotion(memberId: memberID),
+                ),
+                SizedBox(height: sectionSpacing),
+              ],
+            ),
           );
         },
       ),

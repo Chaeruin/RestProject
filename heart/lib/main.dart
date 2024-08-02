@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:heart/screen/chat.dart';
-import 'package:heart/screen/diary.dart';
+import 'package:heart/screen/chat/chat.dart';
+import 'package:heart/screen/diary/diary.dart';
 import 'package:heart/screen/home.dart';
-import 'package:heart/screen/recommendation.dart';
-import 'package:heart/screen/statistics.dart';
+import 'package:heart/screen/action/recommendation.dart';
+import 'package:heart/screen/statistics/statistics.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,20 +40,19 @@ class _MyHomePageState extends State<MyHomePage> {
   late PageController _pageController;
   late SharedPreferences prefs;
   late String memberID = '';
-  late String nickname = '';
   bool isLogin = false;
 
   //저장소에 nickname이 있는지 확인 후 로그인 여부 판단
   Future initPref() async {
     prefs = await SharedPreferences.getInstance();
     final memId = prefs.getString('ID');
-    final nickName = prefs.getString('nickName');
+
+    print('fetched id: $memId');
 
     if (memId != null) {
       setState(() {
         isLogin = true;
         memberID = memId;
-        nickname = nickName!;
       });
     }
   }
@@ -87,7 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final isLargeScreen = width > 800;
 
     print('memberID: $memberID');
-    print('nickname: $nickname');
 
     return Theme(
       data: ThemeData.light(),
@@ -136,7 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   Statistics(
                     memId: memberID,
                   ),
-                   Recommendation(memberID: memberID,),
+                  Recommendation(
+                    memberID: memberID,
+                  ),
                 ],
               ),
         bottomNavigationBar: Container(

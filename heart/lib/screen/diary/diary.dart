@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Model/diary_model.dart';
-import 'package:heart/edit_diary.dart';
+import 'package:heart/screen/diary/edit_diary.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:heart/Api/diary_apis.dart';
-import 'package:heart/add_diary.dart';
+import 'package:heart/screen/diary/add_diary.dart';
 
 class Diary extends StatefulWidget {
   final String memID;
@@ -156,17 +156,24 @@ class _DiaryState extends State<Diary> {
                       );
                     } else if (!snapshot.hasData) {
                       return const Center(
-                        child: Text('No data found'),
+                        child: Text('아직 일기를 작성하지 않았어요!'),
                       );
                     } else {
                       return ListView(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         children: [
-                          Image.asset(
-                            'lib/assets/image/emotions/${snapshot.data.beforeEmotion}.png',
-                            width: imageSize,
-                          ),
+                          if (snapshot.data.beforeEmotion == null ||
+                              snapshot.data.beforeEmotion == '')
+                            Icon(
+                              Icons.image_not_supported_outlined,
+                              size: iconSize,
+                            )
+                          else
+                            Image.asset(
+                              'lib/assets/image/emotions/${snapshot.data.beforeEmotion}.png',
+                              width: imageSize,
+                            ),
                           Icon(
                             Icons.arrow_right_alt_sharp,
                             size: iconSize,

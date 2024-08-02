@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'package:heart/Api/emotion_apis.dart';
 import 'package:heart/Model/emotion_model.dart';
 
@@ -33,7 +32,7 @@ class _HourlyEmotionState extends State<HourlyEmotion> {
           children: [
             Expanded(
               child: Text(
-                '이번달 당신이 가장 많이 느낀 감정이에요!',
+                '시간대별 당신이 가장 많이 느낀 감정이에요!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color.fromARGB(255, 65, 133, 59),
@@ -86,7 +85,7 @@ class _HourlyEmotionState extends State<HourlyEmotion> {
         );
       },
       separatorBuilder: (context, index) => const SizedBox(
-        width: 25,
+        width: 10,
       ),
     );
   }
@@ -106,14 +105,17 @@ class Hourly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 110, // Desired width
+      width: 90, // Desired width
       height: 150, // Height including image and text
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            timeRange, // Desired text
-            style: const TextStyle(fontSize: 12), // Appropriate text style
+            '$timeRange시간', // Desired text
+            style: const TextStyle(
+              fontSize: 18,
+              fontFamily: 'single_day',
+              ), // Appropriate text style
           ),
           const SizedBox(height: 5), // Space between image and text
           Image.asset(
@@ -129,10 +131,12 @@ class Hourly extends StatelessWidget {
             },
           ),
           const SizedBox(height: 5), // Space between image and text
-
           Text(
-            '$count', // Desired text
-            style: const TextStyle(fontSize: 12), // Appropriate text style
+            '$count번', // Desired text
+            style: const TextStyle(
+              fontSize: 18,
+              fontFamily: 'single_day',
+              ), // Appropriate text style
           ),
         ],
       ),

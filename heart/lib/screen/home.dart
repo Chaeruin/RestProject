@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:heart/action_stats.dart';
 import 'package:heart/drawer/login.dart';
 import 'package:heart/drawer/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart/Api/action_api.dart';
+import 'package:just_audio/just_audio.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,34 +20,43 @@ class HomeState extends State<Home> {
   late String memberID;
   String? actionMessage;
 
-  Future initPref() async {
+  final AudioPlayer audioPlayer = AudioPlayer();
+
+  Future<void> initPref() async {
     prefs = await SharedPreferences.getInstance();
-    final point = prefs.getInt('point') ?? 0;
-    final nickName = prefs.getString('nickName');
-    final memID = prefs.getString('ID');
-
-    if (nickName != null && nickName.isNotEmpty) {
-      setState(() {
-        isLogin = true;
-        nickname = nickName;
-      });
-    }
-    if (memID != null) {
-      setState(() {
-        memberID = memID;
-      });
-    }
-
     setState(() {
-      points = point;
+      points = prefs.getInt('point') ?? 0;
+      nickname = prefs.getString('nick') ?? '';
+      memberID = prefs.getString('ID') ?? '';
+      isLogin = prefs.getBool('isLogin') ?? false;
     });
+    print(
+        "Login status: $isLogin, Nickname: $nickname, MemberID: $memberID"); // 디버깅용 출력
   }
 
   @override
   void initState() {
     super.initState();
     initPref();
+    _initAudioPlayer();
     fetchActionRecommendationFromApi();
+  }
+
+  //오디오 연결하는 api->0.wav를 joy.wav로 변경하면 감정에 맞는 음악이 나옴
+  Future<void> _initAudioPlayer() async {
+    try {
+      await audioPlayer
+          .setUrl('https://chatbotmg.s3.ap-northeast-2.amazonaws.com/0.wav');
+      audioPlayer.play();
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.dispose();
+    super.dispose();
   }
 
   Future<void> fetchActionRecommendationFromApi() async {
@@ -58,9 +67,20 @@ class HomeState extends State<Home> {
       });
     } catch (e) {
       setState(() {
-        actionMessage = 'Failed to load action recommendation';
+        actionMessage = '행동 추천을 불러오는데 오류가 발생했습니다.';
       });
     }
+  }
+
+  Future<void> logout() async {
+    await prefs.remove('nickName');
+    await prefs.remove('ID');
+    setState(() {
+      isLogin = false;
+      nickname = '';
+      memberID = '';
+    });
+    Navigator.pop(context);
   }
 
   @override
@@ -83,130 +103,52 @@ class HomeState extends State<Home> {
                   icon: const Icon(Icons.menu),
                 ),
               ),
+        actions: [
+          _buildAudioPlayerControls(),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
           children: [
-            if (isLogin)
-              DrawerHeader(
+            DrawerHeader(
+              child: Center(
                 child: Text(
-                  '안녕하세요!\n $nickname 님!',
+                  isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 23,
                     fontFamily: 'single_day',
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (isLogin)
+              _buildDrawerItem(
+                title: '로그아웃하기',
+                icon: Icons.logout,
+                onTap: logout,
               )
-            else
-              const DrawerHeader(
-                child: Center(
-                  child: Text(
-                    '환영합니다!',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 23,
-                      fontFamily: 'single_day',
-                    ),
-                  ),
+            else ...[
+              _buildDrawerItem(
+                title: '로그인하기',
+                icon: 'lib/assets/image/login.png',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Login()),
                 ),
               ),
+              const SizedBox(height: 20),
+              _buildDrawerItem(
+                title: '회원가입하기',
+                icon: 'lib/assets/image/signup.png',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignUp()),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 89, 181, 81),
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                child: ListTile(
-                  leading: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Image.asset(
-                      'lib/assets/image/login.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  title: const Text(
-                    '로그인하기',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 23,
-                      fontFamily: 'single_day',
-                    ),
-                  ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Login()),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 89, 181, 81),
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                child: ListTile(
-                  leading: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Image.asset(
-                      'lib/assets/image/signup.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  title: const Text(
-                    '회원가입하기',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 23,
-                      fontFamily: 'single_day',
-                    ),
-                  ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUp()),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 89, 181, 81),
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                child: ListTile(
-                  leading: const SizedBox(
-                      width: 24, height: 24, child: Icon(Icons.accessibility)),
-                  title: const Text(
-                    '행동통계',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 23,
-                      fontFamily: 'single_day',
-                    ),
-                  ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ActionStats(
-                              memberID: memberID,
-                            )),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -230,8 +172,9 @@ class HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   imageChange(points, imageSize),
+                  const SizedBox(height: 25),
                   Container(
-                    width: containerWidth,
+                    width: 350,
                     height: containerHeight,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFFBA0),
@@ -241,11 +184,11 @@ class HomeState extends State<Home> {
                     child: Center(
                       child: Text(
                         actionMessage != null
-                            ? '"$actionMessage" 어떠세요?^^'
+                            ? '"$actionMessage" 어떠세요?'
                             : 'Loading...',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.black,
-                          fontSize: fontSize,
+                          fontSize: 23,
                           fontFamily: 'single_day',
                         ),
                       ),
@@ -255,6 +198,61 @@ class HomeState extends State<Home> {
               ),
             ),
           );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required String title,
+    required dynamic icon,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 89, 181, 81),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        child: ListTile(
+          leading: icon is IconData
+              ? Icon(icon, color: Colors.black)
+              : SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Image.asset(
+                    icon,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 23,
+              fontFamily: 'single_day',
+            ),
+          ),
+          onTap: onTap,
+        ),
+      ),
+    );
+  }
+
+  //오디오 기능 UI
+  Widget _buildAudioPlayerControls() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: IconButton(
+        icon: Icon(audioPlayer.playing ? Icons.pause : Icons.play_arrow),
+        onPressed: () {
+          if (audioPlayer.playing) {
+            audioPlayer.pause();
+          } else {
+            audioPlayer.play();
+          }
+          setState(() {});
         },
       ),
     );

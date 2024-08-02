@@ -24,6 +24,24 @@ class _LoginState extends State<Login> {
     initPref();
   }
 
+  void idSave(String ID) async {
+    bool idSaved = await prefs.setString('ID', ID);
+    if (idSaved) {
+      print('ID기록 성공');
+    } else {
+      print('ID기록 실패');
+    }
+  }
+
+  void nickNameSave(String nickName) async {
+    bool nickNameSaved = await prefs.setString('nick', nickName);
+    if (nickNameSaved) {
+      print('Nickname기록 성공');
+    } else {
+      print('Nickname 기록 실패');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,11 +135,12 @@ class _LoginState extends State<Login> {
                     String id = _idController.text;
                     String password = _passwordController.text;
 
-                    var logInUser = await loginUser(id, password);
+                    final String? logInUser = await loginUser(id, password);
                     if (logInUser != null) {
-                      //로그인 성공시
-                      prefs.setString('ID', id);
-                      prefs.setString('nickName', logInUser.nickname);
+                      idSave(id);
+                      nickNameSave(logInUser);
+                      // 로그인 상태 설정
+                      await prefs.setBool('isLogin', true);
                     } else {
                       showAdaptiveDialog(
                         context: context,

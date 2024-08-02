@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:heart/hourlyemo.dart';
-import 'package:heart/feel_better.dart';
+import 'package:heart/drawer/action/hourlyemo.dart';
+import 'package:heart/drawer/action/feel_better.dart';
 
 class ActionStats extends StatefulWidget {
   final String memberID;

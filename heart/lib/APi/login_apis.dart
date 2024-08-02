@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:heart/Model/login_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -43,23 +42,27 @@ Future<bool> saveUser(LoginModel member) async {
   }
 }
 
-//로그인정보 전송
-Future<LoginModel?> loginUser(String id, String password) async {
+Future<String?> loginUser(String id, String password) async {
   try {
     final loginData = LogIn(loginId: id, password: password);
-    final response =
-        await http.post(Uri.parse("http://54.79.110.239:8080/api/login"),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: loginData.toJson());
+    final response = await http.post(
+      Uri.parse("http://54.79.110.239:8080/api/login"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: loginData.toJson(),
+    );
+
+    // Decode response body to a string
+    final responseBody = utf8.decode(response.bodyBytes);
 
     print('Response Status Code: ${response.statusCode}');
-    print('Response Body: ${utf8.decode(response.bodyBytes)}'); //인코딩 깨지는 부분 해결
+    print('Response Body: $responseBody');
 
     if (response.statusCode == 200) {
+      // Convert response body to a map and then to LoginModel
       print('로그인 성공!');
-      return LoginModel.fromJson(response.body);
+      return LoginModel.fromJson(responseBody).nickname;
     } else {
       print("로그인 실패: ${response.statusCode}");
       return null;
