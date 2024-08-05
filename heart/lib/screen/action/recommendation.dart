@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:heart/drawer/phq9test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart/APi/action_api.dart'; 
-import 'package:heart/screen/action/action.dart';
+import 'package:heart/screen/action/action_before.dart';
+import 'package:heart/screen/action/action_after.dart';
 
 enum Emotion {
   joy,
@@ -87,6 +88,7 @@ class _RecommendationState extends State<Recommendation> {
     try {
       final response = await Recommendations(
           memberID, emotion.toString().split('.').last);
+
       final List<Map<String, dynamic>> recommendations = await Future.wait(
         (response as List).map((item) async {
           final savedStatus = await _getActionStatus(item['actionId'].toString());
@@ -94,6 +96,7 @@ class _RecommendationState extends State<Recommendation> {
             'action': item['action'],
             'actionId': item['actionId'],
             'status': savedStatus ?? item['status'] ?? '없음',
+            'memberActionId': item['memberActionId'],  
           };
         }),
       );
@@ -265,24 +268,54 @@ class _RecommendationState extends State<Recommendation> {
                     scrollDirection: Axis.horizontal,
                     itemCount: _currentRecommendations.length,
                     itemBuilder: (context, index) {
+                       
                       return GestureDetector(
                         onTap: () async {
-                          print('Action ID: ${_currentRecommendations[index]['actionId']}');
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => action(
+                          if (_currentRecommendations[index]['status'] == '없음') {
+                            final status = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ActionBefore(
                                 recommendation: _currentRecommendations[index]['action'],
                                 memberId: memberID,
                                 actionId: _currentRecommendations[index]['actionId'],
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                             if (status != null) {
+                            // 상태를 업데이트하고 저장
+                              setState(() {
+                                _currentRecommendations[index]['status'] =
+                                    status;
+                              });
+                              await _saveActionStatus(
+                                _currentRecommendations[index]['actionId']
+                                    .toString(),
+                                status,
+                              );
+                            }
+                          } else if (_currentRecommendations[index]['status'] ==
+                              '진행중') {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ActionAfter(
+                                  recommendation: _currentRecommendations[index]['action'],
+                                  memberActionId: _currentRecommendations[index]['memberActionId'],
+                                  memberId: memberID,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final result = await _getActionStatus(
+                              _currentRecommendations[index]['actionId']
+                                  .toString());
                           if (result != null) {
                             setState(() {
-                               _currentRecommendations[index]['status'] = result.toString();
+                                _currentRecommendations[index]['status'] = result;
                             });
-                            await _saveActionStatus(_currentRecommendations[index]['actionId'].toString(), result.toString());
+                            await _saveActionStatus( _currentRecommendations[index]['actionId'].toString(), result);
                           }
                         },
                         child: Container(
@@ -316,7 +349,7 @@ class _RecommendationState extends State<Recommendation> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                '상태: ${_currentRecommendations[index]['status'] == 'true' ? '진행중' : _currentRecommendations[index]['status'] ?? '없음'}',
+                               '상태: ${_currentRecommendations[index]['status'] ?? '없음'}',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   color: Color.fromARGB(255, 65, 133, 59),

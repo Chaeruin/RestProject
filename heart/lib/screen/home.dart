@@ -23,15 +23,17 @@ class HomeState extends State<Home> {
   final AudioPlayer audioPlayer = AudioPlayer();
 
   Future<void> initPref() async {
-  prefs = await SharedPreferences.getInstance();
-  setState(() {
-    points = prefs.getInt('point') ?? 0;
-    nickname = prefs.getString('nickName') ?? '';
-    memberID = prefs.getString('ID') ?? '';
-    isLogin = prefs.getBool('isLogin') ?? false;
-  });
-  print("Login status: $isLogin, Nickname: $nickname, MemberID: $memberID"); // 디버깅용 출력
-}
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      points = prefs.getInt('point') ?? 0;
+      nickname = prefs.getString('nickName') ?? '';
+      memberID = prefs.getString('ID') ?? '';
+      isLogin = prefs.getBool('isLogin') ?? false;
+    });
+    print(
+        "Login status: $isLogin, Nickname: $nickname, MemberID: $memberID"); // 디버깅용 출력
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,10 +41,12 @@ class HomeState extends State<Home> {
     _initAudioPlayer();
     fetchActionRecommendationFromApi();
   }
-  //오디오 연결하는 api->0.wav를 joy.wav로 변경하면 감정에 맞는 음악이 나옴 
+
+  //오디오 연결하는 api->0.wav를 joy.wav로 변경하면 감정에 맞는 음악이 나옴
   Future<void> _initAudioPlayer() async {
     try {
-      await audioPlayer.setUrl('https://chatbotmg.s3.ap-northeast-2.amazonaws.com/0.wav');
+      await audioPlayer
+          .setUrl('https://chatbotmg.s3.ap-northeast-2.amazonaws.com/0.wav');
       audioPlayer.play();
     } catch (e) {
       print("Error: $e");
@@ -68,7 +72,7 @@ class HomeState extends State<Home> {
     }
   }
 
- Future<void> logout() async {
+  Future<void> logout() async {
     await prefs.remove('nickName');
     await prefs.remove('ID');
     setState(() {
@@ -76,7 +80,7 @@ class HomeState extends State<Home> {
       nickname = '';
       memberID = '';
     });
-    Navigator.pop(context); 
+    Navigator.pop(context);
   }
 
   @override
@@ -100,55 +104,54 @@ class HomeState extends State<Home> {
                 ),
               ),
         actions: [
-          _buildAudioPlayerControls(), 
+          _buildAudioPlayerControls(),
         ],
       ),
       drawer: Drawer(
-  child: ListView(
-    children: [
-      DrawerHeader(
-        child:Center(
-        child: Text(
-          isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!',
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 23,
-            fontFamily: 'single_day',
-          ),
-        ),
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Center(
+                child: Text(
+                  isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 23,
+                    fontFamily: 'single_day',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (isLogin)
+              _buildDrawerItem(
+                title: '로그아웃하기',
+                icon: Icons.logout,
+                onTap: logout,
+              )
+            else ...[
+              _buildDrawerItem(
+                title: '로그인하기',
+                icon: 'lib/assets/image/login.png',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Login()),
+                ),
+              ),
+              const SizedBox(height: 20),
+              _buildDrawerItem(
+                title: '회원가입하기',
+                icon: 'lib/assets/image/signup.png',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignUp()),
+                ),
+              ),
+            ],
+            const SizedBox(height: 20),
+          ],
         ),
       ),
-      const SizedBox(height: 20),
-      if (isLogin)
-        _buildDrawerItem(
-          title: '로그아웃하기',
-          icon: Icons.logout,
-          onTap: logout,
-        )
-      else ...[
-        _buildDrawerItem(
-          title: '로그인하기',
-          icon: 'lib/assets/image/login.png',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Login()),
-          ),
-        ),
-        const SizedBox(height: 20),
-        _buildDrawerItem(
-          title: '회원가입하기',
-          icon: 'lib/assets/image/signup.png',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SignUp()),
-          ),
-        ),
-      ],
-      const SizedBox(height: 20),
-    ],
-  ),
-),
-
       body: LayoutBuilder(
         builder: (context, constraints) {
           final bool isLargeScreen = constraints.maxWidth > 600;

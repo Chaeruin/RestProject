@@ -79,8 +79,8 @@ class _DiaryState extends State<Diary> {
           final double calendarFontSize = isLargeScreen ? 18 : 14;
           final double headerFontSize = isLargeScreen ? 25 : 20;
           final double iconSize = isLargeScreen ? 100 : 70;
-          final double imageSize = isLargeScreen ? 100 : 70;
-          final double spacing = isLargeScreen ? 20 : 10;
+          final double imageSize = isLargeScreen ? 120 : 90;
+          final double spacing = isLargeScreen ? 60 : 50;
 
           return Column(
             children: [
@@ -156,10 +156,15 @@ class _DiaryState extends State<Diary> {
                       );
                     } else if (!snapshot.hasData) {
                       return const Center(
-                        child: Text('아직 일기를 작성하지 않았어요!'),
+                        child: Text(
+                          '아직 일기를 작성하지 않았어요!',
+                           style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'single_day',
+                        ),),
                       );
                     } else {
-                      return ListView(
+                      return ListView( 
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         children: [

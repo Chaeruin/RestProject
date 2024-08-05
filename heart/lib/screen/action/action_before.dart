@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
-import 'dart:convert'; // jsonDecode를 사용하기 위해 추가합니다.
+import 'dart:convert';
 
-class action extends StatelessWidget {
+class ActionBefore extends StatelessWidget {
   final String recommendation;
   final int actionId;
   final String memberId;
 
-  const action({
+  const ActionBefore({
     super.key,
     required this.recommendation,
     required this.actionId,
@@ -117,43 +117,18 @@ class action extends StatelessWidget {
                         );
                         print('Response: $response');
 
-                       
-                        final body = response['body'];
+                        dynamic body = response['body'];
 
                         if (body is String) {
-                        
-                          final Map<String, dynamic> parsedBody = jsonDecode(body);
-                          final savedMemberAction = parsedBody['savedMemberAction'];
-                          if (savedMemberAction is Map<String, dynamic>) {
-                            final status = savedMemberAction['status'];
-                            
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('행동 시작'),
-                                  content: const Text('행동이 저장되었습니다!'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop(status);
-                                      },
-                                      child: const Text('확인'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          } else {
-                            throw Exception('savedMemberAction is not a Map');
-                          }
-                        } else if (body is Map<String, dynamic>) {
-                          // body가 이미 Map인 경우
+                          body = jsonDecode(body);
+                        }
+
+                        if (body is Map<String, dynamic>) {
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            
+                            final memberActionId = savedMemberAction['memberActionId']; 
+
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -163,8 +138,9 @@ class action extends StatelessWidget {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop(status);
+                                        Navigator.of(context).pop(); 
+                                        Navigator.of(context).pop(status); 
+                                        //Navigator.of(context).pop(memberActionId);
                                       },
                                       child: const Text('확인'),
                                     ),
@@ -178,7 +154,7 @@ class action extends StatelessWidget {
                         } else {
                           throw Exception('body is neither a String nor a Map');
                         }
-                                            } catch (e) {
+                      } catch (e) {
                         print('Error: $e');
                         showDialog(
                           context: context,

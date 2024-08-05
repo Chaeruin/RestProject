@@ -61,7 +61,6 @@ Future<List<Map<String, dynamic>>> Recommendations(String memberId, String emoti
   }
 }
 
-//행동 3개중 하나 선택->진행중
 Future<Map<String, dynamic>> startAction(int actionId, String memberId, String beforeEmotion) async {
   final url = Uri.parse('http://54.79.110.239:8080/api/member-actions/add');
   final headers = {
@@ -83,9 +82,22 @@ Future<Map<String, dynamic>> startAction(int actionId, String memberId, String b
   } else {
     return {
       'error': true,
-      'statusCode': response.body,//-> 수정하기
+      'statusCode': response.body,
       'body': utf8.decode(response.bodyBytes, allowMalformed: true),
     };
   }
 }
-//행동 완료
+
+Future<Map<String, dynamic>> completeAction(int memberActionId, String afterEmotion) async {
+  final response = await http.put(
+    Uri.parse('http://54.79.110.239:8080/api/member-actions/$memberActionId/complete'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'afterEmotion': afterEmotion}),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Failed to complete action');
+  }
+}
