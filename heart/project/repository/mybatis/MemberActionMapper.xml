@@ -3,15 +3,33 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="heart.project.repository.mybatis.MemberActionMapper">
 
+    <update id="preSave">
+        update member_action ma
+        set ma.is_public = 'N',
+            ma.updated_at = CURRENT_TIMESTAMP,
+            ma.updated_by = '새 행동 등록'
+        where ma.member_action_id IN (
+            select ma_sub.member_action_id
+            from member_action ma_sub
+            JOIN action a ON ma_sub.action_id = a.action_id
+            where ma_sub.member_id = #{memberId}
+                  and a.action_id = #{actionId}
+                  and ma_sub.is_public = 'Y'
+                  and ma_sub.status = '진행중'
+                  and ma_sub.recommendation_date = #{recommendationDate}
+        )
+    </update>
+
     <insert id="save">
         insert into member_action (action_id, member_id, status, before_emotion,
-        before_emotion_time, created_at, created_by, updated_at, updated_by)
-        values (#{actionId}, #{memberId}, '진행중', #{beforeEmotion},
-        TO_CHAR(CURRENT_TIMESTAMP, 'HH24'), CURRENT_TIMESTAMP, '행동 진행', CURRENT_TIMESTAMP, '행동 진행')
+        before_emotion_time, recommendation_date, created_at, created_by, updated_at, updated_by)
+        values (#{actionId}, #{memberId}, '진행중', #{beforeEmotion}, TO_CHAR(CURRENT_TIMESTAMP, 'HH24'),
+        #{recommendationDate}, CURRENT_TIMESTAMP, '행동 진행', CURRENT_TIMESTAMP, '행동 진행')
     </insert>
 
     <select id="findNewMemberAction" resultType="MemberAction">
-        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status,
+               ma.before_emotion, ma.after_emotion, ma.recommendation_date, a.action
         from member_action ma
         LEFT JOIN action a ON ma.action_id = a.action_id
         where member_action_id = (select max(member_action_id) from member_action)
@@ -27,16 +45,26 @@
         where member_action_id = #{memberActionId}
     </update>
 
-    <select id="findOngoingActionsByMemberId" resultType="MemberAction">
-        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+    <select id="selectMemberActionById" resultType="MemberAction">
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status,
+               ma.before_emotion, ma.after_emotion, ma.recommendation_date, a.action
         from member_action ma
         LEFT JOIN action a ON ma.action_id = a.action_id
-        where ma.member_id = #{memberId} and ma.status = '진행중'
+        where member_action_id = #{memberActionId}
+    </select>
+
+    <select id="findOngoingActionsByMemberId" resultType="MemberAction">
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status,
+               ma.before_emotion, ma.after_emotion, ma.recommendation_date, a.action
+        from member_action ma
+        LEFT JOIN action a ON ma.action_id = a.action_id
+        where ma.member_id = #{memberId} and ma.status = '진행중' and ma.is_public = 'Y'
         order by ma.created_at
     </select>
 
     <select id="findCompletedActionsByMemberId" resultType="MemberAction">
-        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
+        select ma.member_action_id, ma.action_id, ma.member_id, ma.status,
+               ma.before_emotion, ma.after_emotion, ma.recommendation_date, a.action
         from member_action ma
         LEFT JOIN action a ON ma.action_id = a.action_id
         where ma.member_id = #{memberId} and ma.status = '완료'
@@ -44,15 +72,26 @@
     </select>
 
     <select id="findFeelBetterActions" resultType="MemberAction">
-        select ma.member_action_id, ma.action_id, ma.member_id, ma.status, ma.before_emotion, ma.after_emotion, a.action
-        from member_action ma
-        LEFT JOIN action a ON ma.action_id = a.action_id
-        where ma.member_id = #{memberId}
-              and ma.status = '완료'
-              and ma.before_emotion NOT IN ('joy', 'hope')
-              and ma.after_emotion IN ('joy', 'hope')
+        select member_action_id, action_id, member_id, status,
+               before_emotion, after_emotion, recommendation_date, action
+        from (
+            select ma.member_action_id, ma.action_id, ma.member_id, ma.status,
+                   ma.before_emotion, ma.after_emotion, ma.recommendation_date, a.action,
+                   ROW_NUMBER() OVER (PARTITION BY ma.action_id order by
+                       CASE ma.after_emotion
+                           WHEN 'joy' THEN 1
+                           WHEN 'hope' THEN 2
+                       END, ma.recommendation_date) AS rn
+            from member_action ma
+            LEFT JOIN action a ON ma.action_id = a.action_id
+            where ma.member_id = #{memberId}
+                  and ma.status = '완료'
+                  and ma.before_emotion NOT IN ('joy', 'hope')
+                  and ma.after_emotion IN ('joy', 'hope')
+        )
+        where rn = 1
         order by
-            CASE ma.after_emotion
+            CASE after_emotion
                 WHEN 'joy' THEN 1
                 WHEN 'hope' THEN 2
             END

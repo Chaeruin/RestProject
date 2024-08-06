@@ -3,7 +3,6 @@ package heart.project.controller.diary;
 import heart.project.domain.Diary;
 import heart.project.domain.Emotion;
 import heart.project.repository.diary.DiaryUpdateApiDto;
-import heart.project.repository.emotion.EmotionUpdateApiDto;
 import heart.project.service.diary.DiaryService;
 import heart.project.service.emotion.EmotionService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @RestController
@@ -41,6 +39,7 @@ public class DiaryApiController {
     @PostMapping("/add")
     public ResponseEntity<?> saveDiary(@RequestBody Diary diary) {
         String beforeEmotion = diary.getBeforeEmotion();
+        String afterEmotion = diary.getAfterEmotion();
 
         Diary savedDiary = diaryService.save(diary);
 
@@ -49,31 +48,20 @@ public class DiaryApiController {
         emotion.setDiaryId(savedDiary.getDiaryId());
         emotion.setMemberId(savedDiary.getMemberId());
         emotion.setBeforeEmotion(beforeEmotion);
+        emotion.setAfterEmotion(afterEmotion);
 
         // 감정 저장
         emotionService.save(emotion);
 
-        // 응답에 emotionType 정보 추가
+        // 응답에 emotion 정보 추가
         savedDiary.setBeforeEmotion(beforeEmotion);
+        savedDiary.setAfterEmotion(afterEmotion);
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("message", "일기가 저장되었습니다");
         responseData.put("savedDiary", savedDiary);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
-    }
-
-    /**
-     * 특정 일기의 이후 감정을 저장하는 엔드포인트
-     */
-    @PostMapping("/{diaryId}/edit/emotion")
-    public ResponseEntity<String> editEmotionDiary(@PathVariable("diaryId") Integer diaryId, @RequestBody DiaryUpdateApiDto updateParam) {
-        String afterEmotion = updateParam.getAfterEmotion();
-
-        EmotionUpdateApiDto emotionUpdateDto = new EmotionUpdateApiDto(afterEmotion);
-        emotionService.update(diaryId, emotionUpdateDto);
-
-        return ResponseEntity.ok("이후 감정이 추가되었습니다.");
     }
 
     /**

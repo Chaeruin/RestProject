@@ -20,8 +20,8 @@ public class MemberActionService {
     }
 
     // 행동 후 감정 변화를 갱신하고, 상태를 '완료'로 바꾸는 메서드
-    public void completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam) {
-        memberActionRepository.completeMemberAction(memberActionId, updateParam);
+    public MemberAction completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam) {
+        return memberActionRepository.completeMemberAction(memberActionId, updateParam);
     }
 
     // 주어진 회원 ID의 상태가 '진행중'인 행동을 반환하는 메서드

@@ -15,10 +15,13 @@
                ma.status, dr.emotion_type, a.category, dr.recommendation_date
         from daily_recommendations dr
              LEFT JOIN action a ON dr.action_id = a.action_id
-             LEFT JOIN member_action ma ON dr.action_id = ma.action_id and dr.member_id = ma.member_id
+             LEFT JOIN member_action ma ON dr.action_id = ma.action_id
+                       and dr.member_id = ma.member_id
+                       and dr.recommendation_date = ma.recommendation_date
         where dr.member_id = #{memberId}
           and dr.emotion_type = #{emotionType}
           and dr.recommendation_date = #{recommendationDate}
+          and (ma.is_public = 'Y' OR ma.is_public IS NULL)
         order by
             CASE
                 WHEN a.category = '실외활동' THEN 1

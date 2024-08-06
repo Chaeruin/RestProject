@@ -9,9 +9,6 @@ public class DiaryUpdateApiDto {
     @JsonProperty("content") // JSON 필드명 설정
     private String content;
 
-    @JsonProperty("afterEmotion") // JSON 필드명 설정
-    private String afterEmotion; // 임시로 받는 감정
-
     public DiaryUpdateApiDto() {
     }
 

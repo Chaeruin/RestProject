@@ -8,7 +8,7 @@ public interface MemberActionRepository {
 
     MemberAction save(MemberAction memberAction);
 
-    void completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam);
+    MemberAction completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam);
 
     List<MemberAction> findOngoingActionsByMemberId(String memberId);
 

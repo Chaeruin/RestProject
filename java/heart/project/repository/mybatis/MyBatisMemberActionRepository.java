@@ -16,13 +16,15 @@ public class MyBatisMemberActionRepository implements MemberActionRepository {
 
     @Override
     public MemberAction save(MemberAction memberAction) {
+        memberActionMapper.preSave(memberAction);
         memberActionMapper.save(memberAction);
         return memberActionMapper.findNewMemberAction();
     }
 
     @Override
-    public void completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam) {
+    public MemberAction completeMemberAction(Integer memberActionId, MemberActionUpdateApiDto updateParam) {
         memberActionMapper.completeMemberAction(memberActionId, updateParam);
+        return memberActionMapper.selectMemberActionById(memberActionId);
     }
 
     @Override

@@ -18,12 +18,6 @@
                 from action
                 where emotion_type = #{emotionType}
                   and category = '실내활동'
-                  and action_id NOT IN (
-                    select action_id
-                    from member_action
-                    where member_id = #{memberId}
-                      and status = '완료'
-                    )
                 order by DBMS_RANDOM.VALUE
              )
             where rownum = 1
@@ -35,12 +29,6 @@
                 from action
                 where emotion_type = #{emotionType}
                   and category = '실외활동'
-                  and action_id NOT IN (
-                    select action_id
-                    from member_action
-                    where member_id = #{memberId}
-                      and status = '완료'
-                )
                 order by DBMS_RANDOM.VALUE
             )
             where rownum = 1
@@ -52,12 +40,6 @@
                 from action
                 where emotion_type = #{emotionType}
                   and category = '집'
-                  and action_id NOT IN (
-                    select action_id
-                    from member_action
-                    where member_id = #{memberId}
-                      and status = '완료'
-                )
                 order by DBMS_RANDOM.VALUE
             )
             where rownum = 1

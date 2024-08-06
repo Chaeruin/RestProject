@@ -12,24 +12,15 @@
     </update>
 
     <insert id="save">
-        insert into emotion (diary_id, member_id, before_emotion, emotion_time, created_at, created_by, updated_at, updated_by)
-        values (#{diaryId}, #{memberId}, #{beforeEmotion}, TO_CHAR(CURRENT_TIMESTAMP, 'HH24'), CURRENT_TIMESTAMP, '감정 생성', CURRENT_TIMESTAMP, '감정 생성')
+        insert into emotion (diary_id, member_id, before_emotion, after_emotion, emotion_time, created_at, created_by, updated_at, updated_by)
+        values (#{diaryId}, #{memberId}, #{beforeEmotion}, #{afterEmotion}, TO_CHAR(CURRENT_TIMESTAMP, 'HH24'), CURRENT_TIMESTAMP, '감정 생성', CURRENT_TIMESTAMP, '감정 생성')
     </insert>
 
     <select id="findNewEmotion" resultType="Emotion">
-        select emotion_id, diary_id, member_id, before_emotion, emotion_time
+        select emotion_id, diary_id, member_id, before_emotion, after_emotion, emotion_time
         from emotion
         where emotion_id = (select max(emotion_id) from emotion)
     </select>
-
-    <update id="update">
-        update emotion
-        set after_emotion=#{updateParam.afterEmotion},
-        emotion_time=TO_CHAR(CURRENT_TIMESTAMP, 'HH24'),
-        updated_at=CURRENT_TIMESTAMP,
-        updated_by='감정 수정'
-        where diary_id = #{diaryId}
-    </update>
 
     <update id="delete">
         update emotion
@@ -123,5 +114,6 @@
                 WHEN '18-23' THEN 4
             END
     </select>
+
 
 </mapper>

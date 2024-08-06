@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public class MemberActionApiController {
     public ResponseEntity<?> saveMemberAction(@RequestBody MemberAction memberAction) {
         MemberAction savedMemberAction = memberActionService.save(memberAction);
 
-        Map<String, Object> responseData = new HashMap<>();
+        Map<String, Object> responseData = new LinkedHashMap<>();
         responseData.put("message", "행동이 저장되었습니다");
         responseData.put("savedMemberAction", savedMemberAction);
 
@@ -41,9 +41,13 @@ public class MemberActionApiController {
             @PathVariable("memberActionId") Integer memberActionId,
             @RequestBody MemberActionUpdateApiDto updateParam) {
 
-        memberActionService.completeMemberAction(memberActionId, updateParam);
+        MemberAction completedMemberAction = memberActionService.completeMemberAction(memberActionId, updateParam);
 
-        return ResponseEntity.ok("행동이 완료되었습니다");
+        Map<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("message", "행동이 완료되었습니다");
+        responseData.put("completedMemberAction", completedMemberAction);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
     }
 
     /**

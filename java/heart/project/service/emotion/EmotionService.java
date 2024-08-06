@@ -2,7 +2,6 @@ package heart.project.service.emotion;
 
 import heart.project.domain.Emotion;
 import heart.project.repository.emotion.EmotionRepository;
-import heart.project.repository.emotion.EmotionUpdateApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +18,6 @@ public class EmotionService {
     // 감정을 저장하는 메서드
     public Emotion save(Emotion emotion) {
         return emotionRepository.save(emotion);
-    }
-
-    // 감정을 수정하는 메서드
-    public void update(Integer diaryId, EmotionUpdateApiDto updateParam) {
-        emotionRepository.update(diaryId, updateParam);
     }
 
     // 감정을 삭제하는 메서드

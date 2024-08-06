@@ -10,8 +10,6 @@ public interface EmotionRepository {
 
     Emotion save(Emotion emotion);
 
-    void update(Integer diaryId, EmotionUpdateApiDto updateParam);
-
     void delete(Integer diaryId);
 
     Optional<Emotion> findByDiaryId(Integer diaryId);

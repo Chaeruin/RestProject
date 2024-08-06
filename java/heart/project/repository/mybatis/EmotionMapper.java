@@ -1,7 +1,6 @@
 package heart.project.repository.mybatis;
 
 import heart.project.domain.Emotion;
-import heart.project.repository.emotion.EmotionUpdateApiDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,8 +16,6 @@ public interface EmotionMapper {
     void save(Emotion emotion);
 
     Emotion findNewEmotion();
-
-    void update(@Param("diaryId") Integer diaryId, @Param("updateParam") EmotionUpdateApiDto updateParam);
 
     void delete(Integer diaryId);
 

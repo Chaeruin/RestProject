@@ -2,7 +2,6 @@ package heart.project.repository.mybatis;
 
 import heart.project.domain.Emotion;
 import heart.project.repository.emotion.EmotionRepository;
-import heart.project.repository.emotion.EmotionUpdateApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,11 +20,6 @@ public class MyBatisEmotionRepository implements EmotionRepository {
         emotionMapper.preSave(emotion);
         emotionMapper.save(emotion);
         return emotionMapper.findNewEmotion();
-    }
-
-    @Override
-    public void update(Integer diaryId, EmotionUpdateApiDto updateParam) {
-        emotionMapper.update(diaryId, updateParam);
     }
 
     @Override
