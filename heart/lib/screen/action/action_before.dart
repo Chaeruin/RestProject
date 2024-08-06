@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ActionBefore extends StatelessWidget {
   final String recommendation;
@@ -13,6 +14,16 @@ class ActionBefore extends StatelessWidget {
     required this.actionId,
     required this.memberId,
   });
+
+Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('member_action_id_$actionId', memberActionId);
+}
+
+Future<String?> _getMemberActionId(String actionId) async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('member_action_id_$actionId');
+}
 
   @override
   Widget build(BuildContext context) {
@@ -127,27 +138,18 @@ class ActionBefore extends StatelessWidget {
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            final memberActionId = savedMemberAction['memberActionId']; 
+                            final memberActionId =
+                                savedMemberAction['memberActionId'];
+                            print(
+                                'ActionBefore - memberActionId: $memberActionId');
 
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('행동 시작'),
-                                  content: const Text('행동이 저장되었습니다!'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); 
-                                        Navigator.of(context).pop(status); 
-                                        //Navigator.of(context).pop(memberActionId);
-                                      },
-                                      child: const Text('확인'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                            // Save the memberActionId
+                            if (memberActionId != null) {
+                              await _saveMemberActionId(actionId.toString(),
+                                  memberActionId.toString());
+                            }
+
+                            Navigator.of(context).pop(status);
                           } else {
                             throw Exception('savedMemberAction is not a Map');
                           }
@@ -175,6 +177,7 @@ class ActionBefore extends StatelessWidget {
                         );
                       }
                     },
+
                     child: Column(
                       children: [
                         Expanded(

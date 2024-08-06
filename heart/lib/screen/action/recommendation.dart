@@ -33,6 +33,16 @@ class _RecommendationState extends State<Recommendation> {
   Emotion? _selectedEmotion;
   bool _isLoading = false;
 
+  Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('member_action_id_$actionId', memberActionId);
+  }
+
+  Future<String?> _getMemberActionId(String actionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('member_action_id_$actionId');
+  }
+
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     List<String>? storedTestScore = prefs!.getStringList('testScore');
@@ -53,14 +63,14 @@ class _RecommendationState extends State<Recommendation> {
     }
   }
 
-  Future<void> _saveActionStatus(String actionId, String status) async {
+  Future<void> _saveActionStatus(int actionId, String status) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('action_status_$actionId', status);
   }
 
-  Future<String?> _getActionStatus(String actionId) async {
+  Future<int?> _getActionStatus(int actionId) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('action_status_$actionId');
+    return prefs.getInt('action_status_$actionId');
   }
 
   @override
@@ -81,40 +91,44 @@ class _RecommendationState extends State<Recommendation> {
   }
 
   Future<void> _Recommendations(Emotion emotion) async {
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    final response = await Recommendations(
+        memberID, emotion.toString().split('.').last);
+
+    final List<Map<String, dynamic>> recommendations = await Future.wait(
+      (response as List).map((item) async {
+        final actionId = item['actionId'];
+        final memberActionId = await _getMemberActionId(actionId.toString());
+        final savedStatus = await _getActionStatus(actionId);
+        print('Parsed Item: actionId=$actionId, memberActionId=$memberActionId, status=$savedStatus');
+        return {
+          'action': item['action'],
+          'actionId': item['actionId'],
+          'status': savedStatus ?? item['status'] ?? '없음',
+          'memberActionId': memberActionId ?? item['memberActionId'],  
+        };
+      }),
+    );
     setState(() {
-      _isLoading = true;
+      _currentRecommendations = recommendations;
     });
-
-    try {
-      final response = await Recommendations(
-          memberID, emotion.toString().split('.').last);
-
-      final List<Map<String, dynamic>> recommendations = await Future.wait(
-        (response as List).map((item) async {
-          final savedStatus = await _getActionStatus(item['actionId'].toString());
-          return {
-            'action': item['action'],
-            'actionId': item['actionId'],
-            'status': savedStatus ?? item['status'] ?? '없음',
-            'memberActionId': item['memberActionId'],  
-          };
-        }),
-      );
-      setState(() {
-        _currentRecommendations = recommendations;
-      });
-    } catch (e) {
-      setState(() {
-        _currentRecommendations = [
-          {'action': '추천 데이터를 불러오는데 실패했습니다.', 'actionId': null, 'status': '없음'}
-        ];
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  } catch (e) {
+    setState(() {
+      _currentRecommendations = [
+        {'action': '추천 데이터를 불러오는데 실패했습니다.', 'actionId': null, 'status': '없음'}
+      ];
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
 
   Future<String?> _showImagePicker(BuildContext context) async {
     return showModalBottomSheet<String>(
@@ -290,18 +304,19 @@ class _RecommendationState extends State<Recommendation> {
                               });
                               await _saveActionStatus(
                                 _currentRecommendations[index]['actionId']
-                                    .toString(),
+                                    ,
                                 status,
                               );
                             }
                           } else if (_currentRecommendations[index]['status'] ==
                               '진행중') {
+                            final memberActionId = _currentRecommendations[index]['memberActionId'] ?? '';
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ActionAfter(
                                   recommendation: _currentRecommendations[index]['action'],
-                                  memberActionId: _currentRecommendations[index]['memberActionId'],
+                                  memberActionId: memberActionId,
                                   memberId: memberID,
                                 ),
                               ),
@@ -310,12 +325,12 @@ class _RecommendationState extends State<Recommendation> {
 
                           final result = await _getActionStatus(
                               _currentRecommendations[index]['actionId']
-                                  .toString());
+                                  );
                           if (result != null) {
                             setState(() {
                                 _currentRecommendations[index]['status'] = result;
                             });
-                            await _saveActionStatus( _currentRecommendations[index]['actionId'].toString(), result);
+                            await _saveActionStatus( _currentRecommendations[index]['actionId'], result);
                           }
                         },
                         child: Container(

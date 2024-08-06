@@ -91,7 +91,10 @@ Future<Map<String, dynamic>> startAction(int actionId, String memberId, String b
 Future<Map<String, dynamic>> completeAction(int memberActionId, String afterEmotion) async {
   final response = await http.put(
     Uri.parse('http://54.79.110.239:8080/api/member-actions/$memberActionId/complete'),
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept-Charset': 'utf-8'
+      },
     body: jsonEncode({'afterEmotion': afterEmotion}),
   );
 
