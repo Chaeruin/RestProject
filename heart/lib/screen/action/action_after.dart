@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
+import 'dart:convert';
 
 class ActionAfter extends StatelessWidget {
   final String recommendation;
@@ -25,8 +26,6 @@ class ActionAfter extends StatelessWidget {
       {'image': 'lib/assets/image/emotions/tiredness.png', 'label': '피곤', 'value': 'tiredness'},
       {'image': 'lib/assets/image/emotions/regret.png', 'label': '후회', 'value': 'regret'},
     ];
-
-    print('ActionAfter initialized with memberActionId: $memberActionId');
 
     return Scaffold(
       appBar: AppBar(
@@ -106,37 +105,17 @@ class ActionAfter extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
-                      print('Selected Emotion: $selectedEmotion');
-                      print('memberActionId: $memberActionId');
-                      print('Member ID: $memberId');
-                      
                       try {
                         final response = await completeAction(
                           memberActionId,
                           selectedEmotion,
                         );
-                        final message = response['message'];
-                        print('Response: $message');
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('성공'),
-                              content: Text(message ?? '행동이 완료되었습니다.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('확인'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        final status = response['status'] ?? 'error';
+                        Navigator.of(context).pop(status);
                       } catch (e) {
                         print('Error: $e');
-                        showDialog(
+                        // Show error dialog
+                        final result = await showDialog<String>(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
@@ -145,7 +124,7 @@ class ActionAfter extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop('error');
                                   },
                                   child: const Text('확인'),
                                 ),
@@ -153,6 +132,7 @@ class ActionAfter extends StatelessWidget {
                             );
                           },
                         );
+                        Navigator.of(context).pop(result ?? 'error');
                       }
                     },
                     child: Column(
