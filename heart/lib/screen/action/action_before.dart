@@ -20,11 +20,6 @@ Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
   await prefs.setString('member_action_id_$actionId', memberActionId);
 }
 
-Future<String?> _getMemberActionId(String actionId) async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('member_action_id_$actionId');
-}
-
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> emotions = [
@@ -143,7 +138,7 @@ Future<String?> _getMemberActionId(String actionId) async {
                             print(
                                 'ActionBefore - memberActionId: $memberActionId');
 
-                            // Save the memberActionId
+                           
                             if (memberActionId != null) {
                               await _saveMemberActionId(actionId.toString(),
                                   memberActionId.toString());

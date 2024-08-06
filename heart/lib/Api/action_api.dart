@@ -61,6 +61,7 @@ Future<List<Map<String, dynamic>>> Recommendations(String memberId, String emoti
   }
 }
 
+//행동 진행중
 Future<Map<String, dynamic>> startAction(int actionId, String memberId, String beforeEmotion) async {
   final now = DateTime.now();
   final recommendationDate =
@@ -92,6 +93,7 @@ Future<Map<String, dynamic>> startAction(int actionId, String memberId, String b
   }
 }
 
+//행동 완료료
 Future<Map<String, dynamic>> completeAction(int memberActionId, String afterEmotion) async {
   final response = await http.put(
     Uri.parse('http://54.79.110.239:8080/api/member-actions/$memberActionId/complete'),
@@ -106,7 +108,7 @@ Future<Map<String, dynamic>> completeAction(int memberActionId, String afterEmot
     final decodedBody = utf8.decode(response.bodyBytes, allowMalformed: true);
     print('Decoded Response Body: $decodedBody');
     
-    // Decode the JSON response
+   
     return jsonDecode(decodedBody) as Map<String, dynamic>;
   } else {
     throw Exception('Failed to complete action: ${response.statusCode}');

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
-import 'dart:convert';
 
 class ActionAfter extends StatelessWidget {
   final String recommendation;
@@ -105,17 +104,33 @@ class ActionAfter extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
+                      print('Selected Emotion: $selectedEmotion');
+                      print('memberActionId: $memberActionId');
+                      print('Member ID: $memberId');
+
                       try {
                         final response = await completeAction(
                           memberActionId,
                           selectedEmotion,
                         );
-                        final status = response['status'] ?? 'error';
-                        Navigator.of(context).pop(status);
+
+                        print('Raw Response: ${response.toString()}');
+
+                        // response가 Map 형태인지 확인
+                        final completedAction =
+                            response['completedMemberAction'];
+                        if (completedAction != null &&
+                            completedAction is Map<String, dynamic>) {
+                          final status = completedAction['status'] ?? '완료';
+                          print('Status from API: $status');
+                          Navigator.of(context).pop(status);
+                        } else {
+                          print('Unexpected response structure');
+                          Navigator.of(context).pop('완료');
+                        }
                       } catch (e) {
                         print('Error: $e');
-                        // Show error dialog
-                        final result = await showDialog<String>(
+                        showDialog(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
@@ -124,6 +139,7 @@ class ActionAfter extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () {
+                                    Navigator.of(context).pop();
                                     Navigator.of(context).pop('error');
                                   },
                                   child: const Text('확인'),
@@ -132,7 +148,6 @@ class ActionAfter extends StatelessWidget {
                             );
                           },
                         );
-                        Navigator.of(context).pop(result ?? 'error');
                       }
                     },
                     child: Column(

@@ -190,7 +190,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.sadness;
                   });
-                  Navigator.pop(context, Emotion.sadness.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.sadness.toString().split('.').last);
                 },
                 child: const Text('슬픔'),
               ),
@@ -198,8 +199,9 @@ class _RecommendationState extends State<Recommendation> {
                 onPressed: () {
                   setState(() {
                     _selectedEmotion = Emotion.tiredness;
-                    });
-                  Navigator.pop(context, Emotion.tiredness.toString().split('.').last);
+                  });
+                  Navigator.pop(
+                      context, Emotion.tiredness.toString().split('.').last);
                 },
                 child: const Text('피곤'),
               ),
@@ -208,7 +210,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.regret;
                   });
-                  Navigator.pop(context, Emotion.regret.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.regret.toString().split('.').last);
                 },
                 child: const Text('후회'),
               ),
@@ -282,22 +285,23 @@ class _RecommendationState extends State<Recommendation> {
                     scrollDirection: Axis.horizontal,
                     itemCount: _currentRecommendations.length,
                     itemBuilder: (context, index) {
-                       
                       return GestureDetector(
                         onTap: () async {
-                          if (_currentRecommendations[index]['status'] == '없음') {
-                            final status = await Navigator.push(
+                          if (_currentRecommendations[index]['status'] ==
+                              '없음') {
+                            final status = await Navigator.push<String>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ActionBefore(
-                                recommendation: _currentRecommendations[index]['action'],
-                                memberId: memberID,
-                                actionId: _currentRecommendations[index]['actionId'],
+                                  recommendation: _currentRecommendations[index]
+                                      ['action'],
+                                  memberId: memberID,
+                                  actionId: _currentRecommendations[index]
+                                      ['actionId'],
                                 ),
                               ),
                             );
-                             if (status != null) {
-                            // 상태를 업데이트하고 저장
+                            if (status != null) {
                               setState(() {
                                 _currentRecommendations[index]['status'] =
                                     status;
@@ -310,29 +314,48 @@ class _RecommendationState extends State<Recommendation> {
                             }
                           } else if (_currentRecommendations[index]['status'] ==
                               '진행중') {
-                            final memberActionId = _currentRecommendations[index]['memberActionId'] ?? '';
-                            await Navigator.push(
+                            final memberActionId =
+                                _currentRecommendations[index]
+                                        ['memberActionId'] ??
+                                    0;
+                            final status = await Navigator.push<String>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ActionAfter(
-                                  recommendation: _currentRecommendations[index]['action'],
+                                  recommendation: _currentRecommendations[index]
+                                      ['action'],
                                   memberActionId: memberActionId,
                                   memberId: memberID,
                                 ),
                               ),
                             );
+                            print('Returned status from ActionAfter: $status');
+                            if (status != null) {
+                              setState(() {
+                                _currentRecommendations[index]['status'] =
+                                    status;
+                              });
+                              await _saveActionStatus(
+                                _currentRecommendations[index]['actionId']
+                                    .toString(),
+                                status,
+                              );
+                            }
                           }
 
+                          
                           final result = await _getActionStatus(
                               _currentRecommendations[index]['actionId']
                                   .toString());
+                          print(
+                              'Retrieved status from SharedPreferences: $result');
                           if (result != null) {
                             setState(() {
-                                _currentRecommendations[index]['status'] = result;
+                              _currentRecommendations[index]['status'] = result;
                             });
-                            await _saveActionStatus( _currentRecommendations[index]['actionId'].toString(), result);
                           }
                         },
+
                         child: Container(
                           width: 170,
                           margin: const EdgeInsets.symmetric(horizontal: 8.0),
