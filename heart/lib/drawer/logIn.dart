@@ -42,6 +42,15 @@ class _LoginState extends State<Login> {
     }
   }
 
+  void logInCheck() async {
+    bool logInCheck = await prefs.setBool('isLogin', true);
+    if (logInCheck) {
+      print('로그인정보 갱신 성공');
+    } else {
+      print('로그인정보 갱신 실패');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,10 +146,9 @@ class _LoginState extends State<Login> {
 
                     final String? logInUser = await loginUser(id, password);
                     if (logInUser != null) {
-                      idSave(id);
-                      nickNameSave(logInUser);
-                      // 로그인 상태 설정
-                      await prefs.setBool('isLogin', true);
+                      idSave(id); // 아이디 기록 확인
+                      nickNameSave(logInUser); // 닉네임 기록 확인
+                      logInCheck(); // 로그인 기록 확인
                     } else {
                       showAdaptiveDialog(
                         context: context,
