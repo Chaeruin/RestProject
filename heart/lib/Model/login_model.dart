@@ -24,31 +24,42 @@ class LoginModel {
       'password': password,
       'nickname': nickname,
       'gender': gender,
-      'birthDate': birthdate,
+      'birthdate': birthdate, // Use 'birthdate' to match field name
     };
   }
 
   factory LoginModel.fromMap(Map<String, dynamic> map) {
     return LoginModel(
+      id: map['id'] as int?,
       memberId: map['memberId'] ?? '',
       password: map['password'] ?? '',
       nickname: map['nickname'] ?? '',
       gender: map['gender'] ?? '',
-      birthdate: map['birthdate'] ?? '',
+      birthdate: map['birthdate'] ?? '', // Use 'birthdate' to match field name
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory LoginModel.fromJson(String source) =>
-      LoginModel.fromMap(json.decode(source));
+  factory LoginModel.fromJson(String source) {
+    try {
+      final map = json.decode(source) as Map<String, dynamic>;
+      return LoginModel.fromMap(map['user']);
+    } catch (e) {
+      // Handle JSON decoding errors
+      throw FormatException('Invalid JSON format: $e');
+    }
+  }
 }
 
 class LogIn {
   final String loginId;
   final String password;
 
-  LogIn({required this.loginId, required this.password});
+  LogIn({
+    required this.loginId,
+    required this.password,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -66,5 +77,13 @@ class LogIn {
 
   String toJson() => json.encode(toMap());
 
-  factory LogIn.fromJson(String source) => LogIn.fromMap(json.decode(source));
+  factory LogIn.fromJson(String source) {
+    try {
+      final map = json.decode(source) as Map<String, dynamic>;
+      return LogIn.fromMap(map);
+    } catch (e) {
+      // Handle JSON decoding errors
+      throw FormatException('Invalid JSON format: $e');
+    }
+  }
 }

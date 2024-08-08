@@ -26,7 +26,7 @@ class HomeState extends State<Home> {
     prefs = await SharedPreferences.getInstance();
     setState(() {
       points = prefs.getInt('point') ?? 0;
-      nickname = prefs.getString('nickName') ?? '';
+      nickname = prefs.getString('nick') ?? '';
       memberID = prefs.getString('ID') ?? '';
       isLogin = prefs.getBool('isLogin') ?? false;
     });
