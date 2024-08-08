@@ -51,7 +51,9 @@ Future<List<Map<String, dynamic>>> Recommendations(String memberId, String emoti
       print('Response Body: ${utf8.decode(response.bodyBytes)}');
       return data.map((item) => {
         'action': item['action'],
-        'actionId': item['actionId']
+        'actionId': item['actionId'],
+        'memberActionId': item['memberActionId'],
+        'status':item['status']
       }).toList();
     } else {
       throw Exception('Failed to load recommendations');

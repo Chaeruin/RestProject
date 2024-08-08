@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heart/screen/action/recommendation.dart';
 
 class ActionBefore extends StatelessWidget {
   final String recommendation;
@@ -15,10 +16,10 @@ class ActionBefore extends StatelessWidget {
     required this.memberId,
   });
 
-Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('member_action_id_$actionId', memberActionId);
-}
+  Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('member_action_id_$actionId', memberActionId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,18 +134,18 @@ Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            final memberActionId =
-                                savedMemberAction['memberActionId'];
-                            print(
-                                'ActionBefore - memberActionId: $memberActionId');
+                            final memberActionId = savedMemberAction['memberActionId'];
+                            print('ActionBefore - memberActionId: $memberActionId');
 
-                           
                             if (memberActionId != null) {
-                              await _saveMemberActionId(actionId.toString(),
-                                  memberActionId.toString());
+                              await _saveMemberActionId(actionId.toString(), memberActionId.toString());
                             }
 
+                            // 단순히 status만 반환하고 싶다면
                             Navigator.of(context).pop(status);
+
+                            // 만약 memberActionId를 반환하고 싶다면 별도의 방법으로 저장해둬야 함
+                            // 예를 들어, 상태관리 라이브러리를 사용하거나, 다른 로직으로 처리해야 함
                           } else {
                             throw Exception('savedMemberAction is not a Map');
                           }
@@ -162,7 +163,9 @@ Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => const Recommendation(memberID: 'memberId')),
+                                    );
                                   },
                                   child: const Text('확인'),
                                 ),

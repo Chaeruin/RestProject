@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
 
-class ActionAfter extends StatelessWidget {
+class ActionAfter extends StatefulWidget {
   final String recommendation;
   final int memberActionId;
   final String memberId;
@@ -12,6 +12,17 @@ class ActionAfter extends StatelessWidget {
     required this.memberActionId,
     required this.memberId,
   });
+
+  @override
+  _ActionAfterState createState() => _ActionAfterState();
+}
+
+class _ActionAfterState extends State<ActionAfter> {
+  @override
+  void initState() {
+    super.initState();
+    print('memberActionId: ${widget.memberActionId}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +79,7 @@ class ActionAfter extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    recommendation,
+                    widget.recommendation,
                     style: const TextStyle(
                       fontSize: 21,
                       fontFamily: 'single_day',
@@ -105,12 +116,12 @@ class ActionAfter extends StatelessWidget {
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
                       print('Selected Emotion: $selectedEmotion');
-                      print('memberActionId: $memberActionId');
-                      print('Member ID: $memberId');
+                      print('memberActionId: ${widget.memberActionId}');
+                      print('Member ID: ${widget.memberId}');
 
                       try {
                         final response = await completeAction(
-                          memberActionId,
+                          widget.memberActionId,
                           selectedEmotion,
                         );
 
