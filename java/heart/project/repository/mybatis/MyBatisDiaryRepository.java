@@ -51,4 +51,9 @@ public class MyBatisDiaryRepository implements DiaryRepository {
     public Optional<Diary> findByMemberIdAndWriteDate(String memberId, String writeDate) {
         return diaryMapper.findByMemberIdAndWriteDate(memberId, writeDate);
     }
+
+    @Override
+    public Optional<Diary> findLatestDiaryByMemberId(String memberId) {
+        return diaryMapper.findLatestDiaryByMemberId(memberId);
+    }
 }

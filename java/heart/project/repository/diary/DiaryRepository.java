@@ -20,4 +20,6 @@ public interface DiaryRepository {
     List<Diary> findByMemberId(String memberId);
 
     Optional<Diary> findByMemberIdAndWriteDate(String memberId, String writeDate);
+
+    Optional<Diary> findLatestDiaryByMemberId(String memberId);
 }

@@ -85,4 +85,16 @@
           LEFT JOIN emotion e ON d.diary_id = e.diary_id
     </select>
 
+    <select id="findLatestDiaryByMemberId" resultType="Diary">
+        select *
+        from (
+              select d.diary_id, d.member_id, d.write_date, d.content, e.before_emotion, e.after_emotion
+              from diary d
+              LEFT JOIN emotion e ON d.diary_id = e.diary_id
+              where d.member_id = #{memberId} and d.is_public = 'Y'
+              order by d.write_date desc
+            )
+        where ROWNUM = 1
+    </select>
+
 </mapper>

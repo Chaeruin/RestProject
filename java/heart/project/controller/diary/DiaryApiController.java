@@ -106,4 +106,13 @@ public class DiaryApiController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * 특정 멤버의 가장 최근 작성한 일기를 조회하는 엔드포인트
+     */
+    @GetMapping("/{memberId}/latest-diary")
+    public ResponseEntity<Diary> getLatestDiaryByMemberId(@PathVariable("memberId") String memberId) {
+        return diaryService.findLatestDiaryByMemberId(memberId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

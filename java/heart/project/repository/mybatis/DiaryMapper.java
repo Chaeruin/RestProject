@@ -29,4 +29,5 @@ public interface DiaryMapper {
 
     Optional<Diary> findByMemberIdAndWriteDate(@Param("memberId") String memberId, @Param("writeDate") String writeDate);
 
+    Optional<Diary> findLatestDiaryByMemberId(@Param("memberId") String memberId);
 }

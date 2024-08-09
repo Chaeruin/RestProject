@@ -4,6 +4,7 @@ import heart.project.domain.Diary;
 import heart.project.repository.diary.DiaryRepository;
 import heart.project.repository.diary.DiaryUpdateApiDto;
 import lombok.RequiredArgsConstructor;
+import oracle.jdbc.internal.OpaqueString;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +49,11 @@ public class DiaryService {
     // 주어진 회원 ID와 작성 날짜에 해당하는 일기를 반환하는 메서드
     public Optional<Diary> findByMemberIdAndWriteDate(String memberId, String writeDate) {
         return diaryRepository.findByMemberIdAndWriteDate(memberId, writeDate);
+    }
+
+    // 주어진 회원 ID에 해당하는 가장 최근 작성한 일기를 반환하는 메서드
+    public Optional<Diary> findLatestDiaryByMemberId(String memberId) {
+        return diaryRepository.findLatestDiaryByMemberId(memberId);
     }
 }
 
