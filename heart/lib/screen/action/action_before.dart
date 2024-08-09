@@ -16,9 +16,9 @@ class ActionBefore extends StatelessWidget {
     required this.memberId,
   });
 
-  Future<void> _saveMemberActionId(String actionId, String memberActionId) async {
+  Future<void> _saveMemberActionId(int actionId, int memberActionId) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('member_action_id_$actionId', memberActionId);
+    await prefs.setInt('member_action_id_$actionId', memberActionId);
   }
 
   @override
@@ -138,7 +138,7 @@ class ActionBefore extends StatelessWidget {
                             print('ActionBefore - memberActionId: $memberActionId');
 
                             if (memberActionId != null) {
-                              await _saveMemberActionId(actionId.toString(), memberActionId.toString());
+                              await _saveMemberActionId(actionId, memberActionId);
                             }
 
                             // 단순히 status만 반환하고 싶다면

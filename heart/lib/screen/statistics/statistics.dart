@@ -62,7 +62,7 @@ class _StatisticsState extends State<Statistics> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final bool isLargeScreen = constraints.maxWidth > 600;
-          final double titleFontSize = isLargeScreen ? 30 : 20;
+          final double titleFontSize = isLargeScreen ? 30 : 23;
           final double sectionSpacing = isLargeScreen ? 30 : 20;
 
           return SingleChildScrollView(
@@ -70,7 +70,7 @@ class _StatisticsState extends State<Statistics> {
               children: [
                 SizedBox(height: sectionSpacing),
                 Text(
-                  '월간 감정 통계',
+                  '<월간 감정 통계>',
                   style: TextStyle(
                     color: const Color.fromARGB(255, 65, 133, 59),
                     fontSize: titleFontSize,

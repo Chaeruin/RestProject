@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heart/Api/audio_apis.dart';
 import 'package:heart/drawer/login.dart';
 import 'package:heart/drawer/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +20,7 @@ class HomeState extends State<Home> {
   late String nickname;
   late String memberID;
   String? actionMessage;
-
+  late String? latestEmotion = '';
   final AudioPlayer audioPlayer = AudioPlayer();
 
   Future<void> initPref() async {
@@ -30,23 +31,50 @@ class HomeState extends State<Home> {
       memberID = prefs.getString('ID') ?? '';
       isLogin = prefs.getBool('isLogin') ?? false;
     });
-    print(
-        "Login status: $isLogin, Nickname: $nickname, MemberID: $memberID"); // 디버깅용 출력
+    print("Login status: $isLogin, Nickname: $nickname, MemberID: $memberID");
   }
 
   @override
   void initState() {
     super.initState();
-    initPref();
-    _initAudioPlayer();
-    fetchActionRecommendationFromApi();
+    initPref().then((_) {
+      checkLogIn();
+      fetchActionRecommendationFromApi();
+    });
   }
 
-  //오디오 연결하는 api->0.wav를 joy.wav로 변경하면 감정에 맞는 음악이 나옴
-  Future<void> _initAudioPlayer() async {
+  Future<void> getLatestEmotion(String memID) async {
+    print('Fetching latest emotion for memID: $memID');
     try {
-      await audioPlayer
-          .setUrl('https://chatbotmg.s3.ap-northeast-2.amazonaws.com/0.wav');
+      final latest = await returnAfterEmotion(memID);
+      print('Fetched latest emotion: $latest');
+      setState(() {
+        latestEmotion = latest;
+      });
+      if (latestEmotion != null && latestEmotion!.isNotEmpty) {
+        print("Calling _initAudioPlayer with emotion: $latestEmotion");
+        _initAudioPlayer(latestEmotion!);
+      } else {
+        print("Latest emotion is null or empty");
+      }
+    } catch (e) {
+      print("Error fetching latest emotion: $e");
+    }
+  }
+
+  void checkLogIn() {
+    if (isLogin) {
+      getLatestEmotion(memberID);
+    }
+  }
+
+  Future<void> _initAudioPlayer(String latestEmotion) async {
+    print("Entered _initAudioPlayer with emotion: $latestEmotion");
+    try {
+      final url =
+          'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memberID}_$latestEmotion.wav';
+      print('Audio URL: $url'); // Print the URL for debugging
+      await audioPlayer.setUrl(url);
       audioPlayer.play();
     } catch (e) {
       print("Error: $e");
@@ -62,19 +90,24 @@ class HomeState extends State<Home> {
   Future<void> fetchActionRecommendationFromApi() async {
     try {
       final action = await fetchActionRecommendation();
-      setState(() {
-        actionMessage = action;
-      });
+      if (mounted) {
+        setState(() {
+          actionMessage = action;
+        });
+      }
     } catch (e) {
-      setState(() {
-        actionMessage = '행동 추천을 불러오는데 오류가 발생했습니다.';
-      });
+      if (mounted) {
+        setState(() {
+          actionMessage = '행동 추천을 불러오는데 오류가 발생했습니다.';
+        });
+      }
     }
   }
 
   Future<void> logout() async {
     await prefs.remove('nickName');
     await prefs.remove('ID');
+    await prefs.setBool('isLogin', false);
     setState(() {
       isLogin = false;
       nickname = '';
@@ -155,8 +188,8 @@ class HomeState extends State<Home> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final bool isLargeScreen = constraints.maxWidth > 600;
-          final double fontSize = isLargeScreen ? 30 : 20;
-          final double containerWidth = isLargeScreen ? 450 : 300;
+          final double fontSize = isLargeScreen ? 30 : 23;
+          final double containerWidth = isLargeScreen ? 450 : 350;
           final double containerHeight = isLargeScreen ? 150 : 100;
           final double imageSize = isLargeScreen ? 350 : 250;
 
@@ -174,7 +207,7 @@ class HomeState extends State<Home> {
                   imageChange(points, imageSize),
                   const SizedBox(height: 25),
                   Container(
-                    width: 350,
+                    width: containerWidth,
                     height: containerHeight,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFFBA0),
@@ -186,9 +219,9 @@ class HomeState extends State<Home> {
                         actionMessage != null
                             ? '"$actionMessage" 어떠세요?'
                             : 'Loading...',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.black,
-                          fontSize: 23,
+                          fontSize: fontSize,
                           fontFamily: 'single_day',
                         ),
                       ),
@@ -249,8 +282,10 @@ class HomeState extends State<Home> {
         onPressed: () {
           if (audioPlayer.playing) {
             audioPlayer.pause();
+            print('노래가 중지됩니다.');
           } else {
             audioPlayer.play();
+            print('노래가 재생됩니다.');
           }
           setState(() {});
         },
