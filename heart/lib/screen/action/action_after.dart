@@ -134,7 +134,10 @@ class _ActionAfterState extends State<ActionAfter> {
                             completedAction is Map<String, dynamic>) {
                           final status = completedAction['status'] ?? '완료';
                           print('Status from API: $status');
-                          Navigator.of(context).pop(status);
+                         Navigator.of(context).pop({
+                              'status': status,
+                              'memberActionId': widget.memberActionId,
+                            });
                         } else {
                           print('Unexpected response structure');
                           Navigator.of(context).pop('완료');

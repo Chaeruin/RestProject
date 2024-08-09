@@ -141,11 +141,13 @@ class ActionBefore extends StatelessWidget {
                               await _saveMemberActionId(actionId, memberActionId);
                             }
 
-                            // 단순히 status만 반환하고 싶다면
-                            Navigator.of(context).pop(status);
+                            
+                            Navigator.of(context).pop({
+                              'status': status,
+                              'memberActionId': memberActionId,
+                            });
 
-                            // 만약 memberActionId를 반환하고 싶다면 별도의 방법으로 저장해둬야 함
-                            // 예를 들어, 상태관리 라이브러리를 사용하거나, 다른 로직으로 처리해야 함
+                          
                           } else {
                             throw Exception('savedMemberAction is not a Map');
                           }

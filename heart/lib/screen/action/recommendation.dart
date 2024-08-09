@@ -18,8 +18,6 @@ enum Emotion {
 
 class Recommendation extends StatefulWidget {
   final String memberID;
-  
-
   const Recommendation({super.key, required this.memberID});
 
   @override
@@ -36,7 +34,7 @@ class _RecommendationState extends State<Recommendation> {
 
   Emotion? _selectedEmotion;
   bool _isLoading = false;
-Future<void> _initPrefs() async {
+  Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     List<String>? storedTestScore = prefs!.getStringList('testScore');
 
@@ -60,10 +58,9 @@ Future<void> _initPrefs() async {
   void initState() {
     super.initState();
     memberID = widget.memberID;
-    int memberActionId;
-    String status;
 
     _initPrefs();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final String? selectedEmotion = await _showImagePicker(context);
       if (selectedEmotion != null) {
@@ -74,14 +71,11 @@ Future<void> _initPrefs() async {
         await _Recommendations(_selectedEmotion!);
       }
     });
-
-    
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Call _Recommendations every time dependencies change (e.g., screen becomes visible).
     if (_selectedEmotion != null) {
       _Recommendations(_selectedEmotion!);
     }
@@ -104,9 +98,9 @@ Future<void> _initPrefs() async {
           print('Parsed Item: actionId=$actionId, memberActionId=$memberActionId, status=$savedStatus');
           return {
             'action': item['action'],
-            'actionId': item['actionId'], // 변환
+            'actionId': item['actionId'],
             'status': item['status'] ?? '없음',
-            'memberActionId': item['memberActionId'], // 변환
+            'memberActionId': item['memberActionId'], 
           };
         }),
       );
@@ -286,7 +280,8 @@ Future<void> _initPrefs() async {
                         onTap: () async {
                           if (_currentRecommendations[index]['status'] ==
                               '없음') {
-                            final status = await Navigator.push<String>(
+                            final result =
+                                await Navigator.push<Map<String, dynamic>>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ActionBefore(
@@ -298,22 +293,23 @@ Future<void> _initPrefs() async {
                                 ),
                               ),
                             );
-                            if (status != null) {
+
+                            if (result != null) {
                               setState(() {
                                 _currentRecommendations[index]['status'] =
-                                    status;
+                                    result['status'];
+                                _currentRecommendations[index]
+                                        ['memberActionId'] =
+                                    result['memberActionId'];
                               });
-                              // await _saveActionStatus(
-                              //   _currentRecommendations[index]['actionId']
-                              //       .toString(),
-                              //   status,
-                              // );
                             }
                           } else if (_currentRecommendations[index]['status'] ==
                               '진행중') {
                             final memberActionId =
-                                _currentRecommendations[index]['memberActionId'];
-                            final status = await Navigator.push<String>(
+                                _currentRecommendations[index]
+                                    ['memberActionId'];
+                            final result =
+                                await Navigator.push<Map<String, dynamic>>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ActionAfter(
@@ -324,33 +320,18 @@ Future<void> _initPrefs() async {
                                 ),
                               ),
                             );
-                            print('Returned status from ActionAfter: $status');
-                            if (status != null) {
+
+                            if (result != null) {
                               setState(() {
                                 _currentRecommendations[index]['status'] =
-                                    status;
+                                    result['status'];
+                                _currentRecommendations[index]
+                                        ['memberActionId'] =
+                                    result['memberActionId'];
                               });
-                              // await _saveActionStatus(
-                              //   _currentRecommendations[index]['actionId']
-                              //       .toString(),
-                              //   status,
-                              // );
                             }
                           }
-
-                          
-                          // // final result = await _getActionStatus(
-                          // //     _currentRecommendations[index]['actionId']
-                          // //         .toString());
-                          // print(
-                          //     'Retrieved status from SharedPreferences: $result');
-                          // if (result != null) {
-                          //   setState(() {
-                          //     _currentRecommendations[index]['status'] = result;
-                          //   });
-                          // }
                         },
-
                         child: Container(
                           width: 170,
                           margin: const EdgeInsets.symmetric(horizontal: 8.0),
