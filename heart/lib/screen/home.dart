@@ -73,7 +73,7 @@ class HomeState extends State<Home> {
     try {
       final url =
           'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memberID}_$latestEmotion.wav';
-      print('Audio URL: $url'); // Print the URL for debugging
+      print('Audio URL: $url'); 
       await audioPlayer.setUrl(url);
       audioPlayer.play();
     } catch (e) {

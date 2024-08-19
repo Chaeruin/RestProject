@@ -1,3 +1,4 @@
+//로그인하는 페이지
 import 'package:flutter/material.dart';
 import 'package:heart/Api/login_apis.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,10 +11,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  // 아이디와 비밀번호 입력을 위한 TextEditingController 생성
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  // SharedPreferences 인스턴스 생성
   late SharedPreferences prefs;
 
+  // SharedPreferences 초기화 함수
   Future initPref() async {
     prefs = await SharedPreferences.getInstance();
   }
@@ -24,6 +29,7 @@ class _LoginState extends State<Login> {
     initPref();
   }
 
+   // 아이디를 SharedPreferences에 저장하는 함수
   void idSave(String ID) async {
     bool idSaved = await prefs.setString('ID', ID);
     if (idSaved) {
@@ -33,6 +39,7 @@ class _LoginState extends State<Login> {
     }
   }
 
+ // 닉네임을 SharedPreferences에 저장하는 함수
   void nickNameSave(String nickName) async {
     bool nickNameSaved = await prefs.setString('nick', nickName);
     if (nickNameSaved) {
@@ -42,6 +49,7 @@ class _LoginState extends State<Login> {
     }
   }
 
+  // 로그인 상태를 SharedPreferences에 저장하는 함수
   void logInCheck() async {
     bool logInCheck = await prefs.setBool('isLogin', true);
     if (logInCheck) {
@@ -143,12 +151,13 @@ class _LoginState extends State<Login> {
                   onPressed: () async {
                     String id = _idController.text;
                     String password = _passwordController.text;
-
+                    // 로그인 API 호출 및 결과 확인
                     final String? logInUser = await loginUser(id, password);
                     if (logInUser != null) {
                       idSave(id); // 아이디 기록 확인
                       nickNameSave(logInUser); // 닉네임 기록 확인
-                      logInCheck(); // 로그인 기록 확인
+                      logInCheck();// 로그인 기록 확인
+                      
                     } else {
                       showAdaptiveDialog(
                         context: context,
@@ -166,7 +175,6 @@ class _LoginState extends State<Login> {
                         },
                       );
                     }
-
                     Navigator.pop(context);
                   },
                   child: const Text(

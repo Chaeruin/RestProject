@@ -1,3 +1,5 @@
+//시간대별 가장 빈도가 많은 감정을 보여주는 페이지
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:heart/Api/emotion_apis.dart';
@@ -105,19 +107,19 @@ class Hourly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 90, // Desired width
-      height: 150, // Height including image and text
+      width: 90, 
+      height: 150, 
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            '$timeRange시간', // Desired text
+            '$timeRange시간', 
             style: const TextStyle(
               fontSize: 18,
               fontFamily: 'single_day',
-              ), // Appropriate text style
+              ), 
           ),
-          const SizedBox(height: 5), // Space between image and text
+          const SizedBox(height: 5), 
           Image.asset(
             'lib/assets/image/emotions/$afterEmotion.png',
             width: 110,
@@ -130,13 +132,13 @@ class Hourly extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 5), // Space between image and text
+          const SizedBox(height: 5), 
           Text(
-            '$count번', // Desired text
+            '$count번', 
             style: const TextStyle(
               fontSize: 18,
               fontFamily: 'single_day',
-              ), // Appropriate text style
+              ), 
           ),
         ],
       ),

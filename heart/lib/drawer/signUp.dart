@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_typing_uninitialized_variables
+//회원가입을 위한 페이지
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Api/login_apis.dart';
 
+//회원가입 화면을 위한 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
 
@@ -43,7 +44,7 @@ class SignUpFormState extends State<SignUpForm> {
   String _email = '';
   String _password = '';
   String _nickname = '';
-  String _gender = ''; // 'male', 'female'
+  String _gender = ''; 
   String _birthdate = '';
   bool focus = true;
   DateTime initialDay = DateTime.now();

@@ -1,3 +1,5 @@
+//기분에 따른 행동을 추천해주는 페이지
+
 import 'package:flutter/material.dart';
 import 'package:heart/Api/action_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +20,7 @@ class _FeelBetterStatsState extends State<FeelBetter> {
   Future<void> initPref() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
-      nickname = prefs.getString('nick') ?? 'Guest'; // 기본값 추가
+      nickname = prefs.getString('nick') ?? 'Guest';
     });
     print("Nickname: $nickname");
   }
@@ -27,7 +29,7 @@ class _FeelBetterStatsState extends State<FeelBetter> {
   void initState() {
     super.initState();
     feelBetterLists = feelBetterActions(widget.memberID);
-    initPref(); // initPref 호출 추가
+    initPref(); 
   }
 
   @override

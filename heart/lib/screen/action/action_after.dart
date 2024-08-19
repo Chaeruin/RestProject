@@ -1,3 +1,5 @@
+//행동을 완료한 후 감정을 선택하는 페이지
+
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
 
@@ -127,9 +129,9 @@ class _ActionAfterState extends State<ActionAfter> {
 
                         print('Raw Response: ${response.toString()}');
 
-                        // response가 Map 형태인지 확인
                         final completedAction =
                             response['completedMemberAction'];
+                            
                         if (completedAction != null &&
                             completedAction is Map<String, dynamic>) {
                           final status = completedAction['status'] ?? '완료';

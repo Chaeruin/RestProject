@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+//행동 통계를 보여주는 페이지
 
+import 'package:flutter/material.dart';
 import 'package:heart/drawer/action/hourlyemo.dart';
 import 'package:heart/drawer/action/feel_better.dart';
 

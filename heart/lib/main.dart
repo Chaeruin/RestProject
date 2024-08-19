@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'App Demo',
+        title: '쉼표',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: Colors.deepPurple,
