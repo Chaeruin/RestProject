@@ -11,14 +11,15 @@ import 'package:provider/provider.dart';
 import 'audio_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-  late var memberID;
+  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  late final memberID;
 
   @override
   Widget build(BuildContext context) {
