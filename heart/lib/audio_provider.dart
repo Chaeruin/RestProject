@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Api/audio_apis.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 
 class AudioProvider with ChangeNotifier {
   // ignore: prefer_final_fields
@@ -10,10 +11,10 @@ class AudioProvider with ChangeNotifier {
 
   AudioProvider(this.memID) {
     var afterEmotion = returnAfterEmotion(memID);
-    _init(memID, afterEmotion);
+    init(memID, afterEmotion);
   }
 
-  void _init(memID, afterEmotion) async {
+  void init(memID, afterEmotion) async {
     try {
       await _audioPlayer.setUrl(
           'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memID}_${afterEmotion}.wav');
@@ -49,6 +50,18 @@ class AudioProvider with ChangeNotifier {
       _isPlaying = false;
       notifyListeners();
     }
+  }
+
+  void stop() async {
+    await _audioPlayer.stop();
+    _isPlaying = false;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   bool get isPlaying => _isPlaying;

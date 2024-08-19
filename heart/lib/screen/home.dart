@@ -5,6 +5,7 @@ import 'package:heart/drawer/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart/Api/action_api.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,7 +22,6 @@ class HomeState extends State<Home> {
   late String memberID;
   String? actionMessage;
   late String? latestEmotion = '';
-  final AudioPlayer audioPlayer = AudioPlayer();
 
   Future<void> initPref() async {
     prefs = await SharedPreferences.getInstance();
@@ -69,22 +69,18 @@ class HomeState extends State<Home> {
   }
 
   Future<void> _initAudioPlayer(String latestEmotion) async {
+    final audioPlayer = context.read<AudioPlayer>();
     print("Entered _initAudioPlayer with emotion: $latestEmotion");
     try {
       final url =
           'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memberID}_${latestEmotion}.wav';
       print('Audio URL: $url'); // Print the URL for debugging
       await audioPlayer.setUrl(url);
+      audioPlayer.setLoopMode(LoopMode.one);
       audioPlayer.play();
     } catch (e) {
       print("Error: $e");
     }
-  }
-
-  @override
-  void dispose() {
-    audioPlayer.dispose();
-    super.dispose();
   }
 
   Future<void> fetchActionRecommendationFromApi() async {
@@ -272,46 +268,59 @@ class HomeState extends State<Home> {
     );
   }
 
-  //오디오 기능 UI
   Widget _buildAudioPlayerControls() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: IconButton(
-        icon: Icon(audioPlayer.playing ? Icons.pause : Icons.play_arrow),
-        onPressed: () {
-          if (audioPlayer.playing) {
-            audioPlayer.pause();
-            print('노래가 중지됩니다.');
-          } else {
-            audioPlayer.play();
-            print('노래가 재생됩니다.');
-          }
-          setState(() {});
-        },
-      ),
+    final audioPlayer = context.watch<AudioPlayer>();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.play_arrow),
+          onPressed: () async {
+            try {
+              await audioPlayer.play();
+            } catch (e) {
+              print("Error playing audio: $e");
+            }
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.pause),
+          onPressed: () async {
+            try {
+              await audioPlayer.pause();
+            } catch (e) {
+              print("Error pausing audio: $e");
+            }
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.stop),
+          onPressed: () async {
+            try {
+              await audioPlayer.stop();
+            } catch (e) {
+              print("Error stopping audio: $e");
+            }
+          },
+        ),
+      ],
     );
   }
-}
 
-// 획득 포인트에 맞춰 이미지를 바꾸는 함수
-Widget imageChange(int points, double imageSize) {
-  if (points >= 0 && points < 10) {
+  Widget imageChange(int points, double size) {
+    // 포인트에 따라 이미지 변경 로직 작성
+    String imagePath;
+    if (points >= 100) {
+      imagePath = 'lib/assets/image/2.png'; // 포인트가 높을 때의 이미지
+    } else {
+      imagePath = 'lib/assets/image/3.png'; // 포인트가 낮을 때의 이미지
+    }
+
     return Image.asset(
-      'lib/assets/image/2.png', // 레벨에 맞는 이미지 삽입
-      width: imageSize,
-      height: imageSize,
-    );
-  } else if (points >= 10 && points < 50) {
-    return Image.asset(
-      'lib/assets/image/3.png', // 레벨에 맞는 이미지 삽입
-      width: imageSize,
-      height: imageSize,
-    );
-  } else {
-    return Image.asset(
-      'lib/assets/image/4.png', // 레벨에 맞는 이미지 삽입
-      width: imageSize,
-      height: imageSize,
+      imagePath,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
     );
   }
 }

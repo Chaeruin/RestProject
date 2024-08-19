@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/drawer/phq9test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart/APi/action_api.dart'; 
+import 'package:heart/APi/action_api.dart';
 import 'package:heart/screen/action/action.dart';
 
 enum Emotion {
@@ -85,11 +85,12 @@ class _RecommendationState extends State<Recommendation> {
     });
 
     try {
-      final response = await Recommendations(
-          memberID, emotion.toString().split('.').last);
+      final response =
+          await Recommendations(memberID, emotion.toString().split('.').last);
       final List<Map<String, dynamic>> recommendations = await Future.wait(
         (response as List).map((item) async {
-          final savedStatus = await _getActionStatus(item['actionId'].toString());
+          final savedStatus =
+              await _getActionStatus(item['actionId'].toString());
           return {
             'action': item['action'],
             'actionId': item['actionId'],
@@ -101,11 +102,17 @@ class _RecommendationState extends State<Recommendation> {
         _currentRecommendations = recommendations;
       });
     } catch (e) {
-      setState(() {
-        _currentRecommendations = [
-          {'action': '추천 데이터를 불러오는데 실패했습니다.', 'actionId': null, 'status': '없음'}
-        ];
-      });
+      if (mounted) {
+        setState(() {
+          _currentRecommendations = [
+            {
+              'action': '추천 데이터를 불러오는데 실패했습니다.',
+              'actionId': null,
+              'status': '없음'
+            }
+          ];
+        });
+      }
     } finally {
       setState(() {
         _isLoading = false;
@@ -128,7 +135,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.joy;
                   });
-                  Navigator.pop(context, Emotion.joy.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.joy.toString().split('.').last);
                 },
                 child: const Text('기쁨'),
               ),
@@ -137,7 +145,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.hope;
                   });
-                  Navigator.pop(context, Emotion.hope.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.hope.toString().split('.').last);
                 },
                 child: const Text('희망'),
               ),
@@ -146,7 +155,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.anger;
                   });
-                  Navigator.pop(context, Emotion.anger.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.anger.toString().split('.').last);
                 },
                 child: const Text('분노'),
               ),
@@ -155,7 +165,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.anxiety;
                   });
-                  Navigator.pop(context, Emotion.anxiety.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.anxiety.toString().split('.').last);
                 },
                 child: const Text('불안'),
               ),
@@ -164,7 +175,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.neutrality;
                   });
-                  Navigator.pop(context, Emotion.neutrality.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.neutrality.toString().split('.').last);
                 },
                 child: const Text('중립'),
               ),
@@ -173,7 +185,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.sadness;
                   });
-                  Navigator.pop(context, Emotion.sadness.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.sadness.toString().split('.').last);
                 },
                 child: const Text('슬픔'),
               ),
@@ -181,8 +194,9 @@ class _RecommendationState extends State<Recommendation> {
                 onPressed: () {
                   setState(() {
                     _selectedEmotion = Emotion.tiredness;
-                    });
-                  Navigator.pop(context, Emotion.tiredness.toString().split('.').last);
+                  });
+                  Navigator.pop(
+                      context, Emotion.tiredness.toString().split('.').last);
                 },
                 child: const Text('피곤'),
               ),
@@ -191,7 +205,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.regret;
                   });
-                  Navigator.pop(context, Emotion.regret.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.regret.toString().split('.').last);
                 },
                 child: const Text('후회'),
               ),
@@ -267,22 +282,29 @@ class _RecommendationState extends State<Recommendation> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () async {
-                          print('Action ID: ${_currentRecommendations[index]['actionId']}');
+                          print(
+                              'Action ID: ${_currentRecommendations[index]['actionId']}');
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => action(
-                                recommendation: _currentRecommendations[index]['action'],
+                                recommendation: _currentRecommendations[index]
+                                    ['action'],
                                 memberId: memberID,
-                                actionId: _currentRecommendations[index]['actionId'],
+                                actionId: _currentRecommendations[index]
+                                    ['actionId'],
                               ),
                             ),
                           );
                           if (result != null) {
                             setState(() {
-                               _currentRecommendations[index]['status'] = result.toString();
+                              _currentRecommendations[index]['status'] =
+                                  result.toString();
                             });
-                            await _saveActionStatus(_currentRecommendations[index]['actionId'].toString(), result.toString());
+                            await _saveActionStatus(
+                                _currentRecommendations[index]['actionId']
+                                    .toString(),
+                                result.toString());
                           }
                         },
                         child: Container(
@@ -307,7 +329,8 @@ class _RecommendationState extends State<Recommendation> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                               _currentRecommendations[index]['action'] ?? '행동 없음',
+                                _currentRecommendations[index]['action'] ??
+                                    '행동 없음',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontFamily: 'single_day',

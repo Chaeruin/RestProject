@@ -5,14 +5,24 @@ import 'package:heart/screen/diary/diary.dart';
 import 'package:heart/screen/home.dart';
 import 'package:heart/screen/action/recommendation.dart';
 import 'package:heart/screen/statistics/statistics.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'audio_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<AudioPlayer>(
+          create: (_) => AudioPlayer(),
+          dispose: (_, player) => player.dispose(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -23,20 +33,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => AudioProvider(memberID),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'App Demo',
-        theme: ThemeData(
-          primaryColor: Colors.deepPurple,
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(),
+    return MaterialApp(
+      title: '마음 ℃',
+      theme: ThemeData(
+        primaryColor: Colors.deepPurple,
+        useMaterial3: true,
       ),
+      home: const MyHomePage(),
     );
   }
 }
