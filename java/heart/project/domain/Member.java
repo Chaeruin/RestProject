@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Member {
 
-    private int id;
+    private int id; // ID, 기본키
 
     @NotEmpty
     private String memberId; // member ID, 이메일 형식

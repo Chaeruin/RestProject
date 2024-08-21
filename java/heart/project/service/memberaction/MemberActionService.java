@@ -29,7 +29,7 @@ public class MemberActionService {
         return memberActionRepository.findOngoingActionsByMemberId(memberId);
     }
 
-    // 주어진 회원 ID의 상태가 '진행중'인 행동을 반환하는 메서드
+    // 주어진 회원 ID의 상태가 '완료'인 행동을 반환하는 메서드
     public List<MemberAction> getCompletedActionsByMemberId(String memberId) {
         return memberActionRepository.findCompletedActionsByMemberId(memberId);
     }

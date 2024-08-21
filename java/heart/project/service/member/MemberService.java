@@ -45,7 +45,7 @@ public class MemberService {
         return memberRepository.findAll(member);
     }
 
-    // 주어진 아이디에 해당하는 멤버를 조회하는 메서드
+    // 주어진 회원 ID에 해당하는 멤버를 조회하는 메서드
     public Optional<Member> findByMemberId(String memberId) {
         return memberRepository.findByMemberId(memberId);
     }

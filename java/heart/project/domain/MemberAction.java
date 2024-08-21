@@ -10,10 +10,10 @@ import java.time.LocalDate;
 @Data
 public class MemberAction {
 
-    private int memberActionId;
+    private int memberActionId; // memberAction ID, 기본키
 
     @NotEmpty
-    private int actionId; // action Id, 외래키
+    private int actionId; // action ID, 외래키
 
     @NotEmpty
     private String memberId; // member ID, 외래키

@@ -7,8 +7,8 @@ import lombok.Data;
 public class LoginApiForm {
 
     @NotEmpty
-    private String loginId;
+    private String loginId; // 로그인 ID
 
     @NotEmpty
-    private String password;
+    private String password; // 비밀번호
 }

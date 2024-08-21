@@ -4,7 +4,6 @@ import heart.project.domain.Diary;
 import heart.project.repository.diary.DiaryRepository;
 import heart.project.repository.diary.DiaryUpdateApiDto;
 import lombok.RequiredArgsConstructor;
-import oracle.jdbc.internal.OpaqueString;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

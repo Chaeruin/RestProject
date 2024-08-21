@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Data
 public class DailyRecommendation {
 
-    private int dailyRecommendationsId;
+    private int dailyRecommendationsId; // dailyRecommendation ID, 기본키
 
     private int memberActionId; // member action ID, 외래키
 

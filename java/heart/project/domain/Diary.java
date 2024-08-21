@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Diary {
 
-    private int diaryId;
+    private int diaryId; // diary ID, 기본키
 
     @NotEmpty
     private String memberId; // member ID, 외래키

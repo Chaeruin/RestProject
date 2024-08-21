@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Chat {
 
-    private int chatId;
+    private int chatId; // chat ID, 기본키
 
     @NotEmpty
     private String memberId; // member ID, 외래키

@@ -6,10 +6,10 @@ import lombok.Data;
 @Data
 public class Emotion {
 
-    private int emotionId;
+    private int emotionId; // emotion ID, 기본키
 
     @NotEmpty
-    private int diaryId; // diary Id, 외래키
+    private int diaryId; // diary ID, 외래키
 
     @NotEmpty
     private String memberId; // member ID, 외래키

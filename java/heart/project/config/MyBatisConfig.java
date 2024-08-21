@@ -32,76 +32,91 @@ public class MyBatisConfig {
     private final MemberActionMapper memberActionMapper;
     private final DailyRecommendationMapper dailyRecommendationMapper;
 
+    // MemberService 빈을 생성하는 메서드
     @Bean
     public MemberService memberService() {
         return new MemberService(memberRepository());
     }
 
+    // LoginService 빈을 생성하는 메서드
     @Bean
     public LoginService loginService() {
         return new LoginService(memberRepository());
     }
 
+    // MemberRepository 빈을 생성하는 메서드
     @Bean
     public MemberRepository memberRepository() {
         return new MyBatisMemberRepository(memberMapper);
     }
 
+    // DiaryService 빈을 생성하는 메서드
     @Bean
     public DiaryService diaryService() {
         return new DiaryService(diaryRepository());
     }
 
+    // DiaryRepository 빈을 생성하는 메서드
     @Bean
     public DiaryRepository diaryRepository() {
         return new MyBatisDiaryRepository(diaryMapper);
     }
 
+    // ChatService 빈을 생성하는 메서드
     @Bean
     public ChatService chatService() {
         return new ChatService(chatRepository());
     }
 
+    // ChatRepository 빈을 생성하는 메서드
     @Bean
     public ChatRepository chatRepository() {
         return new MyBatisChatRepository(chatMapper);
     }
 
+    // EmotionService 빈을 생성하는 메서드
     @Bean
     public EmotionService emotionService() {
         return new EmotionService(emotionRepository());
     }
 
+    // EmotionRepository 빈을 생성하는 메서드
     @Bean
     public EmotionRepository emotionRepository() {
         return new MyBatisEmotionRepository(emotionMapper);
     }
 
+    // ActionService 빈을 생성하는 메서드
     @Bean
     public ActionService actionService() {
         return new ActionService(actionRepository());
     }
 
+    // ActionRepository 빈을 생성하는 메서드
     @Bean
     public ActionRepository actionRepository() {
         return new MyBatisActionRepository(actionMapper);
     }
 
+    // DailyRecommendationService 빈을 생성하는 메서드
     @Bean
     public DailyRecommendationService dailyRecommendationService() {
         return new DailyRecommendationService(dailyRecommendationRepository(), actionRepository());
     }
 
+    // DailyRecommendationRepository 빈을 생성하는 메서드
     @Bean
     public DailyRecommendationRepository dailyRecommendationRepository() {
         return new MyBatisDailyRecommendationRepository(dailyRecommendationMapper);
     }
 
+    // MemberActionService 빈을 생성하는 메서드
     @Bean
     public MemberActionService memberActionService() {
         return new MemberActionService(memberActionRepository());
     }
 
+    // MemberActionRepository 빈을 생성하는 메서드
     @Bean
     public MemberActionRepository memberActionRepository() {
         return new MyBatisMemberActionRepository(memberActionMapper);
