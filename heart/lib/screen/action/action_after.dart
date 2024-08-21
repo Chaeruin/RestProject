@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
 
 class ActionAfter extends StatefulWidget {
-  final String recommendation;
-  final int memberActionId;
-  final String memberId;
+  final String recommendation; //추천행동 가져오기
+  final int memberActionId; //멤버별 행동 id
+  final String memberId; //멤버 id
 
   const ActionAfter({
     super.key,
@@ -28,6 +28,7 @@ class _ActionAfterState extends State<ActionAfter> {
 
   @override
   Widget build(BuildContext context) {
+    //선택 가능한 감정 목록
     final List<Map<String, String>> emotions = [
       {'image': 'lib/assets/image/emotions/joy.png', 'label': '기쁨', 'value': 'joy'},
       {'image': 'lib/assets/image/emotions/hope.png', 'label': '희망', 'value': 'hope'},
@@ -117,10 +118,8 @@ class _ActionAfterState extends State<ActionAfter> {
                   return GestureDetector(
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
-                      print('Selected Emotion: $selectedEmotion');
-                      print('memberActionId: ${widget.memberActionId}');
-                      print('Member ID: ${widget.memberId}');
-
+                  
+                     // 사용자가 선택한 감정을 API를 통해 서버에 전달
                       try {
                         final response = await completeAction(
                           widget.memberActionId,
@@ -135,13 +134,13 @@ class _ActionAfterState extends State<ActionAfter> {
                         if (completedAction != null &&
                             completedAction is Map<String, dynamic>) {
                           final status = completedAction['status'] ?? '완료';
-                          print('Status from API: $status');
+                         
                          Navigator.of(context).pop({
                               'status': status,
                               'memberActionId': widget.memberActionId,
-                            });
+                            }); // 감정 선택이 완료되면 이전 화면으로 돌아감
                         } else {
-                          print('Unexpected response structure');
+                         
                           Navigator.of(context).pop('완료');
                         }
                       } catch (e) {

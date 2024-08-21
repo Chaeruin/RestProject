@@ -1,32 +1,12 @@
+//통계 메인 페이지
+
 import 'package:flutter/material.dart';
 import 'package:heart/drawer/action/feel_better.dart';
 import 'package:heart/drawer/action/hourlyemo.dart';
 import 'package:heart/screen/statistics/top3emo.dart';
 import 'package:heart/screen/statistics/totalemo.dart';
 
-class DottedLinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color.fromARGB(255, 89, 181, 81)
-      ..strokeWidth = 4
-      ..style = PaintingStyle.stroke;
-
-    const double dashWidth = 5.0;
-    const double dashSpace = 5.0;
-    double startX = 0.0;
-
-    while (startX < size.width) {
-      canvas.drawLine(
-          Offset(startX, 0.0), Offset(startX + dashWidth, 0.0), paint);
-      startX += dashWidth + dashSpace;
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
+//통계 화면을 표시
 class Statistics extends StatefulWidget {
   final String memId;
   const Statistics({super.key, required this.memId});
@@ -36,7 +16,7 @@ class Statistics extends StatefulWidget {
 }
 
 class _StatisticsState extends State<Statistics> {
-  late final String memberID;
+  late final String memberID; // 회원 ID 저장 변수
 
   @override
   void initState() {

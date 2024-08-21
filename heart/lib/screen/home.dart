@@ -1,10 +1,13 @@
+// 메인 홈 페이지
 import 'package:flutter/material.dart';
 import 'package:heart/Api/audio_apis.dart';
+import 'package:heart/audio_provider.dart';
 import 'package:heart/drawer/login.dart';
 import 'package:heart/drawer/signup.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart/Api/action_api.dart';
-import 'package:just_audio/just_audio.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,15 +17,15 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  late SharedPreferences prefs;
-  late int points = 0;
-  bool isLogin = false;
-  late String nickname;
-  late String memberID;
-  String? actionMessage;
-  late String? latestEmotion = '';
-  final AudioPlayer audioPlayer = AudioPlayer();
+  late SharedPreferences prefs;  // SharedPreferences 인스턴스
+  late int points = 0; // 포인트 저장 변수
+  bool isLogin = false; // 로그인 상태 저장 변수
+  late String nickname; // 사용자 닉네임
+  late String memberID; // 사용자 ID
+  String? actionMessage; // 행동 추천 메시지
+  late String? latestEmotion = ''; // 최신 감정 저장 변수
 
+// SharedPreferences를 초기화하고 상태를 설정하는 비동기 메서드
   Future<void> initPref() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -31,65 +34,64 @@ class HomeState extends State<Home> {
       memberID = prefs.getString('ID') ?? '';
       isLogin = prefs.getBool('isLogin') ?? false;
     });
-    print("Login status: $isLogin, Nickname: $nickname, MemberID: $memberID");
   }
 
   @override
   void initState() {
     super.initState();
     initPref().then((_) {
-      checkLogIn();
-      fetchActionRecommendationFromApi();
+      checkLogIn(); // 로그인 상태에 따라 최신 감정 확인
+      fetchActionRecommendationFromApi(); // 행동 추천 메시지 가져오기
     });
   }
 
+// 최신 감정을 API에서 가져오는 비동기 메서드
   Future<void> getLatestEmotion(String memID) async {
-    print('Fetching latest emotion for memID: $memID');
+    
     try {
-      final latest = await returnAfterEmotion(memID);
-      print('Fetched latest emotion: $latest');
+      final latest = await returnAfterEmotion(memID); //감정 가져오기
+      
       setState(() {
         latestEmotion = latest;
       });
       if (latestEmotion != null && latestEmotion!.isNotEmpty) {
-        print("Calling _initAudioPlayer with emotion: $latestEmotion");
-        _initAudioPlayer(latestEmotion!);
+       
+        _initAudioPlayer(latestEmotion!); // 오디오 플레이어 초기화 및 재생
       } else {
-        print("Latest emotion is null or empty");
+        print("최신 감정이 null이거나 비어 있습니다.");
       }
     } catch (e) {
-      print("Error fetching latest emotion: $e");
+      print("최신 감정 가져오기 오류: $e");
     }
   }
 
+  // 로그인 상태를 확인하고, 로그인 상태일 경우 최신 감정 가져오기
   void checkLogIn() {
     if (isLogin) {
       getLatestEmotion(memberID);
     }
   }
 
+ // 최신 감정에 기반하여 오디오 플레이어를 설정하고 재생하는 비동기 메서드
   Future<void> _initAudioPlayer(String latestEmotion) async {
-    print("Entered _initAudioPlayer with emotion: $latestEmotion");
+   
     try {
       final url =
           'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memberID}_$latestEmotion.wav';
-      print('Audio URL: $url'); 
-      await audioPlayer.setUrl(url);
-      audioPlayer.play();
+     
+      final audioProvider = Provider.of<AudioProvider>(context, listen: false);  // 오디오 파일 URL
+      await audioProvider.setUrl(url); // 오디오 URL 설정
+      await audioProvider.audioPlayer.setLoopMode(LoopMode.all); // 오디오 루프 설정
+      audioProvider.play(); // 오디오 재생
     } catch (e) {
-      print("Error: $e");
+      print("오류 발생: $e");
     }
   }
 
-  @override
-  void dispose() {
-    audioPlayer.dispose();
-    super.dispose();
-  }
-
+// 행동 추천 메시지를 API에서 가져오는 비동기 메서드
   Future<void> fetchActionRecommendationFromApi() async {
     try {
-      final action = await fetchActionRecommendation();
+      final action = await fetchActionRecommendation(); // 행동 추천 메시지 가져오기
       if (mounted) {
         setState(() {
           actionMessage = action;
@@ -104,10 +106,11 @@ class HomeState extends State<Home> {
     }
   }
 
+// 로그아웃 기능을 수행하는 비동기 메서드
   Future<void> logout() async {
-    await prefs.remove('nickName');
-    await prefs.remove('ID');
-    await prefs.setBool('isLogin', false);
+    await prefs.remove('nickName'); //닉네임 삭제
+    await prefs.remove('ID'); //아이디 삭제
+    await prefs.setBool('isLogin', false);// 로그인 상태 변경
     setState(() {
       isLogin = false;
       nickname = '';
@@ -118,6 +121,8 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final audioProvider = Provider.of<AudioProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -137,7 +142,7 @@ class HomeState extends State<Home> {
                 ),
               ),
         actions: [
-          _buildAudioPlayerControls(),
+          _buildAudioPlayerControls(audioProvider), // 오디오 플레이어 컨트롤 추가
         ],
       ),
       drawer: Drawer(
@@ -146,7 +151,8 @@ class HomeState extends State<Home> {
             DrawerHeader(
               child: Center(
                 child: Text(
-                  isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!',
+                  // 로그인 상태에 따른 인사말
+                  isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!', 
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 23,
@@ -204,7 +210,7 @@ class HomeState extends State<Home> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  imageChange(points, imageSize),
+                  imageChange(points, imageSize), // 포인트에 따라 이미지 변경
                   const SizedBox(height: 25),
                   Container(
                     width: containerWidth,
@@ -236,6 +242,7 @@ class HomeState extends State<Home> {
     );
   }
 
+// Drawer 항목을 생성하는 메서드
   Widget _buildDrawerItem({
     required String title,
     required dynamic icon,
@@ -273,21 +280,20 @@ class HomeState extends State<Home> {
     );
   }
 
-  //오디오 기능 UI
-  Widget _buildAudioPlayerControls() {
+//오디오 플레이어 컨트롤을 생성하는 메서드
+  Widget _buildAudioPlayerControls(AudioProvider audioProvider) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: IconButton(
-        icon: Icon(audioPlayer.playing ? Icons.pause : Icons.play_arrow),
+        icon: Icon(audioProvider.audioPlayer.playing ? Icons.pause : Icons.play_arrow),
         onPressed: () {
-          if (audioPlayer.playing) {
-            audioPlayer.pause();
-            print('노래가 중지됩니다.');
+          if (audioProvider.audioPlayer.playing) {
+            audioProvider.audioPlayer.pause(); // 재생 중이면 일시 정지
+           
           } else {
-            audioPlayer.play();
-            print('노래가 재생됩니다.');
+            audioProvider.audioPlayer.play(); // 정지 중이면 재생
+           
           }
-          setState(() {});
         },
       ),
     );

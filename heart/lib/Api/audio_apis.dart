@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+//감정 데이터 전송
 void sendEmotionData(String memberID, String afterEmotion) async {
   var url = Uri.parse(
       'http://3.35.183.52:8081//music/recommendation'); // 플라스크 서버의 URL
@@ -25,6 +26,7 @@ void sendEmotionData(String memberID, String afterEmotion) async {
   }
 }
 
+//이후 감정 반환
 Future<String?> returnAfterEmotion(String memberID) async {
   final Uri uri =
       Uri.parse("http://54.79.110.239:8080/api/diaries/$memberID/latest-diary");
@@ -39,7 +41,7 @@ Future<String?> returnAfterEmotion(String memberID) async {
 
     print('Response Status Code: ${response.statusCode}');
     print(
-        'Response Body: ${utf8.decode(response.bodyBytes)}'); // Encoding issue resolved
+        'Response Body: ${utf8.decode(response.bodyBytes)}'); 
 
     if (response.statusCode == 200) {
       print('데이터가 성공적으로 전송되었습니다.');

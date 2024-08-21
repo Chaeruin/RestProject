@@ -1,3 +1,5 @@
+//행동을 시작하는 페이지
+
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
 import 'dart:convert';
@@ -5,9 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart/screen/action/recommendation.dart';
 
 class ActionBefore extends StatelessWidget {
-  final String recommendation;
-  final int actionId;
-  final String memberId;
+  final String recommendation; // 추천된 행동을 가져오기 위한 변수
+  final int actionId; // 행동 ID
+  final String memberId;  // 멤버 ID
 
   const ActionBefore({
     super.key,
@@ -16,6 +18,7 @@ class ActionBefore extends StatelessWidget {
     required this.memberId,
   });
 
+  // 멤버별 행동 ID를 로컬 저장소에 저장하는 함수
   Future<void> _saveMemberActionId(int actionId, int memberActionId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('member_action_id_$actionId', memberActionId);
@@ -23,6 +26,7 @@ class ActionBefore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     // 사용 가능한 감정 목록을 정의
     final List<Map<String, String>> emotions = [
       {'image': 'lib/assets/image/emotions/joy.png', 'label': '기쁨', 'value': 'joy'},
       {'image': 'lib/assets/image/emotions/hope.png', 'label': '희망', 'value': 'hope'},
@@ -112,36 +116,33 @@ class ActionBefore extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
-                      print('Action ID: $actionId');
-                      print('Member ID: $memberId');
-                      print('Selected Emotion: $selectedEmotion');
-
+                   
+                     // 사용자가 선택한 감정을 API를 통해 서버에 전달
                       try {
                         final response = await startAction(
                           actionId,
                           memberId,
                           selectedEmotion,
                         );
-                        print('Response: $response');
-
+                  
                         dynamic body = response['body'];
 
                         if (body is String) {
                           body = jsonDecode(body);
                         }
-
+                        // API로부터 받은 응답 데이터 처리
                         if (body is Map<String, dynamic>) {
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
                             final memberActionId = savedMemberAction['memberActionId'];
-                            print('ActionBefore - memberActionId: $memberActionId');
-
+                           
+                          // 멤버 행동 ID를 로컬 저장소에 저장
                             if (memberActionId != null) {
                               await _saveMemberActionId(actionId, memberActionId);
                             }
 
-                            
+                            // 감정 선택이 완료되면 이전 화면으로 돌아감
                             Navigator.of(context).pop({
                               'status': status,
                               'memberActionId': memberActionId,

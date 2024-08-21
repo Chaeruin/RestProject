@@ -42,6 +42,7 @@ Future<bool> saveUser(LoginModel member) async {
   }
 }
 
+//로그인
 Future<String?> loginUser(String id, String password) async {
   try {
     final loginData = LogIn(loginId: id, password: password);
@@ -53,14 +54,14 @@ Future<String?> loginUser(String id, String password) async {
       body: loginData.toJson(),
     );
 
-    // Decode response body to a string
+    
     final responseBody = utf8.decode(response.bodyBytes);
 
     print('Response Status Code: ${response.statusCode}');
     print('Response Body: $responseBody');
 
     if (response.statusCode == 200) {
-      // Convert response body to a map and then to LoginModel
+      
       print('로그인 성공!');
       return LoginModel.fromJson(responseBody).nickname;
     } else {

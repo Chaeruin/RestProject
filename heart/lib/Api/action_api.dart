@@ -95,7 +95,7 @@ Future<Map<String, dynamic>> startAction(int actionId, String memberId, String b
   }
 }
 
-//행동 완료료
+//행동 완료
 Future<Map<String, dynamic>> completeAction(int memberActionId, String afterEmotion) async {
   final response = await http.put(
     Uri.parse('http://54.79.110.239:8080/api/member-actions/$memberActionId/complete'),

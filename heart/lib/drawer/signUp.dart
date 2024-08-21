@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../Api/login_apis.dart';
 
-//회원가입 화면을 위한 
+//회원가입 화면을 위한 화면 구성을 위한 메인 클래스 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
 
@@ -30,7 +30,7 @@ class SignUp extends StatelessWidget {
     );
   }
 }
-
+//회원가입 폼을 구성
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
 
@@ -40,6 +40,7 @@ class SignUpForm extends StatefulWidget {
 
 enum Gender { male, female }
 
+//SignUpForm의 상태를 관리
 class SignUpFormState extends State<SignUpForm> {
   String _email = '';
   String _password = '';
@@ -58,6 +59,7 @@ class SignUpFormState extends State<SignUpForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          //아이디 입력 필드
           const Text(
             '아이디',
             style: TextStyle(
@@ -235,6 +237,7 @@ class SignUpFormState extends State<SignUpForm> {
           const SizedBox(
             height: 10,
           ),
+          //비밀번호 입력 필드
           const Text(
             '비밀번호',
             style: TextStyle(
@@ -270,6 +273,7 @@ class SignUpFormState extends State<SignUpForm> {
           const SizedBox(
             height: 10,
           ),
+          //닉네임 입력 필드
           const Text(
             '닉네임',
             style: TextStyle(
@@ -302,6 +306,7 @@ class SignUpFormState extends State<SignUpForm> {
             ),
           ),
           const SizedBox(height: 10),
+          //성별 입력 필드
           const Text(
             '성별',
             style: TextStyle(
@@ -353,6 +358,7 @@ class SignUpFormState extends State<SignUpForm> {
             ],
           ),
           const SizedBox(height: 10),
+          //생년월일 입력 필드
           const Text(
             '생년월일',
             style: TextStyle(

@@ -1,3 +1,5 @@
+//감정별로 행동을 추천해주는 페이지
+
 import 'package:flutter/material.dart';
 import 'package:heart/drawer/phq9test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,25 +27,27 @@ class Recommendation extends StatefulWidget {
 }
 
 class _RecommendationState extends State<Recommendation> {
-  List<Map<String, dynamic>> _currentRecommendations = [];
+  List<Map<String, dynamic>> _currentRecommendations = []; //추천행동 리스트
   late String memberID;
   late String status;
   late int memberActionId;
   SharedPreferences? prefs;
-  List<String> testScore = ['', ''];
+  List<String> testScore = ['', '']; // 우울척도 테스트 점수 저장
 
   Emotion? _selectedEmotion;
-  bool _isLoading = false;
+  bool _isLoading = false;  // 로딩 상태를 나타내는 플래그
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     List<String>? storedTestScore = prefs!.getStringList('testScore');
 
+   // 테스트 점수가 없는 경우 초기값으로 설정
     if (storedTestScore == null || storedTestScore.length < 2) {
       await prefs!.setStringList('testScore', ['', '']);
       setState(() {
         testScore = ['', ''];
       });
     } else {
+       // 테스트 점수가 두 개 이상인 경우 최신 두 개의 점수만 유지
       storedTestScore = storedTestScore.length > 2
           ? storedTestScore.sublist(storedTestScore.length - 2)
           : storedTestScore;
@@ -61,6 +65,7 @@ class _RecommendationState extends State<Recommendation> {
 
     _initPrefs();
 
+  // 위젯이 처음 렌더링될 때 감정 선택창을 보여줌
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final String? selectedEmotion = await _showImagePicker(context);
       if (selectedEmotion != null) {
@@ -76,20 +81,24 @@ class _RecommendationState extends State<Recommendation> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // 선택한 감정이 있는 경우 추천 행동 불러오기
     if (_selectedEmotion != null) {
       _Recommendations(_selectedEmotion!);
     }
   }
 
+  // 추천 행동을 불러오는 메소드
   Future<void> _Recommendations(Emotion emotion) async {
     setState(() {
       _isLoading = true;
     });
 
     try {
+       // API 호출로 추천 행동을 가져옴
       final response = await Recommendations(
           memberID, emotion.toString().split('.').last);
 
+      // API 응답을 처리하여 추천 행동 목록을 구성
       final List<Map<String, dynamic>> recommendations = await Future.wait(
         (response as List).map((item) async {
           final actionId = item['actionId'];
@@ -105,7 +114,7 @@ class _RecommendationState extends State<Recommendation> {
         }),
       );
       setState(() {
-        _currentRecommendations = recommendations;
+        _currentRecommendations = recommendations; // 추천 행동 목록을 상태로 저장
       });
     } catch (e) {
       setState(() {
@@ -120,7 +129,7 @@ class _RecommendationState extends State<Recommendation> {
     }
   }
 
-
+  // 감정을 선택하는 하단 모달 창을 표시하는 메소드
   Future<String?> _showImagePicker(BuildContext context) async {
     return showModalBottomSheet<String>(
       context: context,
@@ -233,6 +242,7 @@ class _RecommendationState extends State<Recommendation> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // 감정이 선택되지 않았을 경우 로딩 상태 표시
             if (_selectedEmotion == null)
               const Center(
                 child: Text(
@@ -278,6 +288,7 @@ class _RecommendationState extends State<Recommendation> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () async {
+                          // 행동 상태에 따라 해당 페이지로 이동
                           if (_currentRecommendations[index]['status'] ==
                               '없음') {
                             final result =
@@ -379,6 +390,8 @@ class _RecommendationState extends State<Recommendation> {
                   ),
                 ),
               const SizedBox(height: 30),
+              
+              //우울 척도 테스트와 결과를 보여주는 부분
               const Center(
                 child: Text(
                   '우울 척도 Test',

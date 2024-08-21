@@ -1,3 +1,4 @@
+//감정의 빈도를 일기 작성을 기반으로 월 단위로 원 그래프로 나타내는 화면 
 import 'package:flutter/material.dart';
 import 'package:heart/Api/emotion_apis.dart';
 import 'package:heart/Model/emotion_model.dart';
@@ -13,9 +14,9 @@ class TotalEmotion extends StatefulWidget {
 }
 
 class _TotalEmotionState extends State<TotalEmotion> {
-  late Future<MonthlyEmo> sentiment;
-  String writeDate = DateFormat('yyyyMM').format(DateTime.now());
-  int touchedIndex = 0;
+  late Future<MonthlyEmo> sentiment; // 월간 감정 데이터를 비동기로 가져올 Future 변수
+  String writeDate = DateFormat('yyyyMM').format(DateTime.now()); // 현재 월을 'yyyyMM' 형식으로 저장
+  int touchedIndex = 0; // 터치된 인덱스 저장 변수
 
   @override
   void initState() {
@@ -26,18 +27,19 @@ class _TotalEmotionState extends State<TotalEmotion> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: sentiment,
+      future: sentiment, // 비동기 데이터 전달
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return AspectRatio(
             aspectRatio: 1.3,
             child: AspectRatio(
-              aspectRatio: 1,
+              aspectRatio: 1, // 원형 차트의 비율 설정
               child: PieChart(
                 PieChartData(
                   pieTouchData: PieTouchData(
                     touchCallback: (FlTouchEvent event, pieTouchResponse) {
                       setState(() {
+                        // 차트 터치 시 인덱스 업데이트
                         if (!event.isInterestedForInteractions ||
                             pieTouchResponse == null ||
                             pieTouchResponse.touchedSection == null) {
@@ -50,7 +52,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
                     },
                   ),
                   borderData: FlBorderData(
-                    show: false,
+                    show: false, // 차트 경계선 비활성화
                   ),
                   sectionsSpace: 0,
                   centerSpaceRadius: 0,
@@ -67,11 +69,12 @@ class _TotalEmotionState extends State<TotalEmotion> {
     );
   }
 
+// 원형 차트의 섹션 데이터 반환 메서드
   List<PieChartSectionData> showingSections(
       AsyncSnapshot<MonthlyEmo> snapshot) {
     var sentiments = snapshot.data!;
 
-    // 여기 sentiment 받아서 처리하기
+    // 원형 차트의 각 섹션 데이터 정의
     final sectionsData = [
       PieChartSectionData(
         color: const Color.fromARGB(255, 255, 120, 110),
@@ -154,6 +157,8 @@ class _TotalEmotionState extends State<TotalEmotion> {
         ),
       ),
     ];
+
+    // 각 섹션 데이터의 스타일을 설정하고, 값이 0보다 큰 섹션만 반환
     return sectionsData
         .where((section) => section.value > 0)
         .toList()
@@ -191,6 +196,7 @@ class _TotalEmotionState extends State<TotalEmotion> {
   }
 }
 
+// 원형 차트의 각 섹션에 대한 배지 위젯
 class _Badge extends StatelessWidget {
   final String assetRoute;
   final double size;
