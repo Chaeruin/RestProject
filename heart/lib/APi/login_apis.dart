@@ -23,7 +23,7 @@ Future<bool> saveUser(LoginModel member) async {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(member.toJson()),
+      body: jsonEncode(member.toMap()),
     );
 
     print('Response Status Code: ${response.statusCode}');

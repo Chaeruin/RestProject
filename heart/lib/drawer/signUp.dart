@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'package:flutter/material.dart';
+import 'package:heart/Model/login_model.dart';
 import 'package:intl/intl.dart';
 import '../Api/login_apis.dart';
 
@@ -515,7 +516,27 @@ class SignUpFormState extends State<SignUpForm> {
                 return;
               }
 
-              Navigator.pop(context);
+              //회원가입 정보 전송
+              LoginModel newMember = LoginModel(
+                memberId: _email,
+                password: _password,
+                nickname: _nickname,
+                gender: _gender,
+                birthdate: _birthdate,
+              );
+              var saveCheck = saveUser(newMember);
+              if (await saveCheck) {
+                Navigator.pop(context);
+              } else {
+                showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog.adaptive(
+                        title: Text('회원가입 실패!'),
+                        content: Text('다시한번 시도해주세요.'),
+                      );
+                    });
+              }
             },
             child: const Text(
               '회원가입 하기',

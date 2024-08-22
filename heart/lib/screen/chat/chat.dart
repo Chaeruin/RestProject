@@ -29,7 +29,7 @@ class _ChatState extends State<Chat> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: memberId != null
+      home: memberId != null || memberId != ''
           ? ChatScreen(memberId: memberId!)
           : const Scaffold(
               body: Center(
@@ -79,6 +79,7 @@ class ChatScreenState extends State<ChatScreen> {
         chatId = responseData['chatId'];
       });
       print('채팅방이 생성되었습니다. chatId: $chatId');
+      print('chat memberID: $memberId');
     } else {
       print('채팅방 생성에 실패했습니다. 에러 코드: ${response.statusCode}');
     }
@@ -323,8 +324,7 @@ class ChatMessage extends StatelessWidget {
                   margin: const EdgeInsets.only(
                       right: 10.0, left: 10.0, bottom: 10),
                   child: const CircleAvatar(
-                    backgroundImage:
-                        AssetImage('lib/assets/images/giryong.png'),
+                    backgroundImage: AssetImage('lib/assets/image/2.png'),
                     radius: 20,
                   ),
                 ),
