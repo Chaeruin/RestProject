@@ -49,7 +49,7 @@ def print_and_slack_M(message):
 @app.route('/')
 def isRunning():
     message = "server is running"
-    print_and_slack(SLACK_CHANNEL_SERVER, message)
+    send_slack(SLACK_CHANNEL_SERVER, message)
     return message
 
 def async_route(f):
