@@ -26,16 +26,16 @@ class AddDiaries extends StatefulWidget {
 }
 
 class _AddDiariesState extends State<AddDiaries> {
-  late String _content;
+  late String _content = ' ';
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = '';
   late String _selectedImage = 'lib/assets/image/1.png';
   final Emotion selectedEmotion = Emotion.joy;
   Emotion? _selectedEmotion;
-  late String beforeEmotion;
+  late String beforeEmotion = ' ';
 
-  late SharedPreferences prefs;
+  late final SharedPreferences prefs;
   List<String> writedays = [];
 
   Future<void> _initPrefs() async {
@@ -55,6 +55,11 @@ class _AddDiariesState extends State<AddDiaries> {
     writedays.add(date);
     await prefs.setStringList(widget.memberId, writedays); // writedays 리스트를 저장
     setState(() {});
+  }
+
+  //음악 생성을 위한 딜레이 추가
+  Future<void> musicCreationDelay() async {
+    await Future.delayed(Duration(minutes: 4));
   }
 
   @override
@@ -190,6 +195,7 @@ class _AddDiariesState extends State<AddDiaries> {
           IconButton(
             onPressed: () async {
               if (_emotionType.isEmpty) {
+                //감정이 선택되지 않은 경우 경고 메시지
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -225,6 +231,7 @@ class _AddDiariesState extends State<AddDiaries> {
                 return;
               }
               if (_content.isEmpty) {
+                // 내용이 입력되지 않은 경우 경고 메시지
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -259,6 +266,10 @@ class _AddDiariesState extends State<AddDiaries> {
                 );
                 return;
               }
+
+              // 음악 추천 요청을 위한 감정 전송
+              await sendEmotionAndMemberId(widget.memberId, _emotionType);
+
               String? afterEmotion = await _showImagePicker(context);
               print('beforeEmotin: $beforeEmotion');
               print('afterEmotion: $afterEmotion');
@@ -273,9 +284,25 @@ class _AddDiariesState extends State<AddDiaries> {
               if (await saveDiary(newPage)) {
                 _updateWritedays(_writeDate);
                 Navigator.pop(context);
-              } //작성 실패 시 표시하는 창 작성하기
-
-              // Navigator.pop(context);
+              } else {
+                // 실패 시 알림 처리
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: const Text('일기 저장에 실패했습니다.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('확인'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             },
             icon: const Icon(Icons.check),
           ),

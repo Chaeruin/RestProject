@@ -134,26 +134,26 @@ Future<bool> deleteDiary(String diaryId) async {
   }
 }
 
-// // 음악 생성을 위한 ID와 emotion 요청을 보내는 함수
-// Future<void> sendEmotionAndMemberId(String memberId, String emotion) async {
-//   final url =
-//       Uri.parse('https://yourdomain.com/music/recommendation'); // 실제 서버 URL로 변경
-//   final response = await http.post(
-//     url,
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: json.encode({
-//       'memberId': memberId,
-//       'emotion': emotion,
-//     }),
-//   );
+// 음악 생성을 위한 ID와 emotion 요청을 보내는 함수
+Future<void> sendEmotionAndMemberId(String memberId, String emotion) async {
+  final url =
+      Uri.parse('https://yourdomain.com/music/recommendation'); // 실제 서버 URL로 변경
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: json.encode({
+      'memberId': memberId,
+      'emotion': emotion,
+    }),
+  );
 
-//   if (response.statusCode == 200) {
-//     // 서버 응답 성공 처리
-//     print('Music create requestion successfully');
-//   } else {
-//     // 서버 응답 실패 처리
-//     print('Failed to request music creation: ${response.statusCode}');
-//   }
-// }
+  if (response.statusCode == 200) {
+    // 서버 응답 성공 처리
+    print('Music create requestion successfully');
+  } else {
+    // 서버 응답 실패 처리
+    print('Failed to request music creation: ${response.statusCode}');
+  }
+}
