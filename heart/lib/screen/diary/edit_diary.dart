@@ -20,7 +20,6 @@ class _EditDiariesState extends State<EditDiaries> {
   bool _isEditing = false;
   late TextEditingController _textEditingController;
   late String _content;
-  String _emotionType = '';
   late String _selectedImage = 'lib/assets/image/3.png';
   SharedPreferences? prefs;
   List<String> writedays = [];
@@ -40,7 +39,7 @@ class _EditDiariesState extends State<EditDiaries> {
 
   void _updateWritedays(String date) async {
     writedays.remove(date);
-    await prefs!.setStringList(widget.diary.memberId,writedays); 
+    await prefs!.setStringList(widget.diary.memberId, writedays);
     setState(() {});
   }
 
@@ -50,13 +49,11 @@ class _EditDiariesState extends State<EditDiaries> {
     _textEditingController =
         TextEditingController(text: (widget.diary.content));
     _content = '';
-    _emotionType = widget.diary.beforeEmotion;
     _diaryFuture = readDiarybyDiaryId(widget.diary.diaryId!);
     _selectedImage =
         'lib/assets/image/emotions/${widget.diary.beforeEmotion}.png';
     _initPrefs();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -139,14 +136,8 @@ class _EditDiariesState extends State<EditDiaries> {
                 return;
               }
               //백엔드 요청
-              DiaryModel newPage = DiaryModel(
-                diaryId: widget.diary.diaryId,
-                memberId: widget.diary.memberId,
-                writeDate: widget.diary.writeDate,
-                content: _content,
-                beforeEmotion: _emotionType,
-              );
-              await updateDiary(newPage, widget.diary.diaryId!);
+
+              await updateDiary(_content, widget.diary.diaryId!);
               setState(() {
                 _isEditing = false; // 저장 버튼을 누르면 수정 모드 종료
               });

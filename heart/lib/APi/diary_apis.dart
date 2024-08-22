@@ -79,15 +79,17 @@ Future<DiaryModel?> readDiarybyDate(String memberId, DateTime writeDate) async {
   return null;
 }
 
-//다이어리 수정
-Future<bool> updateDiary(DiaryModel diaries, int diaryId) async {
+// 다이어리 수정
+Future<bool> updateDiary(String contents, int diaryId) async {
   try {
     final response = await http.put(
       Uri.parse("http://54.79.110.239:8080/api/diaries/$diaryId/edit"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: utf8.encode(jsonEncode(diaries.toJson())),
+      body: jsonEncode(<String, String>{
+        'content': contents,
+      }),
     );
 
     print('Response Status Code: ${response.statusCode}');
@@ -131,3 +133,27 @@ Future<bool> deleteDiary(String diaryId) async {
     return false;
   }
 }
+
+// // 음악 생성을 위한 ID와 emotion 요청을 보내는 함수
+// Future<void> sendEmotionAndMemberId(String memberId, String emotion) async {
+//   final url =
+//       Uri.parse('https://yourdomain.com/music/recommendation'); // 실제 서버 URL로 변경
+//   final response = await http.post(
+//     url,
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     body: json.encode({
+//       'memberId': memberId,
+//       'emotion': emotion,
+//     }),
+//   );
+
+//   if (response.statusCode == 200) {
+//     // 서버 응답 성공 처리
+//     print('Music create requestion successfully');
+//   } else {
+//     // 서버 응답 실패 처리
+//     print('Failed to request music creation: ${response.statusCode}');
+//   }
+// }
