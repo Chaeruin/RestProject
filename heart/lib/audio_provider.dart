@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Api/audio_apis.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:provider/provider.dart';
 
 class AudioProvider with ChangeNotifier {
   // ignore: prefer_final_fields

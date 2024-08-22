@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: IndexedStack(
                       index: _selectedIndex,
                       children: [
-                        const Chat(),
+                        Chat(memberId: memberID),
                         Diary(memID: memberID),
                         const Home(),
                         Statistics(memId: memberID),
@@ -160,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: _pageController,
                 onPageChanged: _onPageChanged,
                 children: [
-                  const Chat(),
+                  Chat(memberId: memberID),
                   Diary(memID: memberID),
                   const Home(),
                   Statistics(memId: memberID),

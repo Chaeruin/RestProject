@@ -5,7 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Chat extends StatefulWidget {
-  const Chat({super.key, this.memberId});
+  const Chat({super.key, required this.memberId});
 
   final String? memberId;
 
@@ -14,7 +14,13 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  String? memberId = '0';
+  late final String? memberId;
+
+  @override
+  void initState() {
+    super.initState();
+    memberId = widget.memberId;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +191,7 @@ class ChatScreenState extends State<ChatScreen> {
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) {
-                  return const Chat();
+                  return Chat(memberId: widget.memberId);
                 },
               ),
             );
