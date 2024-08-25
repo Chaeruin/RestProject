@@ -9,10 +9,6 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import java.io.IOException;
 
 public class SlackNotifier {
-    private static final String SLACK_TOKEN = "xoxb-7545114056914-7590356685861-1qqDpt1BFCJTTpbEdLhTl0W5";
-    private static final String SLACK_CHANNEL_DIARY = "C07J081L0Q2"; // Slack Diary Channel ID
-    private static final String SLACK_CHANNEL_SIGNUP = "C07JDGMHQDQ"; // Slack SignUp Channel ID
-    private static final String SLACK_CHANNEL_MEMBERACTION = "C07JS7XAMSM"; // Slack MemberAction Channel ID
 
     private static final Slack slack = Slack.getInstance();
     private static final MethodsClient methods = slack.methods(SLACK_TOKEN);
