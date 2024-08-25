@@ -1,6 +1,7 @@
 package heart.project.controller.member;
 
 import heart.project.domain.Member;
+import heart.project.notifier.SlackNotifier;
 import heart.project.repository.member.MemberUpdateApiDto;
 import heart.project.service.member.MemberService;
 import jakarta.validation.Valid;
@@ -80,6 +81,14 @@ public class MemberApiController {
 
         try {
             Member savedMember = memberService.save(member);
+
+            // Slack 알림 메시지 생성
+            String slackMessage = String.format("새로운 멤버가 저장되었습니다:\n- ID: %s\n- 멤버 ID: %s\n- 비밀번호: %s\n- 닉네임: %s\n- 성별: %s\n- 생년월일: %s",
+                    savedMember.getId(), savedMember.getMemberId(), savedMember.getPassword(), savedMember.getNickname(), savedMember.getGender(), savedMember.getBirthdate());
+
+            // Slack 알림 전송
+            SlackNotifier.logAndNotifySignUp(slackMessage);
+
             return ResponseEntity.ok("멤버가 성공적으로 저장되었습니다.");
         } catch (IllegalArgumentException e) {
             // 중복된 아이디가 이미 존재하는 경우 클라이언트에게 알림

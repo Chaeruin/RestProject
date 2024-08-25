@@ -2,6 +2,7 @@ package heart.project.controller.diary;
 
 import heart.project.domain.Diary;
 import heart.project.domain.Emotion;
+import heart.project.notifier.SlackNotifier;
 import heart.project.repository.diary.DiaryUpdateApiDto;
 import heart.project.service.diary.DiaryService;
 import heart.project.service.emotion.EmotionService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -57,6 +59,13 @@ public class DiaryApiController {
         savedDiary.setBeforeEmotion(beforeEmotion);
         savedDiary.setAfterEmotion(afterEmotion);
 
+        // Slack 알림 메시지 생성
+        String slackMessage = String.format("새로운 일기가 저장되었습니다:\n- 일기 ID: %s\n- 회원 ID: %s\n- 작성 일자: %s\n- 작성 내용: %s\n- 일기 작성 이전 감정: %s\n- 일기 작성 이후 감정: %s",
+                savedDiary.getDiaryId(), savedDiary.getMemberId(), savedDiary.getWriteDate(), savedDiary.getContent(), beforeEmotion, afterEmotion);
+
+        // Slack 알림 전송
+        SlackNotifier.logAndNotifyDiary(slackMessage);
+
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("message", "일기가 저장되었습니다");
         responseData.put("savedDiary", savedDiary);
@@ -70,7 +79,19 @@ public class DiaryApiController {
     @PutMapping("/{diaryId}/edit")
     public ResponseEntity<String> editDiary(@PathVariable("diaryId") Integer diaryId, @RequestBody DiaryUpdateApiDto updateParam) {
 
+        // 일기 수정
         diaryService.update(diaryId, updateParam);
+
+        // 수정된 일기 조회
+        Diary updatedDiary = diaryService.findById(diaryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 Diary ID의 일기를 찾을 수 없습니다."));
+
+        // Slack 알림 메시지 생성
+        String slackMessage = String.format("일기가 수정되었습니다:\n- 일기 ID: %s\n- 회원 ID: %s\n- 작성 일자: %s\n- 작성 내용: %s\n- 일기 작성 이전 감정: %s\n- 일기 작성 이후 감정: %s",
+                updatedDiary.getDiaryId(), updatedDiary.getMemberId(), updatedDiary.getWriteDate(), updatedDiary.getContent(), updatedDiary.getBeforeEmotion(), updatedDiary.getAfterEmotion());
+
+        // Slack 알림 전송
+        SlackNotifier.logAndNotifyDiary(slackMessage);
 
         return ResponseEntity.ok("일기가 수정되었습니다");
     }
@@ -82,6 +103,13 @@ public class DiaryApiController {
     public ResponseEntity<String> deleteDiary(@PathVariable("diaryId") Integer diaryId) {
         diaryService.delete(diaryId);
         emotionService.delete(diaryId);
+
+        // Slack 알림 메시지 생성
+        String slackMessage = String.format("일기가 삭제되었습니다:\n- 일기 ID: %s\n", diaryId);
+
+        // Slack 알림 전송
+        SlackNotifier.logAndNotifyDiary(slackMessage);
+
         return ResponseEntity.ok("일기가 삭제되었습니다");
     }
 
