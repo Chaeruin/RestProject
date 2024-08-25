@@ -1,6 +1,7 @@
 package heart.project.controller.memberaction;
 
 import heart.project.domain.MemberAction;
+import heart.project.notifier.SlackNotifier;
 import heart.project.repository.memberaction.MemberActionUpdateApiDto;
 import heart.project.service.memberaction.MemberActionService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,13 @@ public class MemberActionApiController {
     public ResponseEntity<?> saveMemberAction(@RequestBody MemberAction memberAction) {
         MemberAction savedMemberAction = memberActionService.save(memberAction);
 
+        // Slack 알림 메시지 생성
+        String slackMessage = String.format("새로운 멤버 행동이 저장되었습니다:\n- 멤버행동 ID: %s\n- 행동 ID: %s\n- 멤버 ID: %s\n- 행동 내용: %s\n- 상태: %s\n- 행동하기 이전 감정: %s\n- 행동하기 이후 감정: %s\n- 행동 추천 날짜: %s",
+                savedMemberAction.getMemberActionId(), savedMemberAction.getActionId(), savedMemberAction.getMemberId(), savedMemberAction.getAction(), savedMemberAction.getStatus(), savedMemberAction.getBeforeEmotion(), savedMemberAction.getAfterEmotion(), savedMemberAction.getRecommendationDate());
+
+        // Slack 알림 전송
+        SlackNotifier.logAndNotifyMemberAction(slackMessage);
+
         Map<String, Object> responseData = new LinkedHashMap<>();
         responseData.put("message", "행동이 저장되었습니다");
         responseData.put("savedMemberAction", savedMemberAction);
@@ -42,6 +50,13 @@ public class MemberActionApiController {
             @RequestBody MemberActionUpdateApiDto updateParam) {
 
         MemberAction completedMemberAction = memberActionService.completeMemberAction(memberActionId, updateParam);
+
+        // Slack 알림 메시지 생성
+        String slackMessage = String.format("멤버 행동이 완료되었습니다:\n- 멤버행동 ID: %s\n- 행동 ID: %s\n- 멤버 ID: %s\n- 행동 내용: %s\n- 상태: %s\n- 행동하기 이전 감정: %s\n- 행동하기 이후 감정: %s\n- 행동 추천 날짜: %s",
+                completedMemberAction.getMemberActionId(), completedMemberAction.getActionId(), completedMemberAction.getMemberId(), completedMemberAction.getAction(), completedMemberAction.getStatus(), completedMemberAction.getBeforeEmotion(), completedMemberAction.getAfterEmotion(), completedMemberAction.getRecommendationDate());
+
+        // Slack 알림 전송
+        SlackNotifier.logAndNotifyMemberAction(slackMessage);
 
         Map<String, Object> responseData = new LinkedHashMap<>();
         responseData.put("message", "행동이 완료되었습니다");
