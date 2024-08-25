@@ -51,7 +51,9 @@ Future<List<Map<String, dynamic>>> Recommendations(String memberId, String emoti
       print('Response Body: ${utf8.decode(response.bodyBytes)}');
       return data.map((item) => {
         'action': item['action'],
-        'actionId': item['actionId']
+        'actionId': item['actionId'],
+        'memberActionId': item['memberActionId'],
+        'status':item['status']
       }).toList();
     } else {
       throw Exception('Failed to load recommendations');
@@ -61,8 +63,11 @@ Future<List<Map<String, dynamic>>> Recommendations(String memberId, String emoti
   }
 }
 
-//행동 3개중 하나 선택->진행중
+//행동 진행중
 Future<Map<String, dynamic>> startAction(int actionId, String memberId, String beforeEmotion) async {
+  final now = DateTime.now();
+  final recommendationDate =
+      '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
   final url = Uri.parse('http://54.79.110.239:8080/api/member-actions/add');
   final headers = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -72,6 +77,7 @@ Future<Map<String, dynamic>> startAction(int actionId, String memberId, String b
     'actionId': actionId,
     'memberId': memberId,
     'beforeEmotion': beforeEmotion,
+    'recommendationDate': recommendationDate
   });
 
   final response = await http.post(url, headers: headers, body: body);
@@ -83,9 +89,30 @@ Future<Map<String, dynamic>> startAction(int actionId, String memberId, String b
   } else {
     return {
       'error': true,
-      'statusCode': response.body,//-> 수정하기
+      'statusCode': response.body,
       'body': utf8.decode(response.bodyBytes, allowMalformed: true),
     };
   }
 }
+
 //행동 완료
+Future<Map<String, dynamic>> completeAction(int memberActionId, String afterEmotion) async {
+  final response = await http.put(
+    Uri.parse('http://54.79.110.239:8080/api/member-actions/$memberActionId/complete'),
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Accept-Charset': 'utf-8'
+    },
+    body: jsonEncode({'afterEmotion': afterEmotion}),
+  );
+
+  if (response.statusCode == 201) {
+    final decodedBody = utf8.decode(response.bodyBytes, allowMalformed: true);
+    print('Decoded Response Body: $decodedBody');
+    
+   
+    return jsonDecode(decodedBody) as Map<String, dynamic>;
+  } else {
+    throw Exception('Failed to complete action: ${response.statusCode}');
+  }
+}

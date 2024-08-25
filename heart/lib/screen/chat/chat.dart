@@ -1,3 +1,5 @@
+//챗봇 페이지
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -25,18 +27,11 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: memberId != null || memberId != ''
-          ? ChatScreen(memberId: memberId!)
-          : const Scaffold(
-              body: Center(
-                child: Text('로그인이 필요합니다.'),
-              ),
-            ),
-    );
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: ChatScreen(memberId: memberId!));
   }
 }
 
@@ -65,6 +60,7 @@ class ChatScreenState extends State<ChatScreen> {
     enterChatRoom();
   }
 
+  // 새로운 채팅방을 요청하는 함수
   Future<void> enterChatRoom() async {
     const String springUrl = 'http://54.79.110.239:8080/api/chat/newChatRoom';
 
@@ -85,18 +81,20 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
+// 사용자가 메시지를 입력하고 전송할 때 호출되는 함수
   void _handleSubmitted(String text) {
-    _textController.clear();
+    _textController.clear(); //입력 필드 초기화
     ChatMessage message = ChatMessage(
       text: text,
       isUser: true,
     );
     setState(() {
-      _messages.insert(0, message);
-      sendMessage(chatId, text, memberId!);
+      _messages.insert(0, message); // 메시지를 채팅 목록에 추가
+      sendMessage(chatId, text, memberId!); // 서버로 메시지 전송
     });
   }
 
+// 서버로 메시지를 전송하는 함수
   Future<void> sendMessage(int chatId, String message, String? memberId) async {
     if (memberId == null) {
       print('Error: memberId is null');
@@ -122,18 +120,14 @@ class ChatScreenState extends State<ChatScreen> {
         },
         body: jsonEncode(chat));
 
-    print('Spring 서버 응답 Status Code: ${response.statusCode}');
-    print('Spring 서버 응답 Body: ${utf8.decode(response.bodyBytes)}');
-
     if (response.statusCode == 200) {
-      print('Spring으로 메세지가 성공적으로 전달되었습니다');
       final springResponseBody = jsonDecode(utf8.decode(response.bodyBytes));
       final List<dynamic> categoryList = springResponseBody['category'];
       final receivedMessage = springResponseBody['response'];
-      // 카테고리 받아오기
+
+      // 서버로부터 받은 카테고리 확인
       final String receiveCategory =
           categoryList.isNotEmpty ? categoryList[0] : 'Unknown';
-      print('Category: $receiveCategory'); // 감정/자살충동
 
       if (receiveCategory == "감정/자살충동" ||
           receiveCategory == "감정/살인욕구" ||
@@ -153,6 +147,7 @@ class ChatScreenState extends State<ChatScreen> {
         });
       } else {
         setState(() {
+          // 특정 카테고리의 경우 이미지와 함께 응답
           _messages.insert(
             0,
             ChatMessage(
@@ -164,97 +159,104 @@ class ChatScreenState extends State<ChatScreen> {
         });
       }
     } else {
-      print('Spring으로 메세지 전송에 실패했습니다. Error: ${response.reasonPhrase}');
       setState(() {
         _isLoading = false;
       });
     }
   }
 
+//채팅 화면 구성
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          textAlign: TextAlign.center,
-          '마음이',
-          style: TextStyle(
-            color: Color.fromARGB(255, 89, 181, 81),
-            fontSize: 25,
-            fontFamily: 'single_day',
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) {
-                  return Chat(memberId: widget.memberId);
-                },
-              ),
-            );
-          },
-        ),
-        backgroundColor: const Color(0xFFFFFBA0),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(5.0),
-          child: Container(
-            color: const Color.fromARGB(255, 255, 255, 255),
-          ),
-        ),
-      ),
-      backgroundColor: const Color.fromARGB(255, 250, 248, 205),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Column(
-          children: <Widget>[
-            Flexible(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: _messages.length,
-                itemBuilder: (_, int index) => _messages[index],
-              ),
+    return (memberId == null || memberId == '')
+        ? Scaffold(
+            body: Center(
+              child: Text('로그인이 필요합니다!'),
             ),
-            const Divider(height: 1.0),
-            const SizedBox(height: 20),
-            if (_isLoading)
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 5.0),
-                      child: Container(
-                        height: 40.0,
-                        width: 100.0,
-                        color: Colors.white,
-                        child: const SpinKitThreeBounce(
-                          color: Colors.black,
-                          size: 10.0,
-                        ),
-                      ),
-                    ),
-                  ],
+          )
+        : Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text(
+                textAlign: TextAlign.center,
+                '마음이',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 89, 181, 81),
+                  fontSize: 25,
+                  fontFamily: 'single_day',
                 ),
               ),
-            const SizedBox(width: 8, height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return Chat(memberId: widget.memberId);
+                      },
+                    ),
+                  );
+                },
               ),
-              child: _buildTextComposer(),
+              backgroundColor: const Color(0xFFFFFBA0),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(5.0),
+                child: Container(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                ),
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+            backgroundColor: const Color.fromARGB(255, 250, 248, 205),
+            body: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Column(
+                children: <Widget>[
+                  Flexible(
+                    child: ListView.builder(
+                      reverse: true,
+                      itemCount: _messages.length,
+                      itemBuilder: (_, int index) => _messages[index],
+                    ),
+                  ),
+                  const Divider(height: 1.0),
+                  const SizedBox(height: 20),
+                  if (_isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 5.0),
+                            child: Container(
+                              height: 40.0,
+                              width: 100.0,
+                              color: Colors.white,
+                              child: const SpinKitThreeBounce(
+                                color: Colors.black,
+                                size: 10.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(width: 8, height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                    ),
+                    child: _buildTextComposer(),
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 
+// 텍스트 입력 필드 생성 함수
   Widget _buildTextComposer() {
     return Builder(
       builder: (BuildContext context) {
@@ -380,10 +382,10 @@ class ChatMessage extends StatelessWidget {
                           fontSize: 20.0,
                         ),
                       ),
-                      // OutlineButton 추가
+
+                      // 자살 예방 상담 링크 버튼
                       OutlinedButton(
                         onPressed: () {
-                          // pubspec.yaml에 url_launcher: ^6.0.9 추가
                           launchUrl(Uri.parse("https://www.lifeline.or.kr/"));
                         },
                         child: const Text('자살 예방 상담하기'),

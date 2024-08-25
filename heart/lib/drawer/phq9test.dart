@@ -1,3 +1,5 @@
+//우울증 척도 테스트
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,11 +38,12 @@ class _PHQ9State extends State<PHQ9> {
           ),
         ),
       ),
-      body: TableForm(memberId: memberId),
+      body: TableForm(memberId: memberId), // 설문 테이블 폼을 표시
     );
   }
 }
 
+//설문지 테이블 생성
 class TableForm extends StatefulWidget {
   final String memberId;
   const TableForm({super.key, required this.memberId});
@@ -52,11 +55,13 @@ class TableForm extends StatefulWidget {
 class TableFormState extends State<TableForm> {
   int score = 0;
   SharedPreferences? prefs;
-  List<String> testScore = [];
+  List<String> testScore = []; //저장된 점수 리스트
   int bottomNavIndex = 0;
 
+  //질문에 대한 선택된 값을 저장하는 리스트, 초기값은 모두 0
   final List<int> _selectedValues = List.filled(9, 0);
 
+  // SharedPreferences 초기화 및 저장된 점수 리스트 불러오기
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     final testScoreList = prefs!.getStringList('testScore');
@@ -75,12 +80,14 @@ class TableFormState extends State<TableForm> {
     }
   }
 
+  // 테스트 점수 업데이트 및 SharedPreferences에 저장
   void _updateTestScore(String score) async {
     testScore.add(score);
     await prefs!.setStringList('testScore', testScore);
     setState(() {});
   }
 
+  // 사용자가 체크박스를 변경할 때 호출되는 함수
   void _onCheckboxChanged(int questionIndex, int value) {
     setState(() {
       _selectedValues[questionIndex] = value;
@@ -182,7 +189,7 @@ class TableFormState extends State<TableForm> {
                 ),
               ],
             ),
-            // Score and Result
+            // 점수와 결과 확인 버튼
             IconButton(
               onPressed: () {
                 _updateTestScore(score.toString());
@@ -211,6 +218,7 @@ class TableFormState extends State<TableForm> {
                             ),
                           ),
                         ),
+                        //점수에 따른 결과 표시
                         if (score <= 4)
                           const Padding(
                             padding: EdgeInsets.all(8.0),

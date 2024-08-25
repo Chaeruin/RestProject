@@ -1,4 +1,6 @@
+//일기를 작성하는 페이지
 import 'package:flutter/material.dart';
+import 'package:heart/Api/audio_apis.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +18,7 @@ enum Emotion {
 }
 
 class AddDiaries extends StatefulWidget {
-  final DateTime selectedDate;
+  final DateTime selectedDate; //사용자가 선택한 날짜
   final String memberId;
   const AddDiaries(
       {super.key, required this.selectedDate, required this.memberId});
@@ -29,7 +31,7 @@ class _AddDiariesState extends State<AddDiaries> {
   late String _content = ' ';
   late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
-  String _emotionType = '';
+  String _emotionType = ''; //선택한 감정 타입
   late String _selectedImage = 'lib/assets/image/1.png';
   final Emotion selectedEmotion = Emotion.joy;
   Emotion? _selectedEmotion;
@@ -38,6 +40,7 @@ class _AddDiariesState extends State<AddDiaries> {
   late final SharedPreferences prefs;
   List<String> writedays = [];
 
+// SharedPreferences 초기화
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     final writedaysList = prefs.getStringList(widget.memberId);
@@ -51,6 +54,7 @@ class _AddDiariesState extends State<AddDiaries> {
     }
   }
 
+// 작성한 날짜를 업데이트하고 저장
   void _updateWritedays(String date) async {
     writedays.add(date);
     await prefs.setStringList(widget.memberId, writedays); // writedays 리스트를 저장
@@ -79,6 +83,7 @@ class _AddDiariesState extends State<AddDiaries> {
     });
   }
 
+// 감정 선택 모달을 표시하는 함수
   Future<String?> _showImagePicker(BuildContext context) async {
     return showModalBottomSheet<String>(
       context: context,
@@ -89,6 +94,7 @@ class _AddDiariesState extends State<AddDiaries> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 감정별로 버튼을 생성하고 이미지와 감정 타입을 설정
               ElevatedButton(
                 onPressed: () {
                   setState(() {
@@ -194,6 +200,7 @@ class _AddDiariesState extends State<AddDiaries> {
         actions: [
           IconButton(
             onPressed: () async {
+              // 감정이 선택되지 않은 경우 경고 메시지 표시
               if (_emotionType.isEmpty) {
                 //감정이 선택되지 않은 경우 경고 메시지
                 showDialog(
@@ -230,6 +237,7 @@ class _AddDiariesState extends State<AddDiaries> {
                 );
                 return;
               }
+              // 내용이 입력되지 않은 경우 경고 메시지 표시
               if (_content.isEmpty) {
                 // 내용이 입력되지 않은 경우 경고 메시지
                 showDialog(
@@ -267,10 +275,11 @@ class _AddDiariesState extends State<AddDiaries> {
                 return;
               }
 
-              // 음악 추천 요청을 위한 감정 전송
-              await sendEmotionAndMemberId(widget.memberId, _emotionType);
-
               String? afterEmotion = await _showImagePicker(context);
+
+              // 음악 추천 요청을 위한 감정 전송
+              await sendEmotionData(widget.memberId, afterEmotion!);
+
               print('beforeEmotin: $beforeEmotion');
               print('afterEmotion: $afterEmotion');
               //백엔드 요청
@@ -282,7 +291,7 @@ class _AddDiariesState extends State<AddDiaries> {
                 afterEmotion: afterEmotion,
               );
               if (await saveDiary(newPage)) {
-                _updateWritedays(_writeDate);
+                _updateWritedays(_writeDate); //작성한 날짜 저장
                 Navigator.pop(context);
               } else {
                 // 실패 시 알림 처리

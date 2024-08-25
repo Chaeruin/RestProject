@@ -1,10 +1,12 @@
+//일기 수정 페이지
+
 import 'package:flutter/material.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditDiaries extends StatefulWidget {
-  final DiaryModel diary;
+  final DiaryModel diary; //수정할 일기 데이터
 
   const EditDiaries({
     super.key,
@@ -16,14 +18,16 @@ class EditDiaries extends StatefulWidget {
 }
 
 class _EditDiariesState extends State<EditDiaries> {
-  late Future<DiaryModel> _diaryFuture;
-  bool _isEditing = false;
-  late TextEditingController _textEditingController;
-  late String _content;
-  late String _selectedImage = 'lib/assets/image/3.png';
-  SharedPreferences? prefs;
-  List<String> writedays = [];
+  late Future<DiaryModel> _diaryFuture; // 일기 데이터를 가져오기 위한 Future
+  bool _isEditing = false; // 수정 모드 여부
+  late TextEditingController _textEditingController; // 텍스트 입력 컨트롤러
+  late String _content; // 일기 내용
+  String _emotionType = ''; // 감정 유형
+  late String _selectedImage = 'lib/assets/image/3.png'; // 선택된 감정 이미지
+  SharedPreferences? prefs; // SharedPreferences 인스턴스
+  List<String> writedays = []; // 작성된 날짜 리스트
 
+  // SharedPreferences 초기화 및 작성된 날짜 리스트 불러오기
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     final writedaysList = prefs!.getStringList(widget.diary.memberId);
@@ -37,6 +41,7 @@ class _EditDiariesState extends State<EditDiaries> {
     }
   }
 
+// 작성된 날짜 리스트에서 날짜 제거 후 업데이트
   void _updateWritedays(String date) async {
     writedays.remove(date);
     await prefs!.setStringList(widget.diary.memberId, writedays);
@@ -51,8 +56,8 @@ class _EditDiariesState extends State<EditDiaries> {
     _content = '';
     _diaryFuture = readDiarybyDiaryId(widget.diary.diaryId!);
     _selectedImage =
-        'lib/assets/image/emotions/${widget.diary.beforeEmotion}.png';
-    _initPrefs();
+        'lib/assets/image/emotions/${widget.diary.beforeEmotion}.png'; // 감정 이미지 경로 설정
+    _initPrefs(); // SharedPreferences 초기화
   }
 
   @override
@@ -76,8 +81,8 @@ class _EditDiariesState extends State<EditDiaries> {
               bool isDeleted =
                   await deleteDiary(widget.diary.diaryId.toString());
               if (isDeleted) {
-                _updateWritedays(widget.diary.writeDate);
-                Navigator.pop(context);
+                _updateWritedays(widget.diary.writeDate); // 날짜 리스트에서 제거
+                Navigator.pop(context); // 이전 화면으로 돌아가기
               } else {
                 // 삭제 실패 처리
                 print("일기 삭제에 실패했습니다.");
@@ -141,7 +146,7 @@ class _EditDiariesState extends State<EditDiaries> {
               setState(() {
                 _isEditing = false; // 저장 버튼을 누르면 수정 모드 종료
               });
-              Navigator.pop(context);
+              Navigator.pop(context); // 이전 화면으로 돌아가기
             },
             icon: Image.asset(
               'lib/assets/image/month.png',
@@ -153,7 +158,7 @@ class _EditDiariesState extends State<EditDiaries> {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder<DiaryModel>(
-          future: _diaryFuture,
+          future: _diaryFuture, // 일기 데이터 로드
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -192,9 +197,9 @@ class _EditDiariesState extends State<EditDiaries> {
                       child: SizedBox(
                         width: 350, // 원하는 가로 길이로 설정
                         child: TextField(
-                          controller: _textEditingController,
-                          enabled: _isEditing,
-                          maxLines: 19,
+                          controller: _textEditingController, // 텍스트 컨트롤러 설정
+                          enabled: _isEditing, // 수정 모드 여부에 따라 입력 활성화
+                          maxLines: 19, // 입력 가능한 최대 줄 수
                           onChanged: (value) {
                             setState(() {
                               _content = _textEditingController.text;
