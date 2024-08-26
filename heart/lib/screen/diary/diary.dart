@@ -10,10 +10,8 @@ import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/screen/diary/add_diary.dart';
 
 class Diary extends StatefulWidget {
-  final String memID;
   const Diary({
     super.key,
-    required this.memID,
   });
 
   @override

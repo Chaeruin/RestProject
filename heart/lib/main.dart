@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       index: _selectedIndex,
                       children: [
                         Chat(), // 채팅 화면
-                        Diary(memID: memberID), // 일기 화면
+                        Diary(), // 일기 화면
                         const Home(), // 홈 화면
                         Statistics(), // 통계 화면
                         Recommendation(), // 행동 추천 화면
@@ -165,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPageChanged: _onPageChanged, // 페이지 변경 시 호출
                 children: [
                   Chat(),
-                  Diary(memID: memberID),
+                  Diary(),
                   const Home(),
                   Statistics(),
                   Recommendation(),

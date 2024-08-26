@@ -17,12 +17,12 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  late int points = 0;
-  late bool isLogin;
-  late String nickname;
-  late String memberID;
-  String? actionMessage;
-  late String? latestEmotion = '';
+  late int points = 0; // 포인트 초기값
+  late bool isLogin; // 로그인 여부
+  late String nickname; // 사용자 닉네임
+  late String memberID; // 사용자 ID
+  String? actionMessage; // 행동 추천 메시지
+  late String? latestEmotion = ''; // 최신 감정 상태
 
   @override
   void initState() {
@@ -30,8 +30,9 @@ class HomeState extends State<Home> {
     _initializeState(); // 상태 초기화
   }
 
+  // 상태 초기화 메서드 (비동기)
   Future<void> _initializeState() async {
-    final authProvider = context.read<AuthProvider>();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // 로그인 상태 초기화
     isLogin = authProvider.isLoggedIn;
@@ -43,6 +44,7 @@ class HomeState extends State<Home> {
     }
   }
 
+  // 최신 감정을 서버에서 가져오는 메서드
   Future<void> getLatestEmotion(String memberID) async {
     try {
       final latest = await returnAfterEmotion(memberID);
@@ -50,7 +52,7 @@ class HomeState extends State<Home> {
         latestEmotion = latest;
       });
       if (latestEmotion != null && latestEmotion!.isNotEmpty) {
-        _initAudioPlayer(latestEmotion!);
+        _initAudioPlayer(latestEmotion!); // 최신 감정에 따른 오디오 플레이어 초기화
       } else {
         print("최신 감정이 null이거나 비어 있습니다.");
       }
@@ -59,25 +61,32 @@ class HomeState extends State<Home> {
     }
   }
 
+  // 오디오 플레이어 초기화 및 설정
   Future<void> _initAudioPlayer(String latestEmotion) async {
     try {
       final url =
           'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memberID}_$latestEmotion.wav';
       final audioProvider = Provider.of<AudioProvider>(context, listen: false);
-      await audioProvider.setUrl(url);
-      await audioProvider.audioPlayer.setLoopMode(LoopMode.all);
-      audioProvider.play();
+
+      // 현재 설정된 URL과 재생 중인 상태를 확인
+      if (audioProvider.currentUrl != url ||
+          !audioProvider.audioPlayer.playing) {
+        await audioProvider.setUrl(url);
+        await audioProvider.audioPlayer.setLoopMode(LoopMode.all);
+        audioProvider.play();
+      }
     } catch (e) {
       print("오류 발생: $e");
     }
   }
 
+  // 행동 추천 메시지를 서버에서 가져오는 메서드
   Future<void> fetchActionRecommendationFromApi() async {
     try {
       final action = await fetchActionRecommendation();
       if (mounted) {
         setState(() {
-          actionMessage = action;
+          actionMessage = action; // 행동 추천 메시지 상태 업데이트
         });
       }
     } catch (e) {
@@ -89,15 +98,18 @@ class HomeState extends State<Home> {
     }
   }
 
+  // 로그아웃 메서드
   Future<void> logout() async {
     context.read<AuthProvider>().logout();
-    Navigator.pop(context);
+    Navigator.pop(context); // 로그아웃 후 화면 닫기
   }
 
   @override
   Widget build(BuildContext context) {
     final audioProvider = Provider.of<AudioProvider>(context, listen: true);
-    isLogin = Provider.of<AuthProvider>(context, listen: true).isLoggedIn;
+    final authProvider = Provider.of<AuthProvider>(context, listen: true);
+    isLogin = authProvider.isLoggedIn;
+    nickname = authProvider.NickName;
 
     return Scaffold(
       appBar: AppBar(
@@ -118,7 +130,7 @@ class HomeState extends State<Home> {
                 ),
               ),
         actions: [
-          _buildAudioPlayerControls(audioProvider),
+          _buildAudioPlayerControls(audioProvider), // 오디오 플레이어 컨트롤 버튼
         ],
       ),
       drawer: Drawer(
@@ -141,7 +153,7 @@ class HomeState extends State<Home> {
               _buildDrawerItem(
                 title: '로그아웃하기',
                 icon: Icons.logout,
-                onTap: logout,
+                onTap: logout, // 로그아웃 버튼 클릭 시 로그아웃 메서드 호출
               )
             else ...[
               _buildDrawerItem(
@@ -149,7 +161,8 @@ class HomeState extends State<Home> {
                 icon: 'lib/assets/image/login.png',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Login()),
+                  MaterialPageRoute(
+                      builder: (context) => const Login()), // 로그인 화면으로 이동
                 ),
               ),
               const SizedBox(height: 20),
@@ -158,7 +171,8 @@ class HomeState extends State<Home> {
                 icon: 'lib/assets/image/signup.png',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignUp()),
+                  MaterialPageRoute(
+                      builder: (context) => const SignUp()), // 회원가입 화면으로 이동
                 ),
               ),
             ],
@@ -185,7 +199,7 @@ class HomeState extends State<Home> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  imageChange(points, imageSize),
+                  imageChange(points, imageSize), // 포인트에 따른 이미지 변경 함수 호출
                   const SizedBox(height: 25),
                   Container(
                     width: containerWidth,
@@ -198,8 +212,8 @@ class HomeState extends State<Home> {
                     child: Center(
                       child: Text(
                         actionMessage != null
-                            ? '"$actionMessage" 어떠세요?'
-                            : 'Loading...',
+                            ? '"$actionMessage" 어떠세요?' // 행동 추천 메시지 출력
+                            : 'Loading...', // 로딩 중 메시지
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: fontSize,
@@ -217,6 +231,7 @@ class HomeState extends State<Home> {
     );
   }
 
+  // Drawer 아이템 생성 메서드
   Widget _buildDrawerItem({
     required String title,
     required dynamic icon,
@@ -248,12 +263,13 @@ class HomeState extends State<Home> {
               fontFamily: 'single_day',
             ),
           ),
-          onTap: onTap,
+          onTap: onTap, // 아이템 클릭 시 동작 설정
         ),
       ),
     );
   }
 
+  // 오디오 플레이어 컨트롤 버튼 생성 메서드
   Widget _buildAudioPlayerControls(AudioProvider audioProvider) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -262,9 +278,9 @@ class HomeState extends State<Home> {
             audioProvider.audioPlayer.playing ? Icons.pause : Icons.play_arrow),
         onPressed: () {
           if (audioProvider.audioPlayer.playing) {
-            audioProvider.audioPlayer.pause();
+            audioProvider.audioPlayer.pause(); // 오디오 플레이어 일시 정지
           } else {
-            audioProvider.audioPlayer.play();
+            audioProvider.audioPlayer.play(); // 오디오 플레이어 재생
           }
         },
       ),
