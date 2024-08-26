@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Api/audio_apis.dart';
 import 'package:heart/audio_provider.dart';
+import 'package:heart/auth_provider.dart';
 import 'package:heart/screen/chat/chat.dart';
 import 'package:heart/screen/diary/diary.dart';
 import 'package:heart/screen/home.dart';
@@ -31,6 +32,10 @@ class MyApp extends StatelessWidget {
       providers: [
         // AudioProvider를 ChangeNotifierProvider로 제공
         ChangeNotifierProvider(create: (_) => AudioProvider(memberID)),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider()..loadLoginInfo(),
+          child: MyHomePage(),
+        )
       ],
       child: MaterialApp(
         title: '마음 ℃',
@@ -145,11 +150,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: IndexedStack(
                       index: _selectedIndex,
                       children: [
-                        Chat(memberId: memberID), // 채팅 화면
+                        Chat(), // 채팅 화면
                         Diary(memID: memberID), // 일기 화면
                         const Home(), // 홈 화면
-                        Statistics(memId: memberID), // 통계 화면
-                        Recommendation(memberID: memberID), // 행동 추천 화면
+                        Statistics(), // 통계 화면
+                        Recommendation(), // 행동 추천 화면
                       ],
                     ),
                   ),
@@ -159,11 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: _pageController, // 페이지 컨트롤러
                 onPageChanged: _onPageChanged, // 페이지 변경 시 호출
                 children: [
-                  Chat(memberId: memberID),
+                  Chat(),
                   Diary(memID: memberID),
                   const Home(),
-                  Statistics(memId: memberID),
-                  Recommendation(memberID: memberID),
+                  Statistics(),
+                  Recommendation(),
                 ],
               ),
         bottomNavigationBar: Container(

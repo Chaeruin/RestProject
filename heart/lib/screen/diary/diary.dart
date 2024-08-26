@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:heart/Model/diary_model.dart';
+import 'package:heart/auth_provider.dart';
 import 'package:heart/screen/diary/edit_diary.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/screen/diary/add_diary.dart';
@@ -22,13 +24,14 @@ class _DiaryState extends State<Diary> {
   CalendarFormat _calendarFormat = CalendarFormat.month; //캘린더 형식
   DateTime _focusedDay = DateTime.now(); // 현재 포커스된 날짜
   DateTime? _selectedDay; //선택한 날짜
-  late String memId; // 사용자 ID
+  late String memberId; // 사용자 ID
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay; // 초기 선택 날짜를 현재 포커스 날짜로 설정
-    memId = widget.memID; // 위젯에서 받은 사용자 ID 저장
+    // AuthProvider에서 memberId 가져오기
+    memberId = Provider.of<AuthProvider>(context, listen: false).ID;
   }
 
   @override
@@ -37,7 +40,8 @@ class _DiaryState extends State<Diary> {
       fontFamily: 'single_day',
       fontSize: 16,
     );
-    return (memId == '')
+    memberId = Provider.of<AuthProvider>(context, listen: true).ID;
+    return (memberId == '')
         ? Scaffold(
             body: Center(
               child: Text('로그인이 필요합니다!'),
@@ -53,7 +57,7 @@ class _DiaryState extends State<Diary> {
                     onTap: () async {
                       // 선택된 날짜에 대한 일기 데이터를 읽어옴
                       DiaryModel? newPage =
-                          await readDiarybyDate(memId, _selectedDay!);
+                          await readDiarybyDate(memberId, _selectedDay!);
                       if (newPage != null) {
                         // 일기가 이미 있는 경우, 수정 페이지로 이동
                         Navigator.push(
@@ -68,7 +72,7 @@ class _DiaryState extends State<Diary> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => AddDiaries(
-                              memberId: memId,
+                              memberId: memberId,
                               selectedDate: _selectedDay!,
                             ),
                           ),
@@ -157,7 +161,7 @@ class _DiaryState extends State<Diary> {
                     SizedBox(height: spacing),
                     Expanded(
                       child: FutureBuilder<DiaryModel?>(
-                        future: readDiarybyDate(memId, _selectedDay!),
+                        future: readDiarybyDate(memberId, _selectedDay!),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (snapshot.connectionState ==

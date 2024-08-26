@@ -9,7 +9,7 @@ import 'package:heart/screen/action/recommendation.dart';
 class ActionBefore extends StatelessWidget {
   final String recommendation; // 추천된 행동을 가져오기 위한 변수
   final int actionId; // 행동 ID
-  final String memberId;  // 멤버 ID
+  final String memberId; // 멤버 ID
 
   const ActionBefore({
     super.key,
@@ -26,16 +26,48 @@ class ActionBefore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     // 사용 가능한 감정 목록을 정의
+    // 사용 가능한 감정 목록을 정의
     final List<Map<String, String>> emotions = [
-      {'image': 'lib/assets/image/emotions/joy.png', 'label': '기쁨', 'value': 'joy'},
-      {'image': 'lib/assets/image/emotions/hope.png', 'label': '희망', 'value': 'hope'},
-      {'image': 'lib/assets/image/emotions/anger.png', 'label': '분노', 'value': 'anger'},
-      {'image': 'lib/assets/image/emotions/anxiety.png', 'label': '불안', 'value': 'anxiety'},
-      {'image': 'lib/assets/image/emotions/neutrality.png', 'label': '중립', 'value': 'neutrality'},
-      {'image': 'lib/assets/image/emotions/sadness.png', 'label': '슬픔', 'value': 'sadness'},
-      {'image': 'lib/assets/image/emotions/tiredness.png', 'label': '피곤', 'value': 'tiredness'},
-      {'image': 'lib/assets/image/emotions/regret.png', 'label': '후회', 'value': 'regret'},
+      {
+        'image': 'lib/assets/image/emotions/joy.png',
+        'label': '기쁨',
+        'value': 'joy'
+      },
+      {
+        'image': 'lib/assets/image/emotions/hope.png',
+        'label': '희망',
+        'value': 'hope'
+      },
+      {
+        'image': 'lib/assets/image/emotions/anger.png',
+        'label': '분노',
+        'value': 'anger'
+      },
+      {
+        'image': 'lib/assets/image/emotions/anxiety.png',
+        'label': '불안',
+        'value': 'anxiety'
+      },
+      {
+        'image': 'lib/assets/image/emotions/neutrality.png',
+        'label': '중립',
+        'value': 'neutrality'
+      },
+      {
+        'image': 'lib/assets/image/emotions/sadness.png',
+        'label': '슬픔',
+        'value': 'sadness'
+      },
+      {
+        'image': 'lib/assets/image/emotions/tiredness.png',
+        'label': '피곤',
+        'value': 'tiredness'
+      },
+      {
+        'image': 'lib/assets/image/emotions/regret.png',
+        'label': '후회',
+        'value': 'regret'
+      },
     ];
 
     return Scaffold(
@@ -71,7 +103,8 @@ class ActionBefore extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 65, 133, 59).withOpacity(0.5),
+                      color: const Color.fromARGB(255, 65, 133, 59)
+                          .withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
@@ -116,15 +149,15 @@ class ActionBefore extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
-                   
-                     // 사용자가 선택한 감정을 API를 통해 서버에 전달
+
+                      // 사용자가 선택한 감정을 API를 통해 서버에 전달
                       try {
                         final response = await startAction(
                           actionId,
                           memberId,
                           selectedEmotion,
                         );
-                  
+
                         dynamic body = response['body'];
 
                         if (body is String) {
@@ -135,11 +168,13 @@ class ActionBefore extends StatelessWidget {
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            final memberActionId = savedMemberAction['memberActionId'];
-                           
-                          // 멤버 행동 ID를 로컬 저장소에 저장
+                            final memberActionId =
+                                savedMemberAction['memberActionId'];
+
+                            // 멤버 행동 ID를 로컬 저장소에 저장
                             if (memberActionId != null) {
-                              await _saveMemberActionId(actionId, memberActionId);
+                              await _saveMemberActionId(
+                                  actionId, memberActionId);
                             }
 
                             // 감정 선택이 완료되면 이전 화면으로 돌아감
@@ -147,8 +182,6 @@ class ActionBefore extends StatelessWidget {
                               'status': status,
                               'memberActionId': memberActionId,
                             });
-
-                          
                           } else {
                             throw Exception('savedMemberAction is not a Map');
                           }
@@ -167,7 +200,9 @@ class ActionBefore extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (context) => const Recommendation(memberID: 'memberId')),
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Recommendation()),
                                     );
                                   },
                                   child: const Text('확인'),
@@ -178,7 +213,6 @@ class ActionBefore extends StatelessWidget {
                         );
                       }
                     },
-
                     child: Column(
                       children: [
                         Expanded(
