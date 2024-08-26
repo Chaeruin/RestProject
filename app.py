@@ -8,6 +8,10 @@ import threading
 import boto3
 from functools import wraps
 from flask import current_app
+from concurrent.futures import ThreadPoolExecutor
+
+import asyncio
+from asyncio import Queue
 
 from model.emotion import Emotion
 from model.musicgen import generate_music
@@ -49,7 +53,7 @@ def print_and_slack_M(message):
 @app.route('/')
 def isRunning():
     message = "server is running"
-    send_slack(SLACK_CHANNEL_SERVER, message)
+    # send_slack(SLACK_CHANNEL_SERVER, message)
     return message
 
 def async_route(f):
@@ -81,18 +85,7 @@ async def reactKoElectraChatBot(chat_id):
         "category": category
     })
 
-def comprehend_sentiment(text):
-    comprehend = boto3.client('comprehend')
-    response = comprehend.detect_sentiment(Text=text, LanguageCode='en')
-    sentiment = response['SentimentScore']
-    return sentiment
 
-# @app.route('/analyze', methods=['POST'])
-# @async_route
-# async def analyze():
-#     text = request.json['text']
-#     sentiment = await asyncio.to_thread(comprehend_sentiment, text)
-#     return jsonify(sentiment)
 
 async def generate_music_async(memberID, emotionI):
     try:
@@ -100,8 +93,6 @@ async def generate_music_async(memberID, emotionI):
         print_and_slack_M(f"🎵 음악 생성 완료 : ID {memberID}, 감정 {emotionI}")
     except Exception as e:
         print_and_slack_M(f"❌ 음악 생성 실패 : ID {memberID}, 감정 {emotionI}, 에러: {str(e)}")
-
-
 
 
 def run_async_task(app, memberID, emotionI):
@@ -132,7 +123,6 @@ def recommendMusic():
     print_and_slack_M(f"🎶 음악 생성 시작 -> 백그라운드 처리중.")
     return jsonify({'message': '음악 생성 시작 -> 백그라운드 처리중'}), 202
 
-
+    
 if __name__ == '__main__':
     app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 8081)))
-
