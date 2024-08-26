@@ -7,7 +7,7 @@ from flask_cors import CORS
 import threading
 import boto3
 from functools import wraps
-
+from flask import current_app
 
 from model.emotion import Emotion
 from model.musicgen import generate_music
@@ -87,12 +87,12 @@ def comprehend_sentiment(text):
     sentiment = response['SentimentScore']
     return sentiment
 
-@app.route('/analyze', methods=['POST'])
-@async_route
-async def analyze():
-    text = request.json['text']
-    sentiment = await asyncio.to_thread(comprehend_sentiment, text)
-    return jsonify(sentiment)
+# @app.route('/analyze', methods=['POST'])
+# @async_route
+# async def analyze():
+#     text = request.json['text']
+#     sentiment = await asyncio.to_thread(comprehend_sentiment, text)
+#     return jsonify(sentiment)
 
 async def generate_music_async(memberID, emotionI):
     try:
@@ -101,9 +101,15 @@ async def generate_music_async(memberID, emotionI):
     except Exception as e:
         print_and_slack_M(f"❌ 음악 생성 실패 : ID {memberID}, 감정 {emotionI}, 에러: {str(e)}")
 
+
+
+
+def run_async_task(app, memberID, emotionI):
+    with app.app_context():
+        asyncio.run(generate_music_async(memberID, emotionI))
+
 @app.route('/music/recommendation', methods=["POST"])
-@async_route
-async def recommendMusic():
+def recommendMusic():
     data = request.json
 
     memberID = data.get('memberId')
@@ -119,11 +125,14 @@ async def recommendMusic():
     if not emotionI:
         return jsonify({'❌ error': 'afterEmotion 값이 없습니다.'}), 400
 
-    # 비동기로 음악 생성 작업 실행
-    asyncio.create_task(generate_music_async(memberID, emotionI))
+    # 백그라운드에서 음악 생성 작업을 실행
+    thread = threading.Thread(target=run_async_task, args=(current_app._get_current_object(), memberID, emotionI))
+    thread.start()
 
     print_and_slack_M(f"🎶 음악 생성 시작 -> 백그라운드 처리중.")
     return jsonify({'message': '음악 생성 시작 -> 백그라운드 처리중'}), 202
 
+
 if __name__ == '__main__':
     app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 8081)))
+
