@@ -1,9 +1,11 @@
 //감정별로 행동을 추천해주는 페이지
 
 import 'package:flutter/material.dart';
+import 'package:heart/auth_provider.dart';
 import 'package:heart/drawer/phq9test.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart/APi/action_api.dart'; 
+import 'package:heart/APi/action_api.dart';
 import 'package:heart/screen/action/action_before.dart';
 import 'package:heart/screen/action/action_after.dart';
 
@@ -19,8 +21,7 @@ enum Emotion {
 }
 
 class Recommendation extends StatefulWidget {
-  final String memberID;
-  const Recommendation({super.key, required this.memberID});
+  const Recommendation({super.key});
 
   @override
   _RecommendationState createState() => _RecommendationState();
@@ -35,19 +36,19 @@ class _RecommendationState extends State<Recommendation> {
   List<String> testScore = ['', '']; // 우울척도 테스트 점수 저장
 
   Emotion? _selectedEmotion;
-  bool _isLoading = false;  // 로딩 상태를 나타내는 플래그
+  bool _isLoading = false; // 로딩 상태를 나타내는 플래그
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     List<String>? storedTestScore = prefs!.getStringList('testScore');
 
-   // 테스트 점수가 없는 경우 초기값으로 설정
+    // 테스트 점수가 없는 경우 초기값으로 설정
     if (storedTestScore == null || storedTestScore.length < 2) {
       await prefs!.setStringList('testScore', ['', '']);
       setState(() {
         testScore = ['', ''];
       });
     } else {
-       // 테스트 점수가 두 개 이상인 경우 최신 두 개의 점수만 유지
+      // 테스트 점수가 두 개 이상인 경우 최신 두 개의 점수만 유지
       storedTestScore = storedTestScore.length > 2
           ? storedTestScore.sublist(storedTestScore.length - 2)
           : storedTestScore;
@@ -61,11 +62,11 @@ class _RecommendationState extends State<Recommendation> {
   @override
   void initState() {
     super.initState();
-    memberID = widget.memberID;
+    memberID = Provider.of<AuthProvider>(context, listen: false).ID;
 
     _initPrefs();
 
-  // 위젯이 처음 렌더링될 때 감정 선택창을 보여줌
+    // 위젯이 처음 렌더링될 때 감정 선택창을 보여줌
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final String? selectedEmotion = await _showImagePicker(context);
       if (selectedEmotion != null) {
@@ -94,9 +95,9 @@ class _RecommendationState extends State<Recommendation> {
     });
 
     try {
-       // API 호출로 추천 행동을 가져옴
-      final response = await Recommendations(
-          memberID, emotion.toString().split('.').last);
+      // API 호출로 추천 행동을 가져옴
+      final response =
+          await Recommendations(memberID, emotion.toString().split('.').last);
 
       // API 응답을 처리하여 추천 행동 목록을 구성
       final List<Map<String, dynamic>> recommendations = await Future.wait(
@@ -104,12 +105,13 @@ class _RecommendationState extends State<Recommendation> {
           final actionId = item['actionId'];
           final memberActionId = item['memberActionId'];
           final savedStatus = item['status'];
-          print('Parsed Item: actionId=$actionId, memberActionId=$memberActionId, status=$savedStatus');
+          print(
+              'Parsed Item: actionId=$actionId, memberActionId=$memberActionId, status=$savedStatus');
           return {
             'action': item['action'],
             'actionId': item['actionId'],
             'status': item['status'] ?? '없음',
-            'memberActionId': item['memberActionId'], 
+            'memberActionId': item['memberActionId'],
           };
         }),
       );
@@ -119,7 +121,12 @@ class _RecommendationState extends State<Recommendation> {
     } catch (e) {
       setState(() {
         _currentRecommendations = [
-          {'action': '추천 데이터를 불러오는데 실패했습니다.', 'actionId': 0, 'status': '없음', 'memberActionId': 0}
+          {
+            'action': '추천 데이터를 불러오는데 실패했습니다.',
+            'actionId': 0,
+            'status': '없음',
+            'memberActionId': 0
+          }
         ];
       });
     } finally {
@@ -145,7 +152,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.joy;
                   });
-                  Navigator.pop(context, Emotion.joy.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.joy.toString().split('.').last);
                 },
                 child: const Text('기쁨'),
               ),
@@ -154,7 +162,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.hope;
                   });
-                  Navigator.pop(context, Emotion.hope.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.hope.toString().split('.').last);
                 },
                 child: const Text('희망'),
               ),
@@ -163,7 +172,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.anger;
                   });
-                  Navigator.pop(context, Emotion.anger.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.anger.toString().split('.').last);
                 },
                 child: const Text('분노'),
               ),
@@ -172,7 +182,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.anxiety;
                   });
-                  Navigator.pop(context, Emotion.anxiety.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.anxiety.toString().split('.').last);
                 },
                 child: const Text('불안'),
               ),
@@ -181,7 +192,8 @@ class _RecommendationState extends State<Recommendation> {
                   setState(() {
                     _selectedEmotion = Emotion.neutrality;
                   });
-                  Navigator.pop(context, Emotion.neutrality.toString().split('.').last);
+                  Navigator.pop(
+                      context, Emotion.neutrality.toString().split('.').last);
                 },
                 child: const Text('중립'),
               ),
@@ -224,6 +236,7 @@ class _RecommendationState extends State<Recommendation> {
 
   @override
   Widget build(BuildContext context) {
+    memberID = Provider.of<AuthProvider>(context, listen: true).ID;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFFFFBA0),
@@ -365,7 +378,8 @@ class _RecommendationState extends State<Recommendation> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                               _currentRecommendations[index]['action'] ?? '행동 없음',
+                                _currentRecommendations[index]['action'] ??
+                                    '행동 없음',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontFamily: 'single_day',
@@ -374,7 +388,7 @@ class _RecommendationState extends State<Recommendation> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                               '상태: ${_currentRecommendations[index]['status'] ?? '없음'}',
+                                '상태: ${_currentRecommendations[index]['status'] ?? '없음'}',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   color: Color.fromARGB(255, 65, 133, 59),
@@ -390,7 +404,7 @@ class _RecommendationState extends State<Recommendation> {
                   ),
                 ),
               const SizedBox(height: 30),
-              
+
               //우울 척도 테스트와 결과를 보여주는 부분
               const Center(
                 child: Text(

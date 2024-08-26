@@ -1,32 +1,21 @@
-//행동을 시작하는 페이지
-
 import 'package:flutter/material.dart';
 import 'package:heart/APi/action_api.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart/screen/action/recommendation.dart';
+import 'dart:convert'; // jsonDecode를 사용하기 위해 추가합니다.
 
-class ActionBefore extends StatelessWidget {
-  final String recommendation; // 추천된 행동을 가져오기 위한 변수
-  final int actionId; // 행동 ID
-  final String memberId; // 멤버 ID
+class action extends StatelessWidget {
+  final String recommendation;
+  final int actionId;
+  final String memberId;
 
-  const ActionBefore({
+  const action({
     super.key,
     required this.recommendation,
     required this.actionId,
     required this.memberId,
   });
 
-  // 멤버별 행동 ID를 로컬 저장소에 저장하는 함수
-  Future<void> _saveMemberActionId(int actionId, int memberActionId) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('member_action_id_$actionId', memberActionId);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // 사용 가능한 감정 목록을 정의
     final List<Map<String, String>> emotions = [
       {
         'image': 'lib/assets/image/emotions/joy.png',
@@ -149,39 +138,73 @@ class ActionBefore extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       final selectedEmotion = emotions[index]['value']!;
+                      print('Action ID: $actionId');
+                      print('Member ID: $memberId');
+                      print('Selected Emotion: $selectedEmotion');
 
-                      // 사용자가 선택한 감정을 API를 통해 서버에 전달
                       try {
                         final response = await startAction(
                           actionId,
                           memberId,
                           selectedEmotion,
                         );
+                        print('Response: $response');
 
-                        dynamic body = response['body'];
+                        final body = response['body'];
 
                         if (body is String) {
-                          body = jsonDecode(body);
-                        }
-                        // API로부터 받은 응답 데이터 처리
-                        if (body is Map<String, dynamic>) {
+                          final Map<String, dynamic> parsedBody =
+                              jsonDecode(body);
+                          final savedMemberAction =
+                              parsedBody['savedMemberAction'];
+                          if (savedMemberAction is Map<String, dynamic>) {
+                            final status = savedMemberAction['status'];
+
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('행동 시작'),
+                                  content: const Text('행동이 저장되었습니다!'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop(status);
+                                      },
+                                      child: const Text('확인'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            throw Exception('savedMemberAction is not a Map');
+                          }
+                        } else if (body is Map<String, dynamic>) {
+                          // body가 이미 Map인 경우
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            final memberActionId =
-                                savedMemberAction['memberActionId'];
 
-                            // 멤버 행동 ID를 로컬 저장소에 저장
-                            if (memberActionId != null) {
-                              await _saveMemberActionId(
-                                  actionId, memberActionId);
-                            }
-
-                            // 감정 선택이 완료되면 이전 화면으로 돌아감
-                            Navigator.of(context).pop({
-                              'status': status,
-                              'memberActionId': memberActionId,
-                            });
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('행동 시작'),
+                                  content: const Text('행동이 저장되었습니다!'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop(status);
+                                      },
+                                      child: const Text('확인'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           } else {
                             throw Exception('savedMemberAction is not a Map');
                           }
@@ -199,11 +222,7 @@ class ActionBefore extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const Recommendation()),
-                                    );
+                                    Navigator.of(context).pop();
                                   },
                                   child: const Text('확인'),
                                 ),

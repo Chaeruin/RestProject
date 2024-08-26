@@ -1,5 +1,6 @@
 //일기를 작성하는 페이지
 import 'package:flutter/material.dart';
+import 'package:heart/Api/audio_apis.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +18,7 @@ enum Emotion {
 }
 
 class AddDiaries extends StatefulWidget {
-  final DateTime selectedDate; //사용자가 선택한 날짜 
+  final DateTime selectedDate; //사용자가 선택한 날짜
   final String memberId;
   const AddDiaries(
       {super.key, required this.selectedDate, required this.memberId});
@@ -27,17 +28,17 @@ class AddDiaries extends StatefulWidget {
 }
 
 class _AddDiariesState extends State<AddDiaries> {
-  late String _content; //일기 내용
-  late String _writeDate; //작성 날짜 
+  late String _content = ' ';
+  late String _writeDate;
   final TextEditingController _textEditingController = TextEditingController();
   String _emotionType = ''; //선택한 감정 타입
   late String _selectedImage = 'lib/assets/image/1.png';
-  final Emotion selectedEmotion = Emotion.joy; //초기 감정 설정
-  Emotion? _selectedEmotion; //사용자가 선택한 감정
-  late String beforeEmotion; //이전 감정 상태 
+  final Emotion selectedEmotion = Emotion.joy;
+  Emotion? _selectedEmotion;
+  late String beforeEmotion = ' ';
 
-  late SharedPreferences prefs; //로컬 저장소 접근을 위한 객체
-  List<String> writedays = []; //작성한 일기 날짜 기록
+  late final SharedPreferences prefs;
+  List<String> writedays = [];
 
 // SharedPreferences 초기화
   Future<void> _initPrefs() async {
@@ -52,11 +53,17 @@ class _AddDiariesState extends State<AddDiaries> {
       setState(() {});
     }
   }
+
 // 작성한 날짜를 업데이트하고 저장
   void _updateWritedays(String date) async {
     writedays.add(date);
     await prefs.setStringList(widget.memberId, writedays); // writedays 리스트를 저장
     setState(() {});
+  }
+
+  //음악 생성을 위한 딜레이 추가
+  Future<void> musicCreationDelay() async {
+    await Future.delayed(const Duration(minutes: 4));
   }
 
   @override
@@ -75,8 +82,41 @@ class _AddDiariesState extends State<AddDiaries> {
       }
     });
   }
+
 // 감정 선택 모달을 표시하는 함수
   Future<String?> _showImagePicker(BuildContext context) async {
+    final emotions = {
+      '기쁨': {'image': 'lib/assets/image/emotions/joy.png', 'type': Emotion.joy},
+      '희망': {
+        'image': 'lib/assets/image/emotions/hope.png',
+        'type': Emotion.hope
+      },
+      '분노': {
+        'image': 'lib/assets/image/emotions/anger.png',
+        'type': Emotion.anger
+      },
+      '불안': {
+        'image': 'lib/assets/image/emotions/anxiety.png',
+        'type': Emotion.anxiety
+      },
+      '중립': {
+        'image': 'lib/assets/image/emotions/neutrality.png',
+        'type': Emotion.neutrality
+      },
+      '슬픔': {
+        'image': 'lib/assets/image/emotions/sadness.png',
+        'type': Emotion.sadness
+      },
+      '피곤': {
+        'image': 'lib/assets/image/emotions/tiredness.png',
+        'type': Emotion.tiredness
+      },
+      '후회': {
+        'image': 'lib/assets/image/emotions/regret.png',
+        'type': Emotion.regret
+      },
+    };
+
     return showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) {
@@ -85,90 +125,23 @@ class _AddDiariesState extends State<AddDiaries> {
           width: 400,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 감정별로 버튼을 생성하고 이미지와 감정 타입을 설정
-              ElevatedButton(
+            children: emotions.entries.map((entry) {
+              final emotionName = entry.key;
+              final emotionData = entry.value;
+              return ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/joy.png';
-                    _emotionType = Emotion.joy.toString().split('.').last;
+                    _selectedImage = emotionData['image'] as String;
+                    _emotionType = (emotionData['type'] as Emotion)
+                        .toString()
+                        .split('.')
+                        .last;
                   });
                   Navigator.pop(context, _emotionType);
                 },
-                child: const Text('기쁨'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/hope.png';
-                    _emotionType = Emotion.hope.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('희망'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/anger.png';
-                    _emotionType = Emotion.anger.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('분노'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/anxiety.png';
-                    _emotionType = Emotion.anxiety.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('불안'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/neutrality.png';
-                    _emotionType =
-                        Emotion.neutrality.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('중립'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/sadness.png';
-                    _emotionType = Emotion.sadness.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('슬픔'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/tiredness.png';
-                    _emotionType = Emotion.tiredness.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('피곤'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/regret.png';
-                    _emotionType = Emotion.regret.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('후회'),
-              ),
-            ],
+                child: Text(emotionName),
+              );
+            }).toList(),
           ),
         );
       },
@@ -194,6 +167,7 @@ class _AddDiariesState extends State<AddDiaries> {
             onPressed: () async {
               // 감정이 선택되지 않은 경우 경고 메시지 표시
               if (_emotionType.isEmpty) {
+                //감정이 선택되지 않은 경우 경고 메시지
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -228,8 +202,9 @@ class _AddDiariesState extends State<AddDiaries> {
                 );
                 return;
               }
-               // 내용이 입력되지 않은 경우 경고 메시지 표시
+              // 내용이 입력되지 않은 경우 경고 메시지 표시
               if (_content.isEmpty) {
+                // 내용이 입력되지 않은 경우 경고 메시지
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -264,10 +239,15 @@ class _AddDiariesState extends State<AddDiaries> {
                 );
                 return;
               }
-              // 감정을 재선택하도록 요청-> 일기를 작성하고 난 후 감정 기록
+
               String? afterEmotion = await _showImagePicker(context);
-              
-              //백엔드로 일기 데이터 전송
+
+              // 음악 추천 요청을 위한 감정 전송
+              await sendEmotionData(widget.memberId, afterEmotion!);
+
+              print('beforeEmotin: $beforeEmotion');
+              print('afterEmotion: $afterEmotion');
+              //백엔드 요청
               DiaryModel newPage = DiaryModel(
                 memberId: widget.memberId,
                 writeDate: _writeDate,
@@ -278,13 +258,30 @@ class _AddDiariesState extends State<AddDiaries> {
               if (await saveDiary(newPage)) {
                 _updateWritedays(_writeDate); //작성한 날짜 저장
                 Navigator.pop(context);
-              } 
+              } else {
+                // 실패 시 알림 처리
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: const Text('일기 저장에 실패했습니다.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('확인'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             },
             icon: const Icon(Icons.check),
           ),
         ],
       ),
-      
       body: Container(
         padding: const EdgeInsets.all(30),
         child: Column(

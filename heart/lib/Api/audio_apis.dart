@@ -1,17 +1,16 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-//감정 데이터 전송
-void sendEmotionData(String memberID, String afterEmotion) async {
-  var url = Uri.parse(
-      'http://3.35.183.52:8081//music/recommendation'); // 플라스크 서버의 URL
-  var headers = {
+Future<void> sendEmotionData(String memberID, String afterEmotion) async {
+  final url = Uri.parse(
+      'http://3.35.183.52:8081/music/recommendation'); // 플라스크 서버의 URL
+  final headers = {
     "Content-Type": "application/json; charset=UTF-8",
   };
-  var body = jsonEncode({"memID": memberID, "afterEmotion": afterEmotion});
+  final body = jsonEncode({"memberId": memberID, "afterEmotion": afterEmotion});
 
   try {
-    var response = await http.post(url, headers: headers, body: body);
+    final response = await http.post(url, headers: headers, body: body);
 
     print('Response Status Code: ${response.statusCode}');
     print('Response Body: ${response.body}');
@@ -26,7 +25,6 @@ void sendEmotionData(String memberID, String afterEmotion) async {
   }
 }
 
-//이후 감정 반환
 Future<String?> returnAfterEmotion(String memberID) async {
   final Uri uri =
       Uri.parse("http://54.79.110.239:8080/api/diaries/$memberID/latest-diary");
@@ -40,8 +38,7 @@ Future<String?> returnAfterEmotion(String memberID) async {
     );
 
     print('Response Status Code: ${response.statusCode}');
-    print(
-        'Response Body: ${utf8.decode(response.bodyBytes)}'); 
+    print('Response Body: ${utf8.decode(response.bodyBytes)}'); 
 
     if (response.statusCode == 200) {
       print('데이터가 성공적으로 전송되었습니다.');
@@ -52,7 +49,7 @@ Future<String?> returnAfterEmotion(String memberID) async {
     }
   } catch (e) {
     print('에러 발생: $e');
-    throw e;
+    rethrow;
   }
   return null;
 }

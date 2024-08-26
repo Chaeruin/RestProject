@@ -1,22 +1,12 @@
-//챗봇 페이지
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import 'package:heart/auth_provider.dart';
 
-class Chat extends StatefulWidget {
-  const Chat({super.key, this.memberId});
-
-  final String? memberId;
-
-  @override
-  State<Chat> createState() => _ChatState();
-}
-
-class _ChatState extends State<Chat> {
-  String? memberId = '0';
+class Chat extends StatelessWidget {
+  const Chat({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +15,13 @@ class _ChatState extends State<Chat> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: memberId != null
-          ? ChatScreen(memberId: memberId!)
-          : const Scaffold(
-              body: Center(
-                child: Text('로그인이 필요합니다.'),
-              ),
-            ),
+      home: ChatScreen(),
     );
   }
 }
 
 class ChatScreen extends StatefulWidget {
-  final String? memberId;
-
-  const ChatScreen({super.key, required this.memberId});
+  const ChatScreen({super.key});
 
   @override
   State createState() => ChatScreenState();
@@ -52,12 +34,11 @@ class ChatScreenState extends State<ChatScreen> {
   int chatId = 0;
   bool _isLoading = false;
 
-  ChatScreenState({this.memberId});
-
   @override
   void initState() {
     super.initState();
-    memberId = widget.memberId;
+    // AuthProvider에서 memberId 가져오기
+    memberId = Provider.of<AuthProvider>(context, listen: false).ID;
     enterChatRoom();
   }
 
@@ -75,14 +56,16 @@ class ChatScreenState extends State<ChatScreen> {
       setState(() {
         chatId = responseData['chatId'];
       });
-      
+      print('채팅방이 생성되었습니다. chatId: $chatId');
+      print('chat memberID: $memberId');
     } else {
       print('채팅방 생성에 실패했습니다. 에러 코드: ${response.statusCode}');
     }
   }
-// 사용자가 메시지를 입력하고 전송할 때 호출되는 함수
+
+  // 사용자가 메시지를 입력하고 전송할 때 호출되는 함수
   void _handleSubmitted(String text) {
-    _textController.clear(); //입력 필드 초기화
+    _textController.clear(); // 입력 필드 초기화
     ChatMessage message = ChatMessage(
       text: text,
       isUser: true,
@@ -92,13 +75,9 @@ class ChatScreenState extends State<ChatScreen> {
       sendMessage(chatId, text, memberId!); // 서버로 메시지 전송
     });
   }
-// 서버로 메시지를 전송하는 함수
-  Future<void> sendMessage(int chatId, String message, String? memberId) async {
-    if (memberId == null) {
-      print('Error: memberId is null');
-      return;
-    }
 
+  // 서버로 메시지를 전송하는 함수
+  Future<void> sendMessage(int chatId, String message, String memberId) async {
     setState(() {
       _isLoading = true;
     });
@@ -118,9 +97,7 @@ class ChatScreenState extends State<ChatScreen> {
         },
         body: jsonEncode(chat));
 
-
     if (response.statusCode == 200) {
-     
       final springResponseBody = jsonDecode(utf8.decode(response.bodyBytes));
       final List<dynamic> categoryList = springResponseBody['category'];
       final receivedMessage = springResponseBody['response'];
@@ -128,18 +105,16 @@ class ChatScreenState extends State<ChatScreen> {
       // 서버로부터 받은 카테고리 확인
       final String receiveCategory =
           categoryList.isNotEmpty ? categoryList[0] : 'Unknown';
-     
 
       if (receiveCategory == "감정/자살충동" ||
           receiveCategory == "감정/살인욕구" ||
           receiveCategory == "증상/자살시도" ||
-          receiveCategory == "증상/자해") // 등등 여러가지
-      {
+          receiveCategory == "증상/자해") {
         setState(() {
           _messages.insert(
             0,
             ChatMessage(
-              image: Image.asset('lib/assets/images/SuicidePrevention.png'),
+              image: Image.asset('lib/assets/image/SuicidePrevention.png'),
               text: receivedMessage,
               isUser: false,
             ),
@@ -148,7 +123,6 @@ class ChatScreenState extends State<ChatScreen> {
         });
       } else {
         setState(() {
-          // 특정 카테고리의 경우 이미지와 함께 응답
           _messages.insert(
             0,
             ChatMessage(
@@ -160,97 +134,99 @@ class ChatScreenState extends State<ChatScreen> {
         });
       }
     } else {
-      
       setState(() {
         _isLoading = false;
       });
     }
   }
-//채팅 화면 구성
+
+  // 채팅 화면 구성
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          textAlign: TextAlign.center,
-          '마음이',
-          style: TextStyle(
-            color: Color.fromARGB(255, 89, 181, 81),
-            fontSize: 25,
-            fontFamily: 'single_day',
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) {
-                  return const Chat();
-                },
-              ),
-            );
-          },
-        ),
-        backgroundColor: const Color(0xFFFFFBA0),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(5.0),
-          child: Container(
-            color: const Color.fromARGB(255, 255, 255, 255),
-          ),
-        ),
-      ),
-      backgroundColor: const Color.fromARGB(255, 250, 248, 205),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Column(
-          children: <Widget>[
-            Flexible(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: _messages.length,
-                itemBuilder: (_, int index) => _messages[index],
-              ),
+    memberId = Provider.of<AuthProvider>(context, listen: true).ID;
+
+    return (memberId == null || memberId == '')
+        ? Scaffold(
+            body: Center(
+              child: Text('로그인이 필요합니다!'),
             ),
-            const Divider(height: 1.0),
-            const SizedBox(height: 20),
-            if (_isLoading)
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 5.0),
-                      child: Container(
-                        height: 40.0,
-                        width: 100.0,
-                        color: Colors.white,
-                        child: const SpinKitThreeBounce(
-                          color: Colors.black,
-                          size: 10.0,
-                        ),
-                      ),
-                    ),
-                  ],
+          )
+        : Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text(
+                textAlign: TextAlign.center,
+                '마음이',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 89, 181, 81),
+                  fontSize: 25,
+                  fontFamily: 'single_day',
                 ),
               ),
-            const SizedBox(width: 8, height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              child: _buildTextComposer(),
+              backgroundColor: const Color(0xFFFFFBA0),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(5.0),
+                child: Container(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                ),
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+            backgroundColor: const Color.fromARGB(255, 250, 248, 205),
+            body: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Column(
+                children: <Widget>[
+                  Flexible(
+                    child: ListView.builder(
+                      reverse: true,
+                      itemCount: _messages.length,
+                      itemBuilder: (_, int index) => _messages[index],
+                    ),
+                  ),
+                  const Divider(height: 1.0),
+                  const SizedBox(height: 20),
+                  if (_isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 5.0),
+                            child: Container(
+                              height: 40.0,
+                              width: 100.0,
+                              color: Colors.white,
+                              child: const SpinKitThreeBounce(
+                                color: Colors.black,
+                                size: 10.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(width: 8, height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                    ),
+                    child: _buildTextComposer(),
+                  ),
+                ],
+              ),
+            ),
+          );
   }
-// 텍스트 입력 필드 생성 함수
+
+  // 텍스트 입력 필드 생성 함수
   Widget _buildTextComposer() {
     return Builder(
       builder: (BuildContext context) {
@@ -296,7 +272,7 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final bool isUser;
   final Image? image;
-  static const String suicideText = "자살 방지 문구(임시)";
+  static const String suicideText = "우리, 함께.";
 
   const ChatMessage(
       {super.key, required this.text, required this.isUser, this.image});
@@ -310,87 +286,54 @@ class ChatMessage extends StatelessWidget {
             isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Column(
-            crossAxisAlignment:
-                isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: <Widget>[
-              // 사용자가 보낸게 아니면 (기룡이가 답변하는 채팅일 경우)
-              if (!isUser)
-                Container(
-                  margin: const EdgeInsets.only(
-                      right: 10.0, left: 10.0, bottom: 10),
-                  child: const CircleAvatar(
-                    backgroundImage:
-                        AssetImage('lib/assets/images/giryong.png'),
-                    radius: 20,
-                  ),
-                ),
-              // 사용자가 보내는 메세지일 경우
-              if (isUser)
-                Container(
-                  margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                  child: const Text('나'),
-                ),
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.5,
-                ),
-                margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                padding: const EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Text(
-                  text,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontFamily: 'single_day',
-                    fontSize: 20.0,
-                  ),
-                ),
+          if (!isUser)
+            Container(
+              margin: const EdgeInsets.only(right: 16.0),
+              child: const CircleAvatar(
+                backgroundImage: AssetImage('lib/assets/images/icon2.png'),
               ),
-              // 이미지가 있는 경우
-              if (image != null)
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.5,
+            ),
+          if (image == null)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontFamily: 'single_day',
+                      color: isUser ? Colors.black : Colors.red,
+                    ),
                   ),
-                  margin: const EdgeInsets.only(right: 10.0, left: 10.0),
-                  padding: const EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
+                ],
+              ),
+            )
+          else
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  image!,
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    suicideText,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontFamily: 'single_day',
+                      color: Colors.red,
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 10.0),
-                        child: image,
-                      ),
-                      const Text(
-                        suicideText,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: 'single_day',
-                          fontSize: 20.0,
-                        ),
-                      ),
-                      
-                      // 자살 예방 상담 링크 버튼
-                      OutlinedButton(
-                        onPressed: () {
-                          
-                          launchUrl(Uri.parse("https://www.lifeline.or.kr/"));
-                        },
-                        child: const Text('자살 예방 상담하기'),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
+                ],
+              ),
+            ),
+          if (isUser)
+            Container(
+              margin: const EdgeInsets.only(left: 16.0),
+              child: const CircleAvatar(
+                backgroundImage: AssetImage('lib/assets/images/icon1.png'),
+              ),
+            ),
         ],
       ),
     );

@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:heart/Api/audio_apis.dart';
 import 'package:heart/audio_provider.dart';
+import 'package:heart/auth_provider.dart';
 import 'package:heart/drawer/login.dart';
 import 'package:heart/drawer/signup.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heart/Api/action_api.dart';
 
 class Home extends StatefulWidget {
@@ -17,46 +17,42 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  late SharedPreferences prefs;  // SharedPreferences 인스턴스
-  late int points = 0; // 포인트 저장 변수
-  bool isLogin = false; // 로그인 상태 저장 변수
+  late int points = 0; // 포인트 초기값
+  late bool isLogin; // 로그인 여부
   late String nickname; // 사용자 닉네임
   late String memberID; // 사용자 ID
   String? actionMessage; // 행동 추천 메시지
-  late String? latestEmotion = ''; // 최신 감정 저장 변수
-
-// SharedPreferences를 초기화하고 상태를 설정하는 비동기 메서드
-  Future<void> initPref() async {
-    prefs = await SharedPreferences.getInstance();
-    setState(() {
-      points = prefs.getInt('point') ?? 0;
-      nickname = prefs.getString('nick') ?? '';
-      memberID = prefs.getString('ID') ?? '';
-      isLogin = prefs.getBool('isLogin') ?? false;
-    });
-  }
+  late String? latestEmotion = ''; // 최신 감정 상태
 
   @override
   void initState() {
     super.initState();
-    initPref().then((_) {
-      checkLogIn(); // 로그인 상태에 따라 최신 감정 확인
-      fetchActionRecommendationFromApi(); // 행동 추천 메시지 가져오기
-    });
+    _initializeState(); // 상태 초기화
   }
 
-// 최신 감정을 API에서 가져오는 비동기 메서드
-  Future<void> getLatestEmotion(String memID) async {
-    
+  // 상태 초기화 메서드 (비동기)
+  Future<void> _initializeState() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await fetchActionRecommendationFromApi(); // 행동 추천 메시지 불러오기
+
+    // 로그인 상태 초기화
+    isLogin = authProvider.isLoggedIn;
+    if (isLogin) {
+      memberID = authProvider.ID;
+      nickname = authProvider.NickName;
+      await getLatestEmotion(memberID); // 최신 감정 불러오기
+    }
+  }
+
+  // 최신 감정을 서버에서 가져오는 메서드
+  Future<void> getLatestEmotion(String memberID) async {
     try {
-      final latest = await returnAfterEmotion(memID); //감정 가져오기
-      
+      final latest = await returnAfterEmotion(memberID);
       setState(() {
         latestEmotion = latest;
       });
       if (latestEmotion != null && latestEmotion!.isNotEmpty) {
-       
-        _initAudioPlayer(latestEmotion!); // 오디오 플레이어 초기화 및 재생
+        _initAudioPlayer(latestEmotion!); // 최신 감정에 따른 오디오 플레이어 초기화
       } else {
         print("최신 감정이 null이거나 비어 있습니다.");
       }
@@ -65,36 +61,32 @@ class HomeState extends State<Home> {
     }
   }
 
-  // 로그인 상태를 확인하고, 로그인 상태일 경우 최신 감정 가져오기
-  void checkLogIn() {
-    if (isLogin) {
-      getLatestEmotion(memberID);
-    }
-  }
-
- // 최신 감정에 기반하여 오디오 플레이어를 설정하고 재생하는 비동기 메서드
+  // 오디오 플레이어 초기화 및 설정
   Future<void> _initAudioPlayer(String latestEmotion) async {
-   
     try {
       final url =
           'https://chatbotmg.s3.ap-northeast-2.amazonaws.com/${memberID}_$latestEmotion.wav';
-     
-      final audioProvider = Provider.of<AudioProvider>(context, listen: false);  // 오디오 파일 URL
-      await audioProvider.setUrl(url); // 오디오 URL 설정
-      await audioProvider.audioPlayer.setLoopMode(LoopMode.all); // 오디오 루프 설정
-      audioProvider.play(); // 오디오 재생
+      final audioProvider = Provider.of<AudioProvider>(context, listen: false);
+
+      // 현재 설정된 URL과 재생 중인 상태를 확인
+      if (audioProvider.currentUrl != url ||
+          !audioProvider.audioPlayer.playing) {
+        await audioProvider.setUrl(url);
+        await audioProvider.audioPlayer.setLoopMode(LoopMode.all);
+        audioProvider.play();
+      }
     } catch (e) {
       print("오류 발생: $e");
     }
   }
 
-// 행동 추천 메시지를 API에서 가져오는 비동기 메서드
+  // 행동 추천 메시지를 서버에서 가져오는 메서드
   Future<void> fetchActionRecommendationFromApi() async {
     try {
-      final action = await fetchActionRecommendation(); // 행동 추천 메시지 가져오기
+      final action = await fetchActionRecommendation();
       if (mounted) {
         setState(() {
-          actionMessage = action;
+          actionMessage = action; // 행동 추천 메시지 상태 업데이트
         });
       }
     } catch (e) {
@@ -106,24 +98,21 @@ class HomeState extends State<Home> {
     }
   }
 
-// 로그아웃 기능을 수행하는 비동기 메서드
+  // 로그아웃 메서드
   Future<void> logout() async {
-    await prefs.remove('nickName'); //닉네임 삭제
-    await prefs.remove('ID'); //아이디 삭제
-    await prefs.setBool('isLogin', false);// 로그인 상태 변경
-    setState(() {
-      isLogin = false;
-      nickname = '';
-      memberID = '';
-    });
-    Navigator.pop(context);
+    context.read<AuthProvider>().logout();
+    Navigator.pop(context); // 로그아웃 후 화면 닫기
   }
 
   @override
   Widget build(BuildContext context) {
-    final audioProvider = Provider.of<AudioProvider>(context);
+    final audioProvider = Provider.of<AudioProvider>(context, listen: true);
+    final authProvider = Provider.of<AuthProvider>(context, listen: true);
+    isLogin = authProvider.isLoggedIn;
+    nickname = authProvider.NickName;
 
     return Scaffold(
+     
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -142,7 +131,7 @@ class HomeState extends State<Home> {
                 ),
               ),
         actions: [
-          _buildAudioPlayerControls(audioProvider), // 오디오 플레이어 컨트롤 추가
+          _buildAudioPlayerControls(audioProvider), // 오디오 플레이어 컨트롤 버튼
         ],
       ),
       drawer: Drawer(
@@ -151,8 +140,7 @@ class HomeState extends State<Home> {
             DrawerHeader(
               child: Center(
                 child: Text(
-                  // 로그인 상태에 따른 인사말
-                  isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!', 
+                  isLogin ? '안녕하세요!\n $nickname 님!' : '환영합니다!',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 23,
@@ -166,7 +154,7 @@ class HomeState extends State<Home> {
               _buildDrawerItem(
                 title: '로그아웃하기',
                 icon: Icons.logout,
-                onTap: logout,
+                onTap: logout, // 로그아웃 버튼 클릭 시 로그아웃 메서드 호출
               )
             else ...[
               _buildDrawerItem(
@@ -174,7 +162,8 @@ class HomeState extends State<Home> {
                 icon: 'lib/assets/image/login.png',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const Login()),
+                  MaterialPageRoute(
+                      builder: (context) => const Login()), // 로그인 화면으로 이동
                 ),
               ),
               const SizedBox(height: 20),
@@ -183,7 +172,8 @@ class HomeState extends State<Home> {
                 icon: 'lib/assets/image/signup.png',
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignUp()),
+                  MaterialPageRoute(
+                      builder: (context) => const SignUp()), // 회원가입 화면으로 이동
                 ),
               ),
             ],
@@ -194,7 +184,7 @@ class HomeState extends State<Home> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final bool isLargeScreen = constraints.maxWidth > 600;
-          final double fontSize = isLargeScreen ? 30 : 23;
+          final double fontSize = isLargeScreen ? 30 : 20;
           final double containerWidth = isLargeScreen ? 450 : 350;
           final double containerHeight = isLargeScreen ? 150 : 100;
           final double imageSize = isLargeScreen ? 350 : 250;
@@ -210,7 +200,7 @@ class HomeState extends State<Home> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  imageChange(points, imageSize), // 포인트에 따라 이미지 변경
+                  imageChange(points, imageSize), // 포인트에 따른 이미지 변경 함수 호출
                   const SizedBox(height: 25),
                   Container(
                     width: containerWidth,
@@ -223,8 +213,8 @@ class HomeState extends State<Home> {
                     child: Center(
                       child: Text(
                         actionMessage != null
-                            ? '"$actionMessage" 어떠세요?'
-                            : 'Loading...',
+                            ? '"$actionMessage" 어떠세요?' // 행동 추천 메시지 출력
+                            : 'Loading...', // 로딩 중 메시지
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: fontSize,
@@ -242,7 +232,7 @@ class HomeState extends State<Home> {
     );
   }
 
-// Drawer 항목을 생성하는 메서드
+  // Drawer 아이템 생성 메서드
   Widget _buildDrawerItem({
     required String title,
     required dynamic icon,
@@ -274,25 +264,24 @@ class HomeState extends State<Home> {
               fontFamily: 'single_day',
             ),
           ),
-          onTap: onTap,
+          onTap: onTap, // 아이템 클릭 시 동작 설정
         ),
       ),
     );
   }
 
-//오디오 플레이어 컨트롤을 생성하는 메서드
+  // 오디오 플레이어 컨트롤 버튼 생성 메서드
   Widget _buildAudioPlayerControls(AudioProvider audioProvider) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: IconButton(
-        icon: Icon(audioProvider.audioPlayer.playing ? Icons.pause : Icons.play_arrow),
+        icon: Icon(
+            audioProvider.audioPlayer.playing ? Icons.pause : Icons.play_arrow),
         onPressed: () {
           if (audioProvider.audioPlayer.playing) {
-            audioProvider.audioPlayer.pause(); // 재생 중이면 일시 정지
-           
+            audioProvider.audioPlayer.pause(); // 오디오 플레이어 일시 정지
           } else {
-            audioProvider.audioPlayer.play(); // 정지 중이면 재생
-           
+            audioProvider.audioPlayer.play(); // 오디오 플레이어 재생
           }
         },
       ),

@@ -1,7 +1,9 @@
-//페이지 전체 관리
+// 페이지 전체 관리
 
 import 'package:flutter/material.dart';
 import 'package:heart/Api/audio_apis.dart';
+import 'package:heart/audio_provider.dart';
+import 'package:heart/auth_provider.dart';
 import 'package:heart/screen/chat/chat.dart';
 import 'package:heart/screen/diary/diary.dart';
 import 'package:heart/screen/home.dart';
@@ -10,32 +12,33 @@ import 'package:heart/screen/statistics/statistics.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'audio_provider.dart';
 
 void main() {
+  //위젯 생성 시 초기화 되기전에 바인딩이 형성되는 경우를 막음
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
- // SharedPreferences 인스턴스를 비동기로 가져옴
-  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-
-  late var memberID = ''; //사용자 id 변수 초기화 
+  // SharedPreferences 인스턴스를 비동기로 가져옴
+  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  late final memberID = ''; //사용자 id 변수 초기화
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-         // AudioProvider를 ChangeNotifierProvider로 제공
+        // AudioProvider를 ChangeNotifierProvider로 제공
+        ChangeNotifierProvider(create: (_) => AudioProvider(memberID)),
         ChangeNotifierProvider(
-          create: (_) => AudioProvider(memberID),
-        ),
+          create: (_) => AuthProvider()..loadLoginInfo(),
+          child: const MyHomePage(),
+        )
       ],
       child: MaterialApp(
-        title: '쉼표',
-        debugShowCheckedModeBanner: false,
+        title: '마음 ℃',
         theme: ThemeData(
           primaryColor: Colors.deepPurple,
           useMaterial3: true,
@@ -59,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late SharedPreferences prefs; // SharedPreferences 인스턴스
   late String memberID = ''; // 사용자 ID
   late String nickname = ''; // 사용자 닉네임
-  bool isLogin = false;  // 로그인 여부
+  bool isLogin = false; // 로그인 여부
   late String? latestEmotion = ''; // 최신 감정 값
 
   // 저장소에 nickname이 있는지 확인 후 로그인 여부 판단
@@ -81,7 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _selectedIndex); // 페이지 컨트롤러 초기화
+    _pageController =
+        PageController(initialPage: _selectedIndex); // 페이지 컨트롤러 초기화
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await initPref(); // 초기화 후 SharedPreferences에서 값 가져오기
       if (isLogin) {
@@ -96,27 +100,25 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-// 페이지가 변경될 때 호출되는 메서드
+  // 페이지가 변경될 때 호출되는 메서드
   void _onPageChanged(int index) {
     setState(() {
-      _selectedIndex = index;  // 선택된 페이지 인덱스 업데이트
+      _selectedIndex = index; // 선택된 페이지 인덱스 업데이트
     });
   }
 
-// 하단 내비게이션 바 항목이 선택될 때 호출되는 메서드
+  // 하단 내비게이션 바 항목이 선택될 때 호출되는 메서드
   void _onItemTapped(int index) {
     _pageController.jumpToPage(index); // 페이지를 선택된 인덱스로 이동
   }
 
-// 최신 감정을 가져와서 상태를 업데이트하는 비동기 메서드
+  // 최신 감정을 가져와서 상태를 업데이트하는 비동기 메서드
   Future<void> getLatestEmotion(String memID) async {
-   
     final latest = await returnAfterEmotion(memID); // API 호출하여 최신 감정 값 가져오기
-   
+
     setState(() {
       latestEmotion = latest; // 최신 감정 값 상태 업데이트
     });
-    
   }
 
   @override
@@ -130,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: isLargeScreen
             ? Row(
                 children: [
-                  // 큰 화면일 때 내비게이션 레일 사용
+                  // 큰 화면일 때 네비게이션 레일 사용
                   NavigationRail(
                     destinations: _navRailItems, // 내비게이션 항목 설정
                     selectedIndex: _selectedIndex, // 선택된 인덱스 설정
@@ -147,12 +149,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   Expanded(
                     child: IndexedStack(
                       index: _selectedIndex,
-                      children: [
-                        const Chat(), // 채팅 화면
-                        Diary(memID: memberID),  // 일기 화면
-                        const Home(), // 홈 화면
-                        Statistics(memId: memberID), // 통계 화면
-                        Recommendation(memberID: memberID), // 행동 추천 화면
+                      children: const [
+                        Chat(), // 채팅 화면
+                        Diary(), // 일기 화면
+                        Home(), // 홈 화면
+                        Statistics(), // 통계 화면
+                        Recommendation(), // 행동 추천 화면
                       ],
                     ),
                   ),
@@ -161,12 +163,12 @@ class _MyHomePageState extends State<MyHomePage> {
             : PageView(
                 controller: _pageController, // 페이지 컨트롤러
                 onPageChanged: _onPageChanged, // 페이지 변경 시 호출
-                children: [
-                  const Chat(),
-                  Diary(memID: memberID),
-                  const Home(),
-                  Statistics(memId: memberID),
-                  Recommendation(memberID: memberID),
+                children: const [
+                  Chat(),
+                  Diary(),
+                  Home(),
+                  Statistics(),
+                  Recommendation(),
                 ],
               ),
         bottomNavigationBar: Container(

@@ -79,15 +79,17 @@ Future<DiaryModel?> readDiarybyDate(String memberId, DateTime writeDate) async {
   return null;
 }
 
-//다이어리 수정
-Future<bool> updateDiary(DiaryModel diaries, int diaryId) async {
+// 다이어리 수정
+Future<bool> updateDiary(String contents, int diaryId) async {
   try {
     final response = await http.put(
       Uri.parse("http://54.79.110.239:8080/api/diaries/$diaryId/edit"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: utf8.encode(jsonEncode(diaries.toJson())),
+      body: jsonEncode(<String, String>{
+        'content': contents,
+      }),
     );
 
     print('Response Status Code: ${response.statusCode}');
@@ -131,3 +133,5 @@ Future<bool> deleteDiary(String diaryId) async {
     return false;
   }
 }
+
+

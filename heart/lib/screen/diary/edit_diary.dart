@@ -1,10 +1,10 @@
 //일기 수정 페이지
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 class EditDiaries extends StatefulWidget {
   final DiaryModel diary; //수정할 일기 데이터
@@ -23,12 +23,12 @@ class _EditDiariesState extends State<EditDiaries> {
   bool _isEditing = false; // 수정 모드 여부
   late TextEditingController _textEditingController; // 텍스트 입력 컨트롤러
   late String _content; // 일기 내용
-  String _emotionType = ''; // 감정 유형
+  final String _emotionType = ''; // 감정 유형
   late String _selectedImage = 'lib/assets/image/3.png'; // 선택된 감정 이미지
-  SharedPreferences? prefs;  // SharedPreferences 인스턴스
+  SharedPreferences? prefs; // SharedPreferences 인스턴스
   List<String> writedays = []; // 작성된 날짜 리스트
 
- // SharedPreferences 초기화 및 작성된 날짜 리스트 불러오기
+  // SharedPreferences 초기화 및 작성된 날짜 리스트 불러오기
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     final writedaysList = prefs!.getStringList(widget.diary.memberId);
@@ -45,17 +45,17 @@ class _EditDiariesState extends State<EditDiaries> {
 // 작성된 날짜 리스트에서 날짜 제거 후 업데이트
   void _updateWritedays(String date) async {
     writedays.remove(date);
-    await prefs!.setStringList(widget.diary.memberId,writedays); 
+    await prefs!.setStringList(widget.diary.memberId, writedays);
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _textEditingController = TextEditingController(text: utf8.decode(widget.diary.content.codeUnits)); //내용 글자 인코딩
-    _content = ''; // 초기 내용은 빈 문자열
-    _emotionType = widget.diary.beforeEmotion; // 초기 감정 유형 설정
-    _diaryFuture = readDiarybyDiaryId(widget.diary.diaryId!); // 일기 데이터 로드
+    _textEditingController = TextEditingController(
+        text: utf8.decode(widget.diary.content.codeUnits)); //내용 글자 인코딩
+    _content = '';
+    _diaryFuture = readDiarybyDiaryId(widget.diary.diaryId!);
     _selectedImage =
         'lib/assets/image/emotions/${widget.diary.beforeEmotion}.png'; // 감정 이미지 경로 설정
     _initPrefs(); // SharedPreferences 초기화
@@ -82,7 +82,7 @@ class _EditDiariesState extends State<EditDiaries> {
               bool isDeleted =
                   await deleteDiary(widget.diary.diaryId.toString());
               if (isDeleted) {
-                _updateWritedays(widget.diary.writeDate);  // 날짜 리스트에서 제거
+                _updateWritedays(widget.diary.writeDate); // 날짜 리스트에서 제거
                 Navigator.pop(context); // 이전 화면으로 돌아가기
               } else {
                 // 삭제 실패 처리
@@ -142,14 +142,8 @@ class _EditDiariesState extends State<EditDiaries> {
                 return;
               }
               //백엔드 요청
-              DiaryModel newPage = DiaryModel(
-                diaryId: widget.diary.diaryId,
-                memberId: widget.diary.memberId,
-                writeDate: widget.diary.writeDate,
-                content: _content,
-                beforeEmotion: _emotionType,
-              );
-              await updateDiary(newPage, widget.diary.diaryId!);
+
+              await updateDiary(_content, widget.diary.diaryId!);
               setState(() {
                 _isEditing = false; // 저장 버튼을 누르면 수정 모드 종료
               });

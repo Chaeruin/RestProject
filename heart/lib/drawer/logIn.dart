@@ -1,7 +1,7 @@
-//로그인하는 페이지
 import 'package:flutter/material.dart';
 import 'package:heart/Api/login_apis.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heart/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,52 +11,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  // 아이디와 비밀번호 입력을 위한 TextEditingController 생성
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // SharedPreferences 인스턴스 생성
-  late SharedPreferences prefs;
-
-  // SharedPreferences 초기화 함수
-  Future initPref() async {
-    prefs = await SharedPreferences.getInstance();
-  }
 
   @override
   void initState() {
     super.initState();
-    initPref();
-  }
-
-   // 아이디를 SharedPreferences에 저장하는 함수
-  void idSave(String ID) async {
-    bool idSaved = await prefs.setString('ID', ID);
-    if (idSaved) {
-      print('ID기록 성공');
-    } else {
-      print('ID기록 실패');
-    }
-  }
-
- // 닉네임을 SharedPreferences에 저장하는 함수
-  void nickNameSave(String nickName) async {
-    bool nickNameSaved = await prefs.setString('nick', nickName);
-    if (nickNameSaved) {
-      print('Nickname기록 성공');
-    } else {
-      print('Nickname 기록 실패');
-    }
-  }
-
-  // 로그인 상태를 SharedPreferences에 저장하는 함수
-  void logInCheck() async {
-    bool logInCheck = await prefs.setBool('isLogin', true);
-    if (logInCheck) {
-      print('로그인정보 갱신 성공');
-    } else {
-      print('로그인정보 갱신 실패');
-    }
   }
 
   @override
@@ -151,13 +111,10 @@ class _LoginState extends State<Login> {
                   onPressed: () async {
                     String id = _idController.text;
                     String password = _passwordController.text;
-                    // 로그인 API 호출 및 결과 확인
-                    final String? logInUser = await loginUser(id, password);
-                    if (logInUser != null) {
-                      idSave(id); // 아이디 기록 확인
-                      nickNameSave(logInUser); // 닉네임 기록 확인
-                      logInCheck();// 로그인 기록 확인
-                      
+
+                    final String? nickName = await loginUser(id, password);
+                    if (nickName != null) {
+                      context.read<AuthProvider>().login(id, nickName);
                     } else {
                       showAdaptiveDialog(
                         context: context,
@@ -175,6 +132,7 @@ class _LoginState extends State<Login> {
                         },
                       );
                     }
+
                     Navigator.pop(context);
                   },
                   child: const Text(
