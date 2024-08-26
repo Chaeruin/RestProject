@@ -15,7 +15,7 @@ class Chat extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ChatScreen(),
+      home: const ChatScreen(),
     );
   }
 }
@@ -146,7 +146,7 @@ class ChatScreenState extends State<ChatScreen> {
     memberId = Provider.of<AuthProvider>(context, listen: true).ID;
 
     return (memberId == null || memberId == '')
-        ? Scaffold(
+        ? const Scaffold(
             body: Center(
               child: Text('로그인이 필요합니다!'),
             ),
@@ -215,8 +215,8 @@ class ChatScreenState extends State<ChatScreen> {
                     ),
                   const SizedBox(width: 8, height: 20),
                   Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
                     ),
                     child: _buildTextComposer(),
                   ),
@@ -286,54 +286,87 @@ class ChatMessage extends StatelessWidget {
             isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          if (!isUser)
-            Container(
-              margin: const EdgeInsets.only(right: 16.0),
-              child: const CircleAvatar(
-                backgroundImage: AssetImage('lib/assets/images/icon2.png'),
-              ),
-            ),
-          if (image == null)
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    text,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontFamily: 'single_day',
-                      color: isUser ? Colors.black : Colors.red,
-                    ),
+          Column(
+            crossAxisAlignment:
+                isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: <Widget>[
+              // 사용자가 보낸게 아니면 (마음이가 답변하는 채팅일 경우)
+              if (!isUser)
+                Container(
+                  margin: const EdgeInsets.only(
+                      right: 10.0, left: 20.0, bottom: 10),
+                  child: const CircleAvatar(
+                    backgroundColor: Colors.white,
+                    backgroundImage:
+                        AssetImage('lib/assets/image/1.png'),
+                    radius: 25,
                   ),
-                ],
-              ),
-            )
-          else
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  image!,
-                  const SizedBox(height: 8.0),
-                  const Text(
-                    suicideText,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontFamily: 'single_day',
-                      color: Colors.red,
-                    ),
+                ),
+              // 사용자가 보내는 메세지일 경우
+              if (isUser)
+                Container(
+                  margin: const EdgeInsets.only(right: 10.0, left: 20.0),
+                  child: const Text(
+                    '',
+                     style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'single_day',
+                    fontSize: 20.0,
                   ),
-                ],
+                    ),
+                ),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.5,
+                ),
+                margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'single_day',
+                    fontSize: 20.0,
+                  ),
+                ),
               ),
-            ),
-          if (isUser)
-            Container(
-              margin: const EdgeInsets.only(left: 16.0),
-              child: const CircleAvatar(
-                backgroundImage: AssetImage('lib/assets/images/icon1.png'),
-              ),
-            ),
+              // 이미지가 있는 경우
+              if (image != null)
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.5,
+                  ),
+                  margin: const EdgeInsets.only(right: 10.0, left: 10.0),
+                  padding: const EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        child: image,
+                      ),
+                      const Text(
+                        suicideText,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'single_day',
+                          fontSize: 20.0,
+                        ),
+                      ),
+                      
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
