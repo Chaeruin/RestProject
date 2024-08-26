@@ -24,9 +24,10 @@ class AuthProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _isLoggedIn = true;
     _ID = ID;
+    _NickName = nick;
     await prefs.setBool('isLoggedIn', _isLoggedIn);
     await prefs.setString('ID', _ID);
-    await prefs.setString('nick', nick);
+    await prefs.setString('nick', _NickName);
     notifyListeners();
   }
 
@@ -35,6 +36,7 @@ class AuthProvider with ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _isLoggedIn = false;
     _ID = '';
+    _NickName = '';
     await prefs.remove('isLoggedIn');
     await prefs.remove('ID');
     await prefs.remove('nick');

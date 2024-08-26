@@ -85,6 +85,38 @@ class _AddDiariesState extends State<AddDiaries> {
 
 // 감정 선택 모달을 표시하는 함수
   Future<String?> _showImagePicker(BuildContext context) async {
+    final emotions = {
+      '기쁨': {'image': 'lib/assets/image/emotions/joy.png', 'type': Emotion.joy},
+      '희망': {
+        'image': 'lib/assets/image/emotions/hope.png',
+        'type': Emotion.hope
+      },
+      '분노': {
+        'image': 'lib/assets/image/emotions/anger.png',
+        'type': Emotion.anger
+      },
+      '불안': {
+        'image': 'lib/assets/image/emotions/anxiety.png',
+        'type': Emotion.anxiety
+      },
+      '중립': {
+        'image': 'lib/assets/image/emotions/neutrality.png',
+        'type': Emotion.neutrality
+      },
+      '슬픔': {
+        'image': 'lib/assets/image/emotions/sadness.png',
+        'type': Emotion.sadness
+      },
+      '피곤': {
+        'image': 'lib/assets/image/emotions/tiredness.png',
+        'type': Emotion.tiredness
+      },
+      '후회': {
+        'image': 'lib/assets/image/emotions/regret.png',
+        'type': Emotion.regret
+      },
+    };
+
     return showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext context) {
@@ -93,90 +125,23 @@ class _AddDiariesState extends State<AddDiaries> {
           width: 400,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 감정별로 버튼을 생성하고 이미지와 감정 타입을 설정
-              ElevatedButton(
+            children: emotions.entries.map((entry) {
+              final emotionName = entry.key;
+              final emotionData = entry.value;
+              return ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/joy.png';
-                    _emotionType = Emotion.joy.toString().split('.').last;
+                    _selectedImage = emotionData['image'] as String;
+                    _emotionType = (emotionData['type'] as Emotion)
+                        .toString()
+                        .split('.')
+                        .last;
                   });
                   Navigator.pop(context, _emotionType);
                 },
-                child: const Text('기쁨'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/hope.png';
-                    _emotionType = Emotion.hope.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('희망'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/anger.png';
-                    _emotionType = Emotion.anger.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('분노'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/anxiety.png';
-                    _emotionType = Emotion.anxiety.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('불안'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/neutrality.png';
-                    _emotionType =
-                        Emotion.neutrality.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('중립'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/sadness.png';
-                    _emotionType = Emotion.sadness.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('슬픔'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/tiredness.png';
-                    _emotionType = Emotion.tiredness.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('피곤'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _selectedImage = 'lib/assets/image/emotions/regret.png';
-                    _emotionType = Emotion.regret.toString().split('.').last;
-                  });
-                  Navigator.pop(context, _emotionType);
-                },
-                child: const Text('후회'),
-              ),
-            ],
+                child: Text(emotionName),
+              );
+            }).toList(),
           ),
         );
       },
