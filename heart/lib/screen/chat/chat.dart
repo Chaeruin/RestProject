@@ -114,7 +114,7 @@ class ChatScreenState extends State<ChatScreen> {
           _messages.insert(
             0,
             ChatMessage(
-              image: Image.asset('lib/assets/images/SuicidePrevention.png'),
+              image: Image.asset('lib/assets/image/SuicidePrevention.png'),
               text: receivedMessage,
               isUser: false,
             ),
@@ -272,7 +272,7 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final bool isUser;
   final Image? image;
-  static const String suicideText = "자살 방지 문구(임시)";
+  static const String suicideText = "우리, 함께.";
 
   const ChatMessage(
       {super.key, required this.text, required this.isUser, this.image});
