@@ -84,10 +84,14 @@ def generate_music(memberID, emotionI):
         progress=True
     )
 
+    # 앞부분 0.8초 자르기
+    cut_duration = 0.8  # 제거할 시간 (초)
+    cut_samples = int(cut_duration * 32000)  # 제거할 샘플 수
+    res_cut = res[:, :, cut_samples:]
+
     # 생성된 오디오 파일 저장 및 S3 업로드
     file_name = generate_file_name(memberID, emotionI)
-    audio_write(file_name, res[0].cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
-
+    audio_write(file_name, res_cut[0].cpu(), model.sample_rate, strategy="loudness", loudness_compressor=True)
 
     # 파일 존재 여부 확인
     import os
