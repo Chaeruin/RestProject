@@ -33,6 +33,7 @@ class HomeState extends State<Home> {
   // 상태 초기화 메서드 (비동기)
   Future<void> _initializeState() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await fetchActionRecommendationFromApi(); // 행동 추천 메시지 불러오기
 
     // 로그인 상태 초기화
     isLogin = authProvider.isLoggedIn;
@@ -40,7 +41,6 @@ class HomeState extends State<Home> {
       memberID = authProvider.ID;
       nickname = authProvider.NickName;
       await getLatestEmotion(memberID); // 최신 감정 불러오기
-      await fetchActionRecommendationFromApi(); // 행동 추천 메시지 불러오기
     }
   }
 

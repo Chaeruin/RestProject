@@ -17,14 +17,46 @@ class action extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> emotions = [
-      {'image': 'lib/assets/image/emotions/joy.png', 'label': '기쁨', 'value': 'joy'},
-      {'image': 'lib/assets/image/emotions/hope.png', 'label': '희망', 'value': 'hope'},
-      {'image': 'lib/assets/image/emotions/anger.png', 'label': '분노', 'value': 'anger'},
-      {'image': 'lib/assets/image/emotions/anxiety.png', 'label': '불안', 'value': 'anxiety'},
-      {'image': 'lib/assets/image/emotions/neutrality.png', 'label': '중립', 'value': 'neutrality'},
-      {'image': 'lib/assets/image/emotions/sadness.png', 'label': '슬픔', 'value': 'sadness'},
-      {'image': 'lib/assets/image/emotions/tiredness.png', 'label': '피곤', 'value': 'tiredness'},
-      {'image': 'lib/assets/image/emotions/regret.png', 'label': '후회', 'value': 'regret'},
+      {
+        'image': 'lib/assets/image/emotions/joy.png',
+        'label': '기쁨',
+        'value': 'joy'
+      },
+      {
+        'image': 'lib/assets/image/emotions/hope.png',
+        'label': '희망',
+        'value': 'hope'
+      },
+      {
+        'image': 'lib/assets/image/emotions/anger.png',
+        'label': '분노',
+        'value': 'anger'
+      },
+      {
+        'image': 'lib/assets/image/emotions/anxiety.png',
+        'label': '불안',
+        'value': 'anxiety'
+      },
+      {
+        'image': 'lib/assets/image/emotions/neutrality.png',
+        'label': '중립',
+        'value': 'neutrality'
+      },
+      {
+        'image': 'lib/assets/image/emotions/sadness.png',
+        'label': '슬픔',
+        'value': 'sadness'
+      },
+      {
+        'image': 'lib/assets/image/emotions/tiredness.png',
+        'label': '피곤',
+        'value': 'tiredness'
+      },
+      {
+        'image': 'lib/assets/image/emotions/regret.png',
+        'label': '후회',
+        'value': 'regret'
+      },
     ];
 
     return Scaffold(
@@ -60,7 +92,8 @@ class action extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 65, 133, 59).withOpacity(0.5),
+                      color: const Color.fromARGB(255, 65, 133, 59)
+                          .withOpacity(0.5),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
@@ -117,16 +150,16 @@ class action extends StatelessWidget {
                         );
                         print('Response: $response');
 
-                       
                         final body = response['body'];
 
                         if (body is String) {
-                        
-                          final Map<String, dynamic> parsedBody = jsonDecode(body);
-                          final savedMemberAction = parsedBody['savedMemberAction'];
+                          final Map<String, dynamic> parsedBody =
+                              jsonDecode(body);
+                          final savedMemberAction =
+                              parsedBody['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            
+
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -153,7 +186,7 @@ class action extends StatelessWidget {
                           final savedMemberAction = body['savedMemberAction'];
                           if (savedMemberAction is Map<String, dynamic>) {
                             final status = savedMemberAction['status'];
-                            
+
                             showDialog(
                               context: context,
                               builder: (context) {
@@ -178,7 +211,7 @@ class action extends StatelessWidget {
                         } else {
                           throw Exception('body is neither a String nor a Map');
                         }
-                                            } catch (e) {
+                      } catch (e) {
                         print('Error: $e');
                         showDialog(
                           context: context,

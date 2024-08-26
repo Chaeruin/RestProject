@@ -1,5 +1,7 @@
 //일기 수정 페이지
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:heart/Api/diary_apis.dart';
 import 'package:heart/Model/diary_model.dart';
@@ -51,8 +53,8 @@ class _EditDiariesState extends State<EditDiaries> {
   @override
   void initState() {
     super.initState();
-    _textEditingController =
-        TextEditingController(text: (widget.diary.content));
+    _textEditingController = TextEditingController(
+        text: utf8.decode(widget.diary.content.codeUnits)); //내용 글자 인코딩
     _content = '';
     _diaryFuture = readDiarybyDiaryId(widget.diary.diaryId!);
     _selectedImage =
