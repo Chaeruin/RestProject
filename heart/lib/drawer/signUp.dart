@@ -1,8 +1,9 @@
+//회원가입 페이지
 
-import 'package:flutter/material.dart';
-import 'package:heart/Model/login_model.dart';
-import 'package:intl/intl.dart';
-import '../Api/login_apis.dart';
+import 'package:flutter/material.dart';  // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Model/login_model.dart'; //로그인 model 가져오기
+import 'package:intl/intl.dart'; // 날짜와 시간 형식을 지정하고 조작하기 위해 사용되는 패키지 가져오기
+import '../Api/login_apis.dart'; //로그인 api 가져오기
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});

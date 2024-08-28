@@ -1,7 +1,7 @@
 //행동을 완료한 후 감정을 선택하는 페이지
 
-import 'package:flutter/material.dart';
-import 'package:heart/APi/action_api.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/APi/action_api.dart'; //행동 api 가져오기
 
 class ActionAfter extends StatefulWidget {
   final String recommendation; //추천행동 가져오기

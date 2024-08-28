@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//로그인 인증 여부  
+
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
 
 class AuthProvider with ChangeNotifier {
-  bool _isLoggedIn = false;
-  String _ID = '';
-  String _NickName = '';
+  bool _isLoggedIn = false; //로그인 여부
+  String _ID = ''; //아이디
+  String _NickName = ''; //닉네임
 
   bool get isLoggedIn => _isLoggedIn;
   String get ID => _ID;

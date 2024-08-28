@@ -1,17 +1,17 @@
 // 페이지 전체 관리
 
-import 'package:flutter/material.dart';
-import 'package:heart/Api/audio_apis.dart';
-import 'package:heart/audio_provider.dart';
-import 'package:heart/auth_provider.dart';
-import 'package:heart/screen/chat/chat.dart';
-import 'package:heart/screen/diary/diary.dart';
-import 'package:heart/screen/home.dart';
-import 'package:heart/screen/action/recommendation.dart';
-import 'package:heart/screen/statistics/statistics.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Api/audio_apis.dart'; // 오디오 관련 API 기능을 사용하기
+import 'package:heart/audio_provider.dart'; // 오디오 상태를 관리하기 위한 Provider
+import 'package:heart/auth_provider.dart'; // 사용자 인증 상태를 관리하기 위한 Provider
+import 'package:heart/screen/chat/chat.dart'; // 채팅 화면을 구성
+import 'package:heart/screen/diary/diary.dart'; // 일기 화면
+import 'package:heart/screen/home.dart'; // 홈 화면을 구성
+import 'package:heart/screen/action/recommendation.dart'; // 행동 추천 기능 화면
+import 'package:heart/screen/statistics/statistics.dart'; // 통계 화면
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
+import 'package:provider/provider.dart'; // 상태 관리를 위해 Provider 패키지 가져오기
 
 void main() {
   //위젯 생성 시 초기화 되기전에 바인딩이 형성되는 경우를 막음

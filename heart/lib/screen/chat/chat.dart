@@ -1,9 +1,11 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:provider/provider.dart';
-import 'package:heart/auth_provider.dart';
+//채팅 페이지
+
+import 'dart:convert'; // JSON 데이터를 인코딩 및 디코딩하기 위해 사용
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:http/http.dart' as http; // HTTP 요청을 보내고 응답을 처리하기 위해 사용되는 패키지 가져옴
+import 'package:flutter_spinkit/flutter_spinkit.dart'; // 로딩 애니메이션(스피너)을 구현하기 위해 사용되는 패키지 
+import 'package:provider/provider.dart'; // 상태 관리를 위해 Provider 패키지
+import 'package:heart/auth_provider.dart'; // 사용자 인증 상태를 관리하기 위한 AuthProvider를 가져옴
 
 class Chat extends StatelessWidget {
   const Chat({super.key});
@@ -148,7 +150,13 @@ class ChatScreenState extends State<ChatScreen> {
     return (memberId == null || memberId == '')
         ? const Scaffold(
             body: Center(
-              child: Text('로그인이 필요합니다!'),
+              child: Text(
+                '로그인이 필요합니다!',
+                 style: TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'single_day',
+                  ),
+                  ),
             ),
           )
         : Scaffold(

@@ -1,13 +1,13 @@
-//캘린더 화면
+//일기 메인 화면
 
-import 'package:flutter/material.dart';
-import 'package:heart/Model/diary_model.dart';
-import 'package:heart/auth_provider.dart';
-import 'package:heart/screen/diary/edit_diary.dart';
-import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:heart/Api/diary_apis.dart';
-import 'package:heart/screen/diary/add_diary.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Model/diary_model.dart'; //일기 model 가져오기 
+import 'package:heart/auth_provider.dart'; //로그인 인증 불러오기 
+import 'package:heart/screen/diary/edit_diary.dart'; //일기 수정 화면
+import 'package:provider/provider.dart'; // 상태 관리를 위한 provider 패키지를 불러옴
+import 'package:table_calendar/table_calendar.dart'; //캘린더 패키지 가져오기
+import 'package:heart/Api/diary_apis.dart'; //일기 api 가져오기 
+import 'package:heart/screen/diary/add_diary.dart'; //일기 작성 화면 가져오기
 
 class Diary extends StatefulWidget {
   const Diary({
@@ -42,7 +42,13 @@ class _DiaryState extends State<Diary> {
     return (memberId == '')
         ? const Scaffold(
             body: Center(
-              child: Text('로그인이 필요합니다!'),
+              child: Text(
+                '로그인이 필요합니다!',
+                 style: TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'single_day',
+                  ),
+                ),
             ),
           )
         : Scaffold(

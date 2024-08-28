@@ -1,6 +1,8 @@
+//로그인 api
+
 import 'dart:convert';
-import 'package:heart/Model/login_model.dart';
-import 'package:http/http.dart' as http;
+import 'package:heart/Model/login_model.dart'; //로그인 model 불러오기
+import 'package:http/http.dart' as http; // HTTP 요청을 보내고 응답을 받기 위한 외부 패키지
 
 //이메일 중복 검사
 Future<String> checkEmailDuplicate(String email) async {

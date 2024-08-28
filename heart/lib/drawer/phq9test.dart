@@ -1,7 +1,7 @@
 //우울증 척도 테스트
 
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';  // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
 
 class PHQ9 extends StatefulWidget {
   final String memberId;

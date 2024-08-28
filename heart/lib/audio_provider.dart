@@ -1,8 +1,8 @@
 //오디오 플레이어 관리
 
-import 'package:flutter/material.dart';
-import 'package:heart/Api/audio_apis.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Api/audio_apis.dart'; //오디오 api 가져오기 
+import 'package:just_audio/just_audio.dart';  // 오디오 파일을 로드하고 재생하기 위해 사용되는 패키지
 
 class AudioProvider with ChangeNotifier {
   late AudioPlayer _audioPlayer; // AudioPlayer 인스턴스

@@ -1,5 +1,6 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+//행동 api
+import 'dart:convert'; // JSON 데이터의 인코딩 및 디코딩을 처리
+import 'package:http/http.dart' as http; // HTTP 요청을 보내고 응답을 받기 위한 외부 패키지
 
 //메인 페이지 행동 추천
 Future<String> fetchActionRecommendation() async {

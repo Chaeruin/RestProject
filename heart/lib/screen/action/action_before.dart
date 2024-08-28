@@ -1,10 +1,10 @@
 //행동을 시작하는 페이지
 
-import 'package:flutter/material.dart';
-import 'package:heart/APi/action_api.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart/screen/action/recommendation.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/APi/action_api.dart'; //행동 api 가져오기
+import 'dart:convert';// JSON 데이터를 인코딩 및 디코딩하기 위해 사용
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
+import 'package:heart/screen/action/recommendation.dart'; //행동 추천 페이지 연결
 
 class ActionBefore extends StatelessWidget {
   final String recommendation; // 추천된 행동을 가져오기 위한 변수

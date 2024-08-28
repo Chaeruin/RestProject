@@ -1,8 +1,9 @@
-import 'dart:convert';
+// 일기 api
 
-import 'package:heart/Model/diary_model.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+import 'dart:convert'; // JSON 데이터의 인코딩 및 디코딩을 처리
+import 'package:heart/Model/diary_model.dart'; // HTTP 요청을 보내고 응답을 받기 위한 외부 패키지
+import 'package:http/http.dart' as http; // HTTP 요청을 보내고 응답을 받기 위한 외부 패키지
+import 'package:intl/intl.dart'; // 날짜와 시간 형식을 지정하고 조작하기 위해 사용되는 패키지
 
 //다이어리 생성
 Future<bool> saveDiary(DiaryModel diary) async {

@@ -1,7 +1,8 @@
-import 'dart:convert';
+//감정 api
 
-import 'package:heart/Model/emotion_model.dart';
-import 'package:http/http.dart' as http;
+import 'dart:convert'; // JSON 데이터의 인코딩 및 디코딩을 처리
+import 'package:heart/Model/emotion_model.dart'; //감정 model 불러오기
+import 'package:http/http.dart' as http; // HTTP 요청을 보내고 응답을 받기 위한 외부 패키지
 
 //감정통계조회
 Future<MonthlyEmo> readEmotionMonthly(String memberId, String writeDate) async {

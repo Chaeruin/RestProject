@@ -1,10 +1,10 @@
 //일기 수정 페이지
 
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:heart/Api/diary_apis.dart';
-import 'package:heart/Model/diary_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';  // JSON 데이터를 인코딩 및 디코딩하기 위해 사용
+import 'package:flutter/material.dart';  // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Api/diary_apis.dart'; //일기 api 가져오기 
+import 'package:heart/Model/diary_model.dart'; //일기 model 가져오기 
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
 
 class EditDiaries extends StatefulWidget {
   final DiaryModel diary; //수정할 일기 데이터

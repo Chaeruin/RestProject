@@ -1,10 +1,11 @@
 //일기를 작성하는 페이지
-import 'package:flutter/material.dart';
-import 'package:heart/Api/audio_apis.dart';
-import 'package:heart/Api/diary_apis.dart';
-import 'package:heart/Model/diary_model.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Api/audio_apis.dart'; //오디오 api 불러오기
+import 'package:heart/Api/diary_apis.dart'; //일기 api 불러오기
+import 'package:heart/Model/diary_model.dart'; //일기 model 불러오기 
+import 'package:intl/intl.dart'; // 날짜와 시간 형식을 지정하고 조작하기 위해 사용되는 패키지 가져오기
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
 
 enum Emotion {
   joy,

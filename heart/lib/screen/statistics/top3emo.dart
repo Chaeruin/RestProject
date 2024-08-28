@@ -1,9 +1,9 @@
 //일기 작성 페이지를 기반으로 월 단위로 가장 빈도가 높은 감정 Top 3 
 
-import 'package:flutter/material.dart';
-import 'package:heart/Api/emotion_apis.dart';
-import 'package:heart/Model/emotion_model.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Api/emotion_apis.dart'; //감정  api 가져오기 
+import 'package:heart/Model/emotion_model.dart'; //감정 model 가져오기 
+import 'package:intl/intl.dart';  // 날짜와 시간 형식을 지정하고 조작하기 위해 사용되는 패키지 가져오기
 
 // 상위 3가지 감정을 표시
 class Top3Emotion extends StatefulWidget {

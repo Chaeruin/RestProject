@@ -1,8 +1,8 @@
 //기분에 따른 행동을 추천해주는 페이지
 
-import 'package:flutter/material.dart';
-import 'package:heart/Api/action_api.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/Api/action_api.dart'; //행동  api 불러오기
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
 
 class FeelBetter extends StatefulWidget {
   final String memberID;
@@ -92,7 +92,7 @@ class _FeelBetterStatsState extends State<FeelBetter> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data == null) {
-                return const Center(child: Text('No data available'));
+                return const Center(child: Text('데이터가 없습니다.'));
               } else {
                 var lists = snapshot.data as List<String>;
                 return ListView.builder(

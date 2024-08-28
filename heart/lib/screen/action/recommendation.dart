@@ -1,13 +1,13 @@
 //감정별로 행동을 추천해주는 페이지
 
-import 'package:flutter/material.dart';
-import 'package:heart/auth_provider.dart';
-import 'package:heart/drawer/phq9test.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:heart/APi/action_api.dart';
-import 'package:heart/screen/action/action_before.dart';
-import 'package:heart/screen/action/action_after.dart';
+import 'package:flutter/material.dart'; // Flutter의 기본 위젯 및 머티리얼 디자인 컴포넌트를 사용하기 위해 가져옴
+import 'package:heart/auth_provider.dart'; // 로그인 인증 불러옴
+import 'package:heart/drawer/phq9test.dart'; //우울증 척도 테스트
+import 'package:provider/provider.dart'; // 상태 관리를 위한 provider 패키지를 불러옴
+import 'package:shared_preferences/shared_preferences.dart'; // 간단한 데이터를 로컬에 저장
+import 'package:heart/APi/action_api.dart'; //행동 api 가져오기
+import 'package:heart/screen/action/action_before.dart'; //행동 진행 중 페이지
+import 'package:heart/screen/action/action_after.dart'; //행동 완료 페이지
 
 enum Emotion {
   joy,
