@@ -115,13 +115,30 @@ class _LoginState extends State<Login> {
                     final String? nickName = await loginUser(id, password);
                     if (nickName != null) {
                       context.read<AuthProvider>().login(id, nickName);
+                      Navigator.pop(context);
                     } else {
                       showAdaptiveDialog(
                         context: context,
                         builder: (context) {
-                          return AlertDialog.adaptive(
-                            title: const Text('로그인 실패'),
-                            content: const Text('아이디 또는 비밀번호가 올바르지 않습니다.'),
+                          return AlertDialog(
+                            title: const Text(
+                              '로그인 실패',
+                               textAlign: TextAlign.center,
+                               style: TextStyle(
+                                color: Color.fromARGB(255, 89, 181, 81),
+                                fontSize: 23,
+                                fontFamily: 'single_day',
+                              ),
+                              ),
+                            content: const Text(
+                              '아이디 또는 비밀번호가\n올바르지 않습니다.',
+                              textAlign: TextAlign.center,
+                               style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontFamily: 'single_day',
+                              ),
+                              ),
                             actions: [
                               IconButton.filledTonal(
                                 onPressed: () => Navigator.pop(context),
@@ -132,8 +149,6 @@ class _LoginState extends State<Login> {
                         },
                       );
                     }
-
-                    Navigator.pop(context);
                   },
                   child: const Text(
                     '로그인',
