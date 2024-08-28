@@ -1,3 +1,4 @@
+# 필요한 라이브러리 및 모듈 임포트
 from audiocraft.models import MusicGen
 from audiocraft.models import MultiBandDiffusion
 import math
@@ -7,16 +8,16 @@ from audiocraft.data.audio import audio_write
 import boto3
 import sys
 
-# Slack
+# Slack 관련 모듈 임포트
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-
 
 # Slack 클라이언트 초기화
 SLACK_TOKEN = "YOUR_SLACK_TOKEN"  
 SLACK_CHANNEL_MUSIC = "YOUR_SLACK_CHANNEL_ID"
 slack_client = WebClient(token=SLACK_TOKEN)
 
+# Slack으로 메시지를 보내는 함수
 def send_slack_message(message):
     try:
         response = slack_client.chat_postMessage(
@@ -26,11 +27,10 @@ def send_slack_message(message):
     except SlackApiError as e:
         print(f"Error sending message: {e}")
 
+# 콘솔과 Slack에 동시에 메시지를 보내는 함수
 def print_and_slack(message):
     print(message)
     send_slack_message(message)
-
-
 
 # MultiBandDiffusion 디코더 사용 여부 설정
 USE_DIFFUSION_DECODER = False
@@ -76,8 +76,12 @@ emotion_prompts = {
 def generate_file_name(memberID, emotionI):
     return f"{memberID}_{emotionI}"
 
+# 음악 생성 및 S3 업로드 함수
 def generate_music(memberID, emotionI):
+    # 감정에 맞는 프롬프트 선택
     prompt = emotion_prompts.get(emotionI, "Calm and serene ambient music for relaxation and meditation")
+
+    # 음악 생성
     res = model.generate_continuation(
         get_bip_bip(0.125).expand(1, -1, -1),  # prompt의 길이는 1
         32000, [prompt],
